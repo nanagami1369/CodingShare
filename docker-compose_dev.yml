@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  front:
+    container_name: front_dev_container
+    build:
+      context: .
+      dockerfile: ./front/Dockerfile_Front_Dev
+    restart: always
+    ports:
+      - 10081:8080
+    volumes:
+      - ./front:/app
