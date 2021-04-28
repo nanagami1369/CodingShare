@@ -52,6 +52,14 @@ export default Vue.extend({
           tag: 'text/x-csrc',
           name: 'C言語',
         },
+        {
+          tag: 'text/x-c++src',
+          name: 'C++',
+        },
+        {
+          tag: 'text/x-java',
+          name: 'Java',
+        },
       ],
       selectedLanguage: {
         tag: 'javascript',
