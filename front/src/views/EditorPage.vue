@@ -1,5 +1,5 @@
 <template>
-  <div id="editor">
+  <div id="editor-page">
     <h1>Editor</h1>
     <select v-model="selectedLanguage">
       <option v-for="lang in languages" :key="lang.tag" :value="lang">
@@ -32,7 +32,7 @@ type DataType = {
 }
 
 export default Vue.extend({
-  name: 'Editor',
+  name: 'EditorPage',
   data(): DataType {
     return {
       defualtConfig: {
