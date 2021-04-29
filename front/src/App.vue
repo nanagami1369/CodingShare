@@ -30,4 +30,13 @@
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+
+.CodeMirror {
+  text-align: start;
+  font-size: 2em;
+}
+
+.CodeMirror-hint {
+  font-size: 2em !important;
+}
 </style>
