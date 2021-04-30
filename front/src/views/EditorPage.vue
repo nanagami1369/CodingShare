@@ -81,8 +81,7 @@ export default Vue.extend({
     if (editorAria != null) {
       const config = this.defualtConfig
       this.editor = CodeMirror.fromTextArea(editorAria, config)
-      const editorPanel = document.querySelector('#editorPanel')
-      this.editor?.setSize(editorPanel?.clientWidth, editorPanel?.clientHeight)
+      this.editor?.setSize(1280, 720)
     }
   },
 })
