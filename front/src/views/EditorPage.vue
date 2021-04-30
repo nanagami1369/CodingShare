@@ -2,6 +2,8 @@
   <div id="editor-page">
     <div id="sidePanel">
     <h1>Editor</h1>
+      <h2 v-if="isRecoding"><span style="color: red">●</span>録画中</h2>
+      <h2 v-else>■停止中</h2>
     <select v-model="selectedLanguage">
       <option v-for="lang in languages" :key="lang.tag" :value="lang">
         {{ lang.name }}
@@ -34,6 +36,7 @@ type DataType = {
   languages: Language[]
   selectedLanguage: Language
   editorRecodeOptions: editorRecodeOptions
+  isRecoding: boolean
 }
 
 type editorRecodeOptions = {
@@ -78,6 +81,7 @@ export default Vue.extend({
         imageConnt: 20,
         interval: 500,
       },
+      isRecoding: false,
     }
   },
   watch: {
@@ -90,9 +94,11 @@ export default Vue.extend({
       const editorHistoryContainer: HTMLElement[] = []
       let counter = 0
       let timer = -1
+      this.isRecoding = true
       timer = setInterval(async () => {
         if (counter >= this.editorRecodeOptions.imageConnt) {
           clearInterval(timer)
+          this.isRecoding = false
           alert('終了')
           const body: HTMLElement | null = document.querySelector('body')
           if (body == null) {
