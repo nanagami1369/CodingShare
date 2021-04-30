@@ -78,11 +78,12 @@ export default Vue.extend({
     const editorAria: HTMLTextAreaElement | null = document.querySelector(
       '#editorAria'
     )
-    if (editorAria != null) {
+    if (editorAria == null) {
+      throw new Error('textarea not found for CodeMirror')
+    }
       const config = this.defualtConfig
       this.editor = CodeMirror.fromTextArea(editorAria, config)
       this.editor?.setSize(1280, 720)
-    }
   },
 })
 </script>
