@@ -7,6 +7,7 @@
         {{ lang.name }}
       </option>
     </select>
+      <button @click="onSaveEditorImage">保存</button>
     </div>
     <div id="editorPanel">
       <textarea id="editorAria">#TEST</textarea>
@@ -16,6 +17,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import html2canvas from 'html2canvas'
 import '../codemirror-global.js'
 import CodeMirror, { EditorConfiguration } from 'codemirror'
 import 'codemirror/lib/codemirror.css'
@@ -72,6 +74,17 @@ export default Vue.extend({
   watch: {
     selectedLanguage: function (newLang: Language, _: Language) {
       this.editor?.setOption('mode', newLang.tag)
+    },
+  },
+  methods: {
+    onSaveEditorImage: async function (): Promise<void> {
+      // エディタから画像を生成
+      const editor: HTMLElement | null = document.querySelector('.CodeMirror')
+      if (editor == null) {
+        throw new Error('can not find CodeMirror dom')
+      }
+      const canvas = await html2canvas(editor)
+      window.open(canvas.toDataURL())
     },
   },
   mounted() {
