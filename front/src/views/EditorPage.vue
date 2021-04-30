@@ -1,12 +1,14 @@
 <template>
   <div id="editor-page">
+    <div id="sidePanel">
     <h1>Editor</h1>
     <select v-model="selectedLanguage">
       <option v-for="lang in languages" :key="lang.tag" :value="lang">
         {{ lang.name }}
       </option>
     </select>
-    <div class="editorAria">
+    </div>
+    <div id="editorPanel">
       <textarea id="editorAria">#TEST</textarea>
     </div>
   </div>
@@ -79,6 +81,8 @@ export default Vue.extend({
     if (editorAria != null) {
       const config = this.defualtConfig
       this.editor = CodeMirror.fromTextArea(editorAria, config)
+      const editorPanel = document.querySelector('#editorPanel')
+      this.editor?.setSize(editorPanel?.clientWidth, editorPanel?.clientHeight)
     }
   },
 })
@@ -89,8 +93,16 @@ h1 {
   color: #28e270;
 }
 
-.editorAria {
-  text-align: start;
-  font-size: 2em;
+#editor-page {
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#sidePanel {
+  grid-column: 1;
+}
+#editorPanel {
+  grid-column: 2;
 }
 </style>
