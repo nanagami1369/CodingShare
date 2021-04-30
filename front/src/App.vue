@@ -41,6 +41,7 @@
 }
 
 html {
+  overflow: hidden;
   height: 100%;
 }
 

@@ -33,8 +33,13 @@ type DataType = {
   defualtConfig: EditorConfiguration
   languages: Language[]
   selectedLanguage: Language
+  editorRecodeOptions: editorRecodeOptions
 }
 
+type editorRecodeOptions = {
+  imageConnt: number
+  interval: number
+}
 export default Vue.extend({
   name: 'EditorPage',
   data(): DataType {
@@ -69,6 +74,10 @@ export default Vue.extend({
         tag: 'javascript',
         name: 'JavaScript',
       },
+      editorRecodeOptions: {
+        imageConnt: 20,
+        interval: 500,
+      },
     }
   },
   watch: {
@@ -78,13 +87,48 @@ export default Vue.extend({
   },
   methods: {
     onSaveEditorImage: async function (): Promise<void> {
-      // エディタから画像を生成
+      const editorHistoryContainer: HTMLElement[] = []
+      let counter = 0
+      let timer = -1
+      timer = setInterval(async () => {
+        if (counter >= this.editorRecodeOptions.imageConnt) {
+          clearInterval(timer)
+          alert('終了')
+          const body: HTMLElement | null = document.querySelector('body')
+          if (body == null) {
+            throw new Error('can not find body tag')
+          }
+          editorHistoryContainer
+            .map((html) => {
+              // HTMLElementをキャンバスへ変換
+              html.id = 'data-for-canvas-nokohunjyata'
+              body.appendChild(html)
+              const dataForCanvas: HTMLElement | null = document.querySelector(
+                '#data-for-canvas-nokohunjyata'
+              )
+              if (dataForCanvas == null) {
+                throw new Error('can not find data for canvas')
+              }
+              try {
+                const canvas = html2canvas(dataForCanvas)
+                return canvas
+              } finally {
+                body.removeChild(dataForCanvas)
+              }
+            })
+            .forEach(async (canvas, index) => {
+              // キャンバスのデータを開く
+              window.open((await canvas).toDataURL())
+            })
+        }
       const editor: HTMLElement | null = document.querySelector('.CodeMirror')
       if (editor == null) {
         throw new Error('can not find CodeMirror dom')
       }
-      const canvas = await html2canvas(editor)
-      window.open(canvas.toDataURL())
+        editorHistoryContainer.push(editor.cloneNode(true) as HTMLElement)
+        console.log(counter)
+        counter++
+      }, this.editorRecodeOptions.interval)
     },
   },
   mounted() {
