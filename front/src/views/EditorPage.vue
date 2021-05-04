@@ -1,14 +1,14 @@
 <template>
   <div id="editor-page">
     <div id="sidePanel">
-    <h1>Editor</h1>
+      <h1>Editor</h1>
       <h2 v-if="isRecoding"><span style="color: red">●</span>録画中</h2>
       <h2 v-else>■停止中</h2>
-    <select v-model="selectedLanguage">
-      <option v-for="lang in languages" :key="lang.tag" :value="lang">
-        {{ lang.name }}
-      </option>
-    </select>
+      <select v-model="selectedLanguage">
+        <option v-for="lang in languages" :key="lang.tag" :value="lang">
+          {{ lang.name }}
+        </option>
+      </select>
       <button @click="onSaveEditorImage">保存</button>
     </div>
     <div id="editorPanel">
@@ -29,16 +29,19 @@ import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
+import 'codemirror/addon/edit/closebrackets.js'
 import { Language } from '@/models/language'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
-  defualtConfig: EditorConfiguration
+  defualtConfig: EditorConfig
   languages: Language[]
   selectedLanguage: Language
   editorRecodeOptions: editorRecodeOptions
   isRecoding: boolean
 }
-
+interface EditorConfig extends EditorConfiguration {
+  autoCloseBrackets: boolean
+}
 type editorRecodeOptions = {
   imageConnt: number
   interval: number
@@ -52,6 +55,7 @@ export default Vue.extend({
         lineNumbers: true,
         indentUnit: 4,
         theme: 'monokai',
+        autoCloseBrackets: true,
         showHint: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
       },
@@ -127,10 +131,10 @@ export default Vue.extend({
               window.open((await canvas).toDataURL())
             })
         }
-      const editor: HTMLElement | null = document.querySelector('.CodeMirror')
-      if (editor == null) {
-        throw new Error('can not find CodeMirror dom')
-      }
+        const editor: HTMLElement | null = document.querySelector('.CodeMirror')
+        if (editor == null) {
+          throw new Error('can not find CodeMirror dom')
+        }
         editorHistoryContainer.push(editor.cloneNode(true) as HTMLElement)
         console.log(counter)
         counter++
@@ -144,9 +148,9 @@ export default Vue.extend({
     if (editorAria == null) {
       throw new Error('textarea not found for CodeMirror')
     }
-      const config = this.defualtConfig
-      this.editor = CodeMirror.fromTextArea(editorAria, config)
-      this.editor?.setSize(1280, 720)
+    const config = this.defualtConfig
+    this.editor = CodeMirror.fromTextArea(editorAria, config)
+    this.editor?.setSize(1280, 720)
   },
 })
 </script>
