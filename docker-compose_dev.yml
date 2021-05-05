@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: ./front/Dockerfile_Front_Dev
+    environment:
+      - http_proxy
+      - https_proxy
     restart: always
     ports:
       - 10081:8080
