@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "front"
+    },
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "Dockerfile_Front_Dev": "dockerfile",
+      "docker-compose_dev.yml": "dockercompose"
+    }
+  }
+}
