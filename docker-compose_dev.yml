@@ -5,9 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./front/Dockerfile_Front_Dev
-    environment:
-      - http_proxy
-      - https_proxy
+    command: npm run serve
     restart: always
     ports:
       - 10081:8080
