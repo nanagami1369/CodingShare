@@ -1,13 +1,12 @@
 version: '3.8'
 services:
   front:
+    image: node:14.15.5
     container_name: front_dev_container
-    build:
-      context: .
-      dockerfile: ./front/Dockerfile_Front_Dev
     command: npm run serve
     restart: always
     ports:
       - 10081:8080
+    working_dir: /app
     volumes:
       - ./front:/app
