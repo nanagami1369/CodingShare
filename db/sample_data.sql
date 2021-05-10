@@ -1,5 +1,5 @@
 USE account;
-INSERT INTO user (name, email, type, student_number, password)
+INSERT INTO users (name, email, type, student_number, password)
 VALUES (
         '山田太郎',
         's1121141@exsample.com',
@@ -21,6 +21,6 @@ VALUES (
         NULL,
         'sample'
     );
-INSERT INTO admin (name, password)
+INSERT INTO admins (name, password)
 VALUES ('admin1', 'admin1'),
     ('admin2', 'admin2');
