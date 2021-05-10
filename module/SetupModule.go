@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -13,6 +14,10 @@ type SetupModule struct {
 
 func NewStupModule() *SetupModule {
 	return &SetupModule{}
+}
+
+func (cm *SetupModule) GetRouter() *gin.Engine {
+	return gin.Default()
 }
 
 func (cm *SetupModule) OpenDB() (db *gorm.DB, err error) {
