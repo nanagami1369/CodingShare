@@ -1,6 +1,8 @@
 package module
 
 import (
+	"errors"
+
 	"github.com/nanagami1369/CodingShare/model"
 	"github.com/nanagami1369/CodingShare/repository"
 )
@@ -13,6 +15,13 @@ func NewUserAccountRepository(r repository.UserAccountRepository) UserAccountMod
 	return &UserAccountModuleImpl{repository: r}
 }
 
-func (m *UserAccountModuleImpl) Login(email string) (user *model.User, err error) {
-	return m.repository.FindOne(email)
+func (m *UserAccountModuleImpl) Login(email string, password string) (user *model.User, err error) {
+	user, err = m.repository.FindOne(email)
+	if err != nil {
+		return nil, err
+	}
+	if user.Password != password {
+		return nil, errors.New("password is incorrect")
+	}
+	return user, nil
 }

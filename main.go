@@ -29,7 +29,7 @@ func main() {
 			})
 			return
 		}
-		user, err := uam.Login(loginRequest.Email)
+		user, err := uam.Login(loginRequest.Email, loginRequest.Password)
 		if err != nil {
 			// ログインに失敗したら失敗した事だけ伝える
 			c.JSON(http.StatusUnauthorized, gin.H{
