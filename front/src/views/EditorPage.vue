@@ -27,8 +27,10 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import { Language } from '@/models/language'
+import { CodingRecorder } from '@/CodingRecorder'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
+  recorder: CodingRecorder
   defualtConfig: EditorConfig
   languages: Language[]
   selectedLanguage: Language
@@ -49,6 +51,7 @@ export default Vue.extend({
         showHint: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
       },
+      recorder: new CodingRecorder(),
       languages: [
         {
           tag: 'javascript',
@@ -88,6 +91,10 @@ export default Vue.extend({
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
     this.editor?.setSize(1280, 720)
+    this.recorder.register(this.editor)
+  },
+  beforeDestroy() {
+    this.recorder.unregister(this.editor)
   },
 })
 </script>
