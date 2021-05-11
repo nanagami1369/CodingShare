@@ -6,5 +6,5 @@ type User struct {
 	Email         string
 	Type          string
 	StudentNumber int
-	PassWord      string
+	Password      string
 }
