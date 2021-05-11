@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,10 +11,6 @@ import (
 func main() {
 	sm := module.NewStupModule()
 	uam, err := sm.GetUserAccountModule()
-	if err != nil {
-		panic(err)
-	}
-	db, err := sm.OpenDB()
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +43,4 @@ func main() {
 		})
 	})
 	router.Run(":8081")
-	user := &model.User{}
-	db.First(user)
-	fmt.Println(user)
 }
