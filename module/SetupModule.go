@@ -17,8 +17,8 @@ func NewStupModule() *SetupModule {
 	return &SetupModule{}
 }
 
-func (cm *SetupModule) GetUserAccountModule() (module UserAccountModule, err error) {
-	db, err := cm.OpenDB()
+func (sm *SetupModule) GetUserAccountModule() (module UserAccountModule, err error) {
+	db, err := sm.OpenDB()
 	if err != nil {
 		return nil, err
 	}
@@ -26,19 +26,19 @@ func (cm *SetupModule) GetUserAccountModule() (module UserAccountModule, err err
 	return NewUserAccountRepository(r), nil
 }
 
-func (cm *SetupModule) GetRouter() *gin.Engine {
+func (sm *SetupModule) GetRouter() *gin.Engine {
 	return gin.Default()
 }
 
-func (cm *SetupModule) OpenDB() (db *gorm.DB, err error) {
-	url, err := cm.createConnectURLFromEnv()
+func (sm *SetupModule) OpenDB() (db *gorm.DB, err error) {
+	url, err := sm.createConnectURLFromEnv()
 	if err != nil {
 		return nil, err
 	}
 	return gorm.Open(mysql.Open(url), &gorm.Config{})
 }
 
-func (cm *SetupModule) createConnectURLFromEnv() (connectURL string, err error) {
+func (sm *SetupModule) createConnectURLFromEnv() (connectURL string, err error) {
 	dbUser := os.Getenv("DB_USER")
 	if dbUser == "" {
 		return "", errors.New("環境変数「DB_USER」が定義されていません")
