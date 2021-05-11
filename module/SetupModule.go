@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nanagami1369/CodingShare/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -14,6 +15,15 @@ type SetupModule struct {
 
 func NewStupModule() *SetupModule {
 	return &SetupModule{}
+}
+
+func (cm *SetupModule) GetUserAccountModule() (module UserAccountModule, err error) {
+	db, err := cm.OpenDB()
+	if err != nil {
+		return nil, err
+	}
+	r := repository.NewUserAccountRepository(db)
+	return NewUserAccountRepository(r), nil
 }
 
 func (cm *SetupModule) GetRouter() *gin.Engine {
