@@ -1,10 +1,10 @@
 package model
 
 type User struct {
-	UserId        int
+	UserId        float64
 	Name          string
 	Email         string
 	Type          string
-	StudentNumber int
+	StudentNumber float64
 	Password      string
 }
