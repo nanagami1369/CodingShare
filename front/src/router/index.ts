@@ -28,6 +28,11 @@ const routes: Array<RouteConfig> = [
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/EditorPage.vue'),
   },
+  {
+    path: '/player',
+    name: 'Player',
+    component: () => import('../views/PlayerPage.vue'),
+  },
 ]
 
 const router = new VueRouter({

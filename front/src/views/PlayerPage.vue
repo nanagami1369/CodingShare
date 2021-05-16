@@ -1,0 +1,111 @@
+<template>
+  <div id="player-page">
+    <div id="side-panel">
+      <h1>Player</h1>
+      <select v-model="selectedLanguage">
+        <option v-for="lang in languages" :key="lang.tag" :value="lang">
+          {{ lang.name }}
+        </option>
+      </select>
+    </div>
+    <div id="player-panel">
+      <textarea id="editor-aria">#TEST</textarea>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import Vue from 'vue'
+import '../codemirror-global.js'
+import CodeMirror, { EditorConfiguration } from 'codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/monokai.css'
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/hint/show-hint.js'
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/addon/hint/javascript-hint.js'
+import 'codemirror/addon/edit/closebrackets.js'
+import { Language } from '@/models/language'
+import { CodingRecorder } from '@/CodingRecorder'
+type DataType = {
+  editor?: CodeMirror.EditorFromTextArea
+  recorder: CodingRecorder
+  defualtConfig: EditorConfig
+  languages: Language[]
+  selectedLanguage: Language
+}
+interface EditorConfig extends EditorConfiguration {
+  autoCloseBrackets: boolean
+}
+export default Vue.extend({
+  name: 'PlayerPage',
+  data(): DataType {
+    return {
+      defualtConfig: {
+        mode: 'javascript',
+        lineNumbers: true,
+        indentUnit: 4,
+        theme: 'monokai',
+        autoCloseBrackets: true,
+        showHint: true,
+        extraKeys: { 'Ctrl-Space': 'autocomplete' },
+      },
+      recorder: new CodingRecorder(),
+      languages: [
+        {
+          tag: 'javascript',
+          name: 'JavaScript',
+        },
+        {
+          tag: 'text/x-csrc',
+          name: 'C言語',
+        },
+        {
+          tag: 'text/x-c++src',
+          name: 'C++',
+        },
+        {
+          tag: 'text/x-java',
+          name: 'Java',
+        },
+      ],
+      selectedLanguage: {
+        tag: 'javascript',
+        name: 'JavaScript',
+      },
+    }
+  },
+  methods: {},
+  mounted() {
+    const editorAria: HTMLTextAreaElement | null = document.querySelector(
+      '#editor-aria'
+    )
+    if (editorAria == null) {
+      throw new Error('textarea not found for CodeMirror')
+    }
+    const config = this.defualtConfig
+    this.editor = CodeMirror.fromTextArea(editorAria, config)
+    this.editor?.setSize(1280, 720)
+  },
+})
+</script>
+
+<style scoped>
+h1 {
+  color: #28e270;
+}
+
+#player-page {
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#side-panel {
+  grid-column: 1;
+}
+#player-panel {
+  grid-column: 2;
+}
+</style>
