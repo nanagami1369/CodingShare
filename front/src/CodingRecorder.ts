@@ -2,6 +2,8 @@ import CodeMirror from 'codemirror'
 import { CodingSequence } from '@/models/CodingSequence'
 export class CodingRecorder {
   private _data: CodingSequence[] = []
+  private _timer: number = new Date().getTime()
+
   public register(editor: CodeMirror.Editor | undefined): void {
     if (editor == null) {
       throw new Error('editor is undefined')
@@ -38,7 +40,8 @@ export class CodingRecorder {
     changeObj: CodeMirror.EditorChangeLinkedList
   ): void {
     const scrollInfo = editor.getScrollInfo()
-    const codingSequence = new CodingSequence(changeObj, scrollInfo)
+    const time = new Date().getTime() - this._timer
+    const codingSequence = new CodingSequence(time, changeObj, scrollInfo)
     this._data.push(codingSequence)
     console.log(JSON.stringify(codingSequence))
   }
