@@ -7,6 +7,8 @@
           {{ lang.name }}
         </option>
       </select>
+      <button @click="recordStart">開始</button>
+      <button @click="recordStop">停止</button>
     </div>
     <div id="editorPanel">
       <textarea id="editorAria">#TEST</textarea>
@@ -75,6 +77,14 @@ export default Vue.extend({
         name: 'JavaScript',
       },
     }
+  },
+  methods: {
+    recordStart: function () {
+      this.recorder.start()
+    },
+    recordStop: function () {
+      this.recorder.stop()
+    },
   },
   watch: {
     selectedLanguage: function (newLang: Language, _: Language) {
