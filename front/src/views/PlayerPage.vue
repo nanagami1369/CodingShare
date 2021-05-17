@@ -2,11 +2,7 @@
   <div id="player-page">
     <div id="side-panel">
       <h1>Player</h1>
-      <select v-model="selectedLanguage">
-        <option v-for="lang in languages" :key="lang.tag" :value="lang">
-          {{ lang.name }}
-        </option>
-      </select>
+      <input type="file" @change="loadData" value="読み込み" />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria">#TEST</textarea>
@@ -28,16 +24,28 @@ import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import { Language } from '@/models/language'
 import { CodingRecorder } from '@/CodingRecorder'
+import { Video } from '@/models/Video.js'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   recorder: CodingRecorder
-  defualtConfig: EditorConfig
-  languages: Language[]
-  selectedLanguage: Language
+  defualtConfig: EditorConfiguration
+  selectedLanguage?: Language
 }
-interface EditorConfig extends EditorConfiguration {
-  autoCloseBrackets: boolean
+
+function doSomethingLoop(
+  maxCount: number,
+  index: number,
+  span: number,
+  doSomething: (index: number) => void
+) {
+  if (index <= maxCount) {
+    doSomething(index)
+    setTimeout(function () {
+      doSomethingLoop(maxCount, ++index, span, doSomething)
+    }, span)
+  }
 }
+
 export default Vue.extend({
   name: 'PlayerPage',
   data(): DataType {
@@ -47,36 +55,36 @@ export default Vue.extend({
         lineNumbers: true,
         indentUnit: 4,
         theme: 'monokai',
-        autoCloseBrackets: true,
         showHint: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
       },
       recorder: new CodingRecorder(),
-      languages: [
-        {
-          tag: 'javascript',
-          name: 'JavaScript',
-        },
-        {
-          tag: 'text/x-csrc',
-          name: 'C言語',
-        },
-        {
-          tag: 'text/x-c++src',
-          name: 'C++',
-        },
-        {
-          tag: 'text/x-java',
-          name: 'Java',
-        },
-      ],
-      selectedLanguage: {
-        tag: 'javascript',
-        name: 'JavaScript',
-      },
     }
   },
-  methods: {},
+  methods: {
+    loadData: function (event: Event): void {
+      const target = event.target as HTMLInputElement
+      const file = target.files?.item(0)
+      if (file == undefined || file == null) {
+        // ファイルがなければ何もしない
+        return
+      }
+      const reader = new FileReader()
+      reader.readAsText(file)
+      reader.onload = (): void => {
+        const videoJson = reader.result as string
+        const video: Video = JSON.parse(videoJson)
+        console.log(video)
+        doSomethingLoop(video.value.length, 0, 250, (index: number) => {
+          const text = video.value[index].changeData.text
+          const from = video.value[index].changeData.from
+          const to = video.value[index].changeData.to
+          const origin = video.value[index].changeData.origin
+          this.editor?.replaceRange(text, from, to, origin)
+        })
+      }
+    },
+  },
   mounted() {
     const editorAria: HTMLTextAreaElement | null = document.querySelector(
       '#editor-aria'
