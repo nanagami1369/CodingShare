@@ -1,10 +1,10 @@
 import CodeMirror from 'codemirror'
 import { CodingSequence } from '@/models/CodingSequence'
-import { CordingSequenceData } from './models/CordingSequenceData'
+import { Video } from './models/Video'
 import { Language } from './models/language'
 
 export class CodingRecorder {
-  private _data: CodingSequence[] = []
+  private _video: CodingSequence[] = []
   private _timer: number = new Date().getTime()
   private _isRecording = false
   private _userId?: number
@@ -51,7 +51,7 @@ export class CodingRecorder {
       const scrollInfo = editor.getScrollInfo()
       const time = new Date().getTime() - this._timer
       const codingSequence = new CodingSequence(time, changeObj, scrollInfo)
-      this._data.push(codingSequence)
+      this._video.push(codingSequence)
       console.log(JSON.stringify(codingSequence))
     }
   }
@@ -69,7 +69,7 @@ export class CodingRecorder {
     name: string,
     title: string,
     language: Language
-  ): CordingSequenceData {
+  ): Video {
     if (!this._isRecording) {
       throw new Error('Recorder is not start')
     }
@@ -84,12 +84,12 @@ export class CodingRecorder {
         uploadTime: time,
         recordingTime: time - this._timer,
       },
-      value: this.getData(),
+      value: this.getVideo(),
     }
   }
 
-  public getData(): CodingSequence[] {
-    return this._data.concat()
+  public getVideo(): CodingSequence[] {
+    return this._video.concat()
   }
 
   public get isRecording(): boolean {

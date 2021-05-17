@@ -1,22 +1,22 @@
 import CodeMirror from 'codemirror'
 
 export class CodingSequence {
-  private _time: number
+  private _timestamp: number
   private _changeData: CodeMirror.EditorChangeLinkedList
   private _scrollInfo: CodeMirror.ScrollInfo
 
   constructor(
-    time: number,
+    timestamp: number,
     changeData: CodeMirror.EditorChangeLinkedList,
     scrollInfo: CodeMirror.ScrollInfo
   ) {
-    this._time = time
+    this._timestamp = timestamp
     this._changeData = changeData
     this._scrollInfo = scrollInfo
   }
 
   public get time(): number {
-    return this._time
+    return this._timestamp
   }
 
   public get changeData(): CodeMirror.EditorChangeLinkedList {
