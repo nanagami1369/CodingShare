@@ -83,13 +83,18 @@ export default Vue.extend({
       this.recorder.start()
     },
     recordStop: function () {
-      const data = this.recorder.stop(-1, 'test', 'test', this.selectedLanguage)
+      const video = this.recorder.stop(
+        -1,
+        'test',
+        'test',
+        this.selectedLanguage
+      )
       var url = (window.URL || window.webkitURL).createObjectURL(
-        new Blob([JSON.stringify(data)], { type: 'application/json' })
+        new Blob([JSON.stringify(video)], { type: 'application/json' })
       )
       const a = document.createElement('a')
       a.href = url
-      a.download = 'data.json'
+      a.download = 'video.json'
       a.click()
     },
   },

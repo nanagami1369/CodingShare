@@ -1,7 +1,7 @@
 import { CodingSequence } from '@/models/CodingSequence'
 import { Language } from './language'
 
-export type CordingSequenceData = {
+export type Video = {
   header: {
     userId: number
     name: string
