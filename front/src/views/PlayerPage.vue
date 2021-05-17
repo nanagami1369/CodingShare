@@ -75,6 +75,7 @@ export default Vue.extend({
         const videoJson = reader.result as string
         const video: Video = JSON.parse(videoJson)
         console.log(video)
+        this.editor?.setValue('')
         doSomethingLoop(video.value.length, 0, 250, (index: number) => {
           const text = video.value[index].changeData.text
           const from = video.value[index].changeData.from
