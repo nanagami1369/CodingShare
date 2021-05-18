@@ -5,7 +5,7 @@
       <input type="file" @change="loadData" value="読み込み" />
     </div>
     <div id="player-panel">
-      <textarea id="editor-aria">#TEST</textarea>
+      <textarea id="editor-aria"></textarea>
     </div>
   </div>
 </template>
