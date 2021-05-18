@@ -67,6 +67,7 @@ export default Vue.extend({
         indentUnit: 4,
         theme: 'monokai',
         showHint: true,
+        readOnly: true,
         extraKeys: { 'Ctrl-Space': 'autocomplete' },
       },
       recorder: new CodingRecorder(),
