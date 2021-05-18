@@ -100,7 +100,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    selectedLanguage: function (newLang: Language, _: Language) {
+    selectedLanguage: function (newLang: Language) {
       this.editor?.setOption('mode', newLang.tag)
     },
   },
