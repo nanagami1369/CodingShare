@@ -113,7 +113,7 @@ export default Vue.extend({
     }
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
-    this.editor?.setSize(1280, 720)
+    this.editor?.setSize('100%', '70vh')
     this.recorder.register(this.editor)
   },
   beforeDestroy() {
@@ -130,7 +130,7 @@ h1 {
 #editor-page {
   grid-row: 2;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 300px 3fr;
 }
 
 #side-panel {
@@ -138,5 +138,6 @@ h1 {
 }
 #editor-panel {
   grid-column: 2;
+  display: grid;
 }
 </style>
