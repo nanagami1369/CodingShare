@@ -84,6 +84,8 @@ export default Vue.extend({
       const video: Video = JSON.parse(videoJson)
       const stream = new CodingStream(video)
       console.log(video)
+      const language = video.header.language
+      this.editor?.setOption('mode',language.tag)
       this.editor?.setValue('')
       doSomethingLoop(video.value.length - 1, 0, (index: number) => {
         const text = stream.current.changeData.text
