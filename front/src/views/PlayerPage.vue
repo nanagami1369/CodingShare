@@ -83,10 +83,13 @@ export default Vue.extend({
       const language = video.header.language
       this.editor?.setOption('mode', language.tag)
       this.editor?.setValue('')
+      this.editor?.focus()
       doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
         const { text, from, to, origin } = stream.current.changeData
+        const cursor = stream.current.cursor
         this.editor?.replaceRange(text, from, to, origin)
         stream.next()
+        this.editor?.setCursor(cursor)
         const isNext = stream.isNext()
         if (stream.from === undefined) {
           return { isNext: isNext, nextSpan: stream.current.timestamp }
