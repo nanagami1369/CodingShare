@@ -45,15 +45,13 @@ function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
 }
 
 function doSomethingLoop(
-  maxCount: number,
-  count: number,
-  doSomething: (count: number) => number
-) {
-  if (count <= maxCount) {
-    const nextSpan = doSomething(count)
+  doSomething: () => { nextSpan: number; isNext: boolean }
+): void {
+  const resurt = doSomething()
+  if (resurt.isNext) {
     setTimeout(function () {
-      doSomethingLoop(maxCount, ++count, doSomething)
-    }, nextSpan)
+      doSomethingLoop(doSomething)
+    }, resurt.nextSpan)
   }
 }
 
@@ -88,17 +86,23 @@ export default Vue.extend({
       const language = video.header.language
       this.editor?.setOption('mode', language.tag)
       this.editor?.setValue('')
-      doSomethingLoop(video.value.length - 1, 0, () => {
+      doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
         const { text, from, to, origin } = stream.current.changeData
         this.editor?.replaceRange(text, from, to, origin)
         stream.next()
+        const isNext = stream.isNext()
         if (stream.from === undefined) {
-          return stream.current.timestamp
+          return { isNext: isNext, nextSpan: stream.current.timestamp }
         }
         if (stream.to === undefined) {
-          return 1
+          // 次の要素が無いので終了
+          console.log('終了')
+          return { isNext: isNext, nextSpan: 1 }
         }
-        return stream.to.timestamp - stream.current.timestamp
+        return {
+          isNext: isNext,
+          nextSpan: stream.to.timestamp - stream.current.timestamp,
+        }
       })
     },
   },
