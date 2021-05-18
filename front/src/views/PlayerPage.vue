@@ -88,10 +88,7 @@ export default Vue.extend({
       this.editor?.setOption('mode', language.tag)
       this.editor?.setValue('')
       doSomethingLoop(video.value.length - 1, 0, () => {
-        const text = stream.current.changeData.text
-        const from = stream.current.changeData.from
-        const to = stream.current.changeData.to
-        const origin = stream.current.changeData.origin
+        const { text, from, to, origin } = stream.current.changeData
         this.editor?.replaceRange(text, from, to, origin)
         stream.next()
         if (stream.from === undefined) {
