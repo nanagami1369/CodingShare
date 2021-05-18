@@ -1,6 +1,6 @@
 <template>
   <div id="editor-page">
-    <div id="sidePanel">
+    <div id="side-panel">
       <h1>Editor</h1>
       <select v-model="selectedLanguage">
         <option v-for="lang in languages" :key="lang.tag" :value="lang">
@@ -10,8 +10,8 @@
       <button @click="recordStart">開始</button>
       <button @click="recordStop">停止</button>
     </div>
-    <div id="editorPanel">
-      <textarea id="editorAria">#TEST</textarea>
+    <div id="editor-panel">
+      <textarea id="editor-aria">#TEST</textarea>
     </div>
   </div>
 </template>
@@ -106,7 +106,7 @@ export default Vue.extend({
   },
   mounted() {
     const editorAria: HTMLTextAreaElement | null = document.querySelector(
-      '#editorAria'
+      '#editor-aria'
     )
     if (editorAria == null) {
       throw new Error('textarea not found for CodeMirror')
@@ -133,10 +133,10 @@ h1 {
   grid-template-columns: 1fr 1fr;
 }
 
-#sidePanel {
+#side-panel {
   grid-column: 1;
 }
-#editorPanel {
+#editor-panel {
   grid-column: 2;
 }
 </style>
