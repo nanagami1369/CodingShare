@@ -11,15 +11,15 @@ export class CodingStream {
 
   public isNext(): boolean {
     const index = this._index + 1
-    return index === this._codingSequence.length
+    return index !== this._codingSequence.length
   }
 
-  public next(): CodingSequence | undefined {
-    this._index++
-    if (this._index >= this._codingSequence.length) {
-      return undefined
+  public next(): boolean {
+    if (this.isNext()) {
+      this._index++
+      return true
     }
-    return this._codingSequence[this._index]
+    return false
   }
   public get from(): CodingSequence | undefined {
     const index = this._index - 1
