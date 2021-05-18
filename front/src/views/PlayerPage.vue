@@ -32,6 +32,17 @@ type DataType = {
   selectedLanguage?: Language
 }
 
+function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
+  return new Promise((resolve, reject) => {
+    var fr = new FileReader()
+    fr.onload = () => {
+      resolve(fr.result)
+    }
+    fr.onerror = reject
+    fr.readAsText(file)
+  })
+}
+
 function doSomethingLoop(
   maxCount: number,
   index: number,
@@ -62,28 +73,24 @@ export default Vue.extend({
     }
   },
   methods: {
-    loadData: function (event: Event): void {
+    loadData: async function (event: Event): Promise<void> {
       const target = event.target as HTMLInputElement
       const file = target.files?.item(0)
       if (file == undefined || file == null) {
         // ファイルがなければ何もしない
         return
       }
-      const reader = new FileReader()
-      reader.readAsText(file)
-      reader.onload = (): void => {
-        const videoJson = reader.result as string
-        const video: Video = JSON.parse(videoJson)
-        console.log(video)
-        this.editor?.setValue('')
-        doSomethingLoop(video.value.length, 0, 250, (index: number) => {
-          const text = video.value[index].changeData.text
-          const from = video.value[index].changeData.from
-          const to = video.value[index].changeData.to
-          const origin = video.value[index].changeData.origin
-          this.editor?.replaceRange(text, from, to, origin)
-        })
-      }
+      const videoJson = (await readTextFile(file)) as string
+      const video: Video = JSON.parse(videoJson)
+      console.log(video)
+      this.editor?.setValue('')
+      doSomethingLoop(video.value.length - 1, 0, 250, (index: number) => {
+        const text = video.value[index].changeData.text
+        const from = video.value[index].changeData.from
+        const to = video.value[index].changeData.to
+        const origin = video.value[index].changeData.origin
+        this.editor?.replaceRange(text, from, to, origin)
+      })
     },
   },
   mounted() {
