@@ -83,7 +83,8 @@ export default Vue.extend({
       this.recorder.start()
     },
     recordStop: function () {
-      const video = this.recorder.stop(
+      this.recorder.stop()
+      const video = this.recorder.outputVideo(
         -1,
         'test',
         'test',
