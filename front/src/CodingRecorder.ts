@@ -7,10 +7,8 @@ export class CodingRecorder {
   private _video: CodingSequence[] = []
   private _timer: number = new Date().getTime()
   private _isRecording = false
-  private _userId?: number
-  private _name?: string
-  private _title?: string
-  private _language?: Language
+  private _uploadTime = -1
+  private _recordingTime = -1
 
   public register(editor: CodeMirror.Editor | undefined): void {
     if (editor == null) {
@@ -60,36 +58,52 @@ export class CodingRecorder {
     if (this._isRecording) {
       throw new Error('Recorder has already started')
     }
+    if (this._video.length != 0) {
+      throw new Error('Video exists !! Clear or output video')
+    }
     this._isRecording = true
     this._timer = new Date().getTime()
   }
 
-  public stop(
-    userId: number,
-    name: string,
-    title: string,
-    language: Language
-  ): Video {
+  public stop(): void {
     if (!this._isRecording) {
       throw new Error('Recorder is not start')
     }
     this._isRecording = false
     const time = new Date().getTime()
+    this._uploadTime = time
+    this._recordingTime = time - this._timer
+  }
+
+  public outputVideo(
+    userId: number,
+    name: string,
+    title: string,
+    language: Language
+  ): Video {
+    if (this._video.length == 0) {
+      throw new Error('video is not found')
+    }
+    if (this._isRecording) {
+      throw new Error('is recording')
+    }
+    const video = this._video.concat()
+    this._video = []
     return {
       header: {
         userId: userId,
         name: name,
         title: title,
         language: language,
-        uploadTime: time,
-        recordingTime: time - this._timer,
+        uploadTime: this._uploadTime,
+        recordingTime: this._recordingTime,
       },
-      value: this.getVideo(),
+      value: video,
     }
   }
 
-  public getVideo(): CodingSequence[] {
-    return this._video.concat()
+  public clearVideo(): void {
+    this._video = []
   }
 
   public get isRecording(): boolean {
