@@ -47,11 +47,11 @@ function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
 function doSomethingLoop(
   doSomething: () => { nextSpan: number; isNext: boolean }
 ): void {
-  const resurt = doSomething()
-  if (resurt.isNext) {
+  const { isNext, nextSpan } = doSomething()
+  if (isNext) {
     setTimeout(function () {
       doSomethingLoop(doSomething)
-    }, resurt.nextSpan)
+    }, nextSpan)
   }
 }
 
