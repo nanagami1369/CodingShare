@@ -47,8 +47,14 @@ export class CodingRecorder {
   ): void {
     if (this._isRecording) {
       const scrollInfo = editor.getScrollInfo()
+      const cursor = editor.getCursor()
       const time = new Date().getTime() - this._timer
-      const codingSequence = new CodingSequence(time, changeObj, scrollInfo)
+      const codingSequence = new CodingSequence(
+        time,
+        changeObj,
+        scrollInfo,
+        cursor
+      )
       this._video.push(codingSequence)
       console.log(JSON.stringify(codingSequence))
     }
