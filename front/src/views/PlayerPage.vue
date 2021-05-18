@@ -25,6 +25,7 @@ import 'codemirror/addon/edit/closebrackets.js'
 import { Language } from '@/models/language'
 import { CodingRecorder } from '@/CodingRecorder'
 import { Video } from '@/models/Video.js'
+import { CodingStream } from '@/CodingStream'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   recorder: CodingRecorder
@@ -81,15 +82,23 @@ export default Vue.extend({
       }
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
+      const stream = new CodingStream(video)
       console.log(video)
       this.editor?.setValue('')
       doSomethingLoop(video.value.length - 1, 0, (index: number) => {
-        const text = video.value[index].changeData.text
-        const from = video.value[index].changeData.from
-        const to = video.value[index].changeData.to
-        const origin = video.value[index].changeData.origin
+        const text = stream.current.changeData.text
+        const from = stream.current.changeData.from
+        const to = stream.current.changeData.to
+        const origin = stream.current.changeData.origin
         this.editor?.replaceRange(text, from, to, origin)
-        return 250
+        stream.next()
+        if (stream.from === undefined) {
+          return stream.current.timestamp
+        }
+        if (stream.to === undefined) {
+          return 1
+        }
+        return stream.to.timestamp - stream.current.timestamp
       })
     },
   },
