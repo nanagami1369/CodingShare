@@ -7,10 +7,6 @@ export class CodingRecorder {
   private _video: CodingSequence[] = []
   private _timer: number = new Date().getTime()
   private _isRecording = false
-  private _userId?: number
-  private _name?: string
-  private _title?: string
-  private _language?: Language
 
   public register(editor: CodeMirror.Editor | undefined): void {
     if (editor == null) {
