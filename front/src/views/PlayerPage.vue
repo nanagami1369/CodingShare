@@ -45,15 +45,14 @@ function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
 
 function doSomethingLoop(
   maxCount: number,
-  index: number,
-  span: number,
-  doSomething: (index: number) => void
+  count: number,
+  doSomething: (count: number) => number
 ) {
-  if (index <= maxCount) {
-    doSomething(index)
+  if (count <= maxCount) {
+    const nextSpan = doSomething(count)
     setTimeout(function () {
-      doSomethingLoop(maxCount, ++index, span, doSomething)
-    }, span)
+      doSomethingLoop(maxCount, ++count, doSomething)
+    }, nextSpan)
   }
 }
 
@@ -84,12 +83,13 @@ export default Vue.extend({
       const video: Video = JSON.parse(videoJson)
       console.log(video)
       this.editor?.setValue('')
-      doSomethingLoop(video.value.length - 1, 0, 250, (index: number) => {
+      doSomethingLoop(video.value.length - 1, 0, (index: number) => {
         const text = video.value[index].changeData.text
         const from = video.value[index].changeData.from
         const to = video.value[index].changeData.to
         const origin = video.value[index].changeData.origin
         this.editor?.replaceRange(text, from, to, origin)
+        return 250
       })
     },
   },
