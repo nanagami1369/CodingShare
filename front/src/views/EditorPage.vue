@@ -11,7 +11,7 @@
       <button @click="recordStop">停止</button>
     </div>
     <div id="editor-panel">
-      <textarea id="editor-aria">#TEST</textarea>
+      <textarea id="editor-aria"></textarea>
     </div>
   </div>
 </template>
