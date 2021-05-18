@@ -80,7 +80,7 @@ export default Vue.extend({
   },
   methods: {
     recordStart: function () {
-      this.recorder.start()
+      this.recorder.start(this.editor?.getValue() ?? '')
     },
     recordStop: function () {
       this.recorder.stop()

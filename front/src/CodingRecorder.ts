@@ -7,6 +7,7 @@ export class CodingRecorder {
   private _video: CodingSequence[] = []
   private _timer: number = new Date().getTime()
   private _isRecording = false
+  private _startData = ''
   private _uploadTime = -1
   private _recordingTime = -1
 
@@ -60,7 +61,7 @@ export class CodingRecorder {
     }
   }
 
-  public start(): void {
+  public start(startData: string): void {
     if (this._isRecording) {
       throw new Error('Recorder has already started')
     }
@@ -69,6 +70,7 @@ export class CodingRecorder {
     }
     this._isRecording = true
     this._timer = new Date().getTime()
+    this._startData = startData
   }
 
   public stop(): void {
@@ -103,6 +105,7 @@ export class CodingRecorder {
         language: language,
         uploadTime: this._uploadTime,
         recordingTime: this._recordingTime,
+        startData: this._startData,
       },
       value: video,
     }
