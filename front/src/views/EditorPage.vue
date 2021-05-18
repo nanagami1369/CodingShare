@@ -138,6 +138,5 @@ h1 {
 }
 #editor-panel {
   grid-column: 2;
-  display: grid;
 }
 </style>
