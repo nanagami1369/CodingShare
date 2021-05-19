@@ -71,6 +71,10 @@ export class CodingRecorder {
     if (!this._isRecording) {
       throw new Error('Recorder is not start')
     }
+    if (this._video.length == 0) {
+      throw new Error('video is no recording')
+    }
+
     this._isRecording = false
     const time = new Date().getTime()
     this._uploadTime = time
