@@ -82,21 +82,25 @@ export default Vue.extend({
       console.log(video)
       const language = video.header.language
       this.editor?.setOption('mode', language.tag)
-      this.editor?.setValue('')
+      this.editor?.setValue(video.header.startData)
       this.editor?.focus()
       doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
         const { text, from, to, origin } = stream.current.changeData
         const cursor = stream.current.cursor
         this.editor?.replaceRange(text, from, to, origin)
-        stream.next()
         this.editor?.setCursor(cursor)
+        stream.next()
         const isNext = stream.isNext()
         if (stream.from === undefined) {
           return { isNext: isNext, nextSpan: stream.current.timestamp }
         }
         if (stream.to === undefined) {
-          // 次の要素が無いので終了
+          // 次の要素が無いので最後の要素を表示して終了
           console.log('終了')
+          const { text, from, to, origin } = stream.current.changeData
+          const cursor = stream.current.cursor
+          this.editor?.replaceRange(text, from, to, origin)
+          this.editor?.setCursor(cursor)
           return { isNext: isNext, nextSpan: 1 }
         }
         return {
