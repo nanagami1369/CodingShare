@@ -47,15 +47,9 @@ export class CodingRecorder {
     changeObj: CodeMirror.EditorChangeLinkedList
   ): void {
     if (this._isRecording) {
-      const scrollInfo = editor.getScrollInfo()
       const cursor = editor.getCursor()
       const time = new Date().getTime() - this._timer
-      const codingSequence = new CodingSequence(
-        time,
-        changeObj,
-        scrollInfo,
-        cursor
-      )
+      const codingSequence = new CodingSequence(time, changeObj, cursor)
       this._video.push(codingSequence)
       console.log(JSON.stringify(codingSequence))
     }
