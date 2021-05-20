@@ -9,7 +9,6 @@ export type Video = {
     language: Language
     uploadTime: number
     recordingTime: number
-    startData: string
   }
   value: CodingSequence[]
 }
