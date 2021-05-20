@@ -64,7 +64,6 @@ export default Vue.extend({
         theme: 'monokai',
         showHint: true,
         readOnly: true,
-        extraKeys: { 'Ctrl-Space': 'autocomplete' },
       },
     }
   },
