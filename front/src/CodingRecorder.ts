@@ -7,7 +7,6 @@ export class CodingRecorder {
   private _video: CodingSequence[] = []
   private _timer: number = new Date().getTime()
   private _isRecording = false
-  private _startData = ''
   private _uploadTime = -1
   private _recordingTime = -1
 
@@ -55,18 +54,32 @@ export class CodingRecorder {
     }
   }
 
-  public start(startData: string): void {
+  public start(editor: CodeMirror.Editor | undefined): void {
+    if (editor == null) {
+      throw new Error('editor is undefined')
+    }
     if (this._isRecording) {
       throw new Error('Recorder has already started')
     }
     if (this._video.length != 0) {
       throw new Error('Video exists !! Clear or output video')
     }
+    const startData = editor.getValue().split('\n')
+    const startCursor = editor.getCursor()
+    const startTimestamp = 1
+    const startChangeData: CodeMirror.EditorChangeLinkedList = {
+      from: { line: 0, ch: 0, sticky: undefined },
+      to: { line: 0, ch: 0, sticky: undefined },
+      text: startData,
+      removed: [''],
+      origin: 'input',
+    }
+    this._video.push(
+      new CodingSequence(startTimestamp, startChangeData, startCursor)
+    )
     this._isRecording = true
     this._timer = new Date().getTime()
-    this._startData = startData
   }
-
   public stop(): void {
     if (!this._isRecording) {
       throw new Error('Recorder is not start')
@@ -99,7 +112,6 @@ export class CodingRecorder {
         language: language,
         uploadTime: this._uploadTime,
         recordingTime: this._recordingTime,
-        startData: this._startData,
       },
       value: video,
     }
