@@ -82,7 +82,7 @@ export default Vue.extend({
       console.log(video)
       const language = video.header.language
       this.editor?.setOption('mode', language.tag)
-      this.editor?.setValue(video.header.startData)
+      this.editor?.setValue('')
       this.editor?.focus()
       doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
         const { text, from, to, origin } = stream.current.changeData
