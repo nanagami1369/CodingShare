@@ -3,6 +3,7 @@
     <div id="side-panel">
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
+      <VideoInfo :videoInfo="videoInfo" />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -22,13 +23,14 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
-import { Language } from '@/models/language'
 import { Video } from '@/models/Video.js'
 import { CodingStream } from '@/CodingStream'
+import { ViewVideo } from '@/models/ViewVideo'
+import VideoInfo from '@/components/VideoInfo.vue'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
-  selectedLanguage?: Language
+  videoInfo: ViewVideo | undefined
 }
 
 function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
@@ -55,6 +57,9 @@ function doSomethingLoop(
 
 export default Vue.extend({
   name: 'PlayerPage',
+  components: {
+    VideoInfo,
+  },
   data(): DataType {
     return {
       defualtConfig: {
@@ -65,6 +70,7 @@ export default Vue.extend({
         showHint: true,
         readOnly: true,
       },
+      videoInfo: undefined,
     }
   },
   methods: {
@@ -79,10 +85,15 @@ export default Vue.extend({
       const video: Video = JSON.parse(videoJson)
       const stream = new CodingStream(video)
       console.log(video)
-      const language = video.header.language
+      this.videoInfo = video.header
+      const { language } = video.header
+      if (language == undefined) {
+        throw new Error('video is not language data')
+      }
       this.editor?.setOption('mode', language.tag)
       this.editor?.setValue('')
       this.editor?.focus()
+
       doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
         const { text, from, to, origin } = stream.current.changeData
         const cursor = stream.current.cursor

@@ -1,14 +1,7 @@
 import { CodingSequence } from '@/models/CodingSequence'
-import { Language } from './language'
+import { ViewVideo } from './ViewVideo'
 
 export type Video = {
-  header: {
-    userId: number
-    name: string
-    title: string
-    language: Language
-    uploadTime: number
-    recordingTime: number
-  }
+  header: ViewVideo
   value: CodingSequence[]
 }
