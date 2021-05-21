@@ -7,6 +7,7 @@
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
+      <SliderBar :value="playbackPosition" />
     </div>
   </div>
 </template>
@@ -27,10 +28,12 @@ import { Video } from '@/models/Video.js'
 import { CodingStream } from '@/CodingStream'
 import { ViewVideo } from '@/models/ViewVideo'
 import VideoInfo from '@/components/VideoInfo.vue'
+import SliderBar from '@/components/SliderBar.vue'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   videoInfo: ViewVideo | undefined
+  playbackPosition: number
 }
 
 function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
@@ -59,6 +62,7 @@ export default Vue.extend({
   name: 'PlayerPage',
   components: {
     VideoInfo,
+    SliderBar,
   },
   data(): DataType {
     return {
@@ -71,6 +75,7 @@ export default Vue.extend({
         readOnly: true,
       },
       videoInfo: undefined,
+      playbackPosition: 0,
     }
   },
   methods: {
@@ -86,7 +91,7 @@ export default Vue.extend({
       const stream = new CodingStream(video)
       console.log(video)
       this.videoInfo = video.header
-      const { language } = video.header
+      const { language, recordingTime } = video.header
       if (language == undefined) {
         throw new Error('video is not language data')
       }
@@ -97,8 +102,10 @@ export default Vue.extend({
       doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
         const { text, from, to, origin } = stream.current.changeData
         const cursor = stream.current.cursor
+        const elapsedTime = (stream.current.timestamp / recordingTime) * 100
         this.editor?.replaceRange(text, from, to, origin)
         this.editor?.setCursor(cursor)
+        this.playbackPosition = elapsedTime
         stream.next()
         const isNext = stream.isNext()
         if (stream.from === undefined) {
@@ -111,6 +118,7 @@ export default Vue.extend({
           const cursor = stream.current.cursor
           this.editor?.replaceRange(text, from, to, origin)
           this.editor?.setCursor(cursor)
+          this.playbackPosition = 100
           return { isNext: isNext, nextSpan: 1 }
         }
         return {
