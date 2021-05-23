@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   front:
-    image: node:14.15.5
+    image: node:14.17.0
     container_name: front_dev_container
     command: npm run serve
     restart: always
