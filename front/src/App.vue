@@ -3,7 +3,8 @@
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
-      <router-link to="/editor">Editor</router-link>
+      <router-link to="/editor">Editor</router-link> |
+      <router-link to="/player">Player</router-link>
     </div>
     <router-view />
   </div>
@@ -41,7 +42,6 @@
 }
 
 html {
-  overflow: hidden;
   height: 100%;
 }
 

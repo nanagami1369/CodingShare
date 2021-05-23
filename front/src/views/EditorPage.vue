@@ -1,15 +1,17 @@
 <template>
   <div id="editor-page">
-    <div id="sidePanel">
+    <div id="side-panel">
       <h1>Editor</h1>
       <select v-model="selectedLanguage">
         <option v-for="lang in languages" :key="lang.tag" :value="lang">
           {{ lang.name }}
         </option>
       </select>
+      <button @click="recordStart">開始</button>
+      <button @click="recordStop">停止</button>
     </div>
-    <div id="editorPanel">
-      <textarea id="editorAria">#TEST</textarea>
+    <div id="editor-panel">
+      <textarea id="editor-aria"></textarea>
     </div>
   </div>
 </template>
@@ -76,21 +78,42 @@ export default Vue.extend({
       },
     }
   },
+  methods: {
+    recordStart: function () {
+      this.recorder.start(this.editor)
+    },
+    recordStop: function () {
+      this.recorder.stop()
+      const video = this.recorder.outputVideo(
+        -1,
+        'test',
+        'test',
+        this.selectedLanguage
+      )
+      var url = (window.URL || window.webkitURL).createObjectURL(
+        new Blob([JSON.stringify(video)], { type: 'application/json' })
+      )
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'video.json'
+      a.click()
+    },
+  },
   watch: {
-    selectedLanguage: function (newLang: Language, _: Language) {
+    selectedLanguage: function (newLang: Language) {
       this.editor?.setOption('mode', newLang.tag)
     },
   },
   mounted() {
     const editorAria: HTMLTextAreaElement | null = document.querySelector(
-      '#editorAria'
+      '#editor-aria'
     )
     if (editorAria == null) {
       throw new Error('textarea not found for CodeMirror')
     }
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
-    this.editor?.setSize(1280, 720)
+    this.editor?.setSize('100%', '70vh')
     this.recorder.register(this.editor)
   },
   beforeDestroy() {
@@ -107,13 +130,13 @@ h1 {
 #editor-page {
   grid-row: 2;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 300px 3fr;
 }
 
-#sidePanel {
+#side-panel {
   grid-column: 1;
 }
-#editorPanel {
+#editor-panel {
   grid-column: 2;
 }
 </style>
