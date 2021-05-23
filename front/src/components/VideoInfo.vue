@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { ViewVideo } from '@/models/ViewVideo'
+import { VideoInfo } from '@/models/VideoInfo'
 import { format } from 'date-fns'
 import Vue, { PropType } from 'vue'
 
@@ -21,8 +21,8 @@ export default Vue.extend({
   name: 'VideoInfo',
   props: {
     videoInfo: {
-      type: Object as PropType<ViewVideo>,
-      default: (): ViewVideo => ({
+      type: Object as PropType<VideoInfo>,
+      default: (): VideoInfo => ({
         userId: -1,
         title: '',
         name: '',

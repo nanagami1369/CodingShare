@@ -1,6 +1,6 @@
 import { Language } from '@/models/language'
 
-export type ViewVideo = {
+export type VideoInfo = {
   userId: number
   title: string
   name: string

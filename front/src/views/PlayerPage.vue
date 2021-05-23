@@ -3,7 +3,7 @@
     <div id="side-panel">
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
-      <VideoInfo :videoInfo="videoInfo" />
+      <VideoInfoComponent :videoInfo="videoInfo" />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -24,15 +24,15 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
-import { Video } from '@/models/Video.js'
+import { Video } from '@/models/Video'
 import { CodingStream } from '@/CodingStream'
-import { ViewVideo } from '@/models/ViewVideo'
-import VideoInfo from '@/components/VideoInfo.vue'
+import { VideoInfo } from '@/models/VideoInfo'
+import VideoInfoComponent from '@/components/VideoInfo.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
-  videoInfo: ViewVideo | undefined
+  videoInfo: VideoInfo | undefined
   elapsedTime: number
   totalTime: number
 }
@@ -62,7 +62,7 @@ function doSomethingLoop(
 export default Vue.extend({
   name: 'PlayerPage',
   components: {
-    VideoInfo,
+    VideoInfoComponent,
     VideoSliderBar,
   },
   data(): DataType {

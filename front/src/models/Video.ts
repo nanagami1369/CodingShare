@@ -1,7 +1,7 @@
 import { CodingSequence } from '@/models/CodingSequence'
-import { ViewVideo } from './ViewVideo'
+import { VideoInfo } from '@/models/VideoInfo'
 
 export type Video = {
-  header: ViewVideo
+  header: VideoInfo
   value: CodingSequence[]
 }
