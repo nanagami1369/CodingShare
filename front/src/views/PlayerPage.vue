@@ -29,9 +29,11 @@ import { CodingStream } from '@/CodingStream'
 import { VideoInfo } from '@/models/VideoInfo'
 import VideoInfoComponent from '@/components/VideoInfo.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
+import { CodingPlayer } from '@/CodingPlayer'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
+  player: CodingPlayer
   videoInfo: VideoInfo | undefined
   elapsedTime: number
   totalTime: number
@@ -46,17 +48,6 @@ function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
     fr.onerror = reject
     fr.readAsText(file)
   })
-}
-
-function doSomethingLoop(
-  doSomething: () => { nextSpan: number; isNext: boolean }
-): void {
-  const { isNext, nextSpan } = doSomething()
-  if (isNext) {
-    setTimeout(function () {
-      doSomethingLoop(doSomething)
-    }, nextSpan)
-  }
 }
 
 export default Vue.extend({
@@ -75,6 +66,7 @@ export default Vue.extend({
         showHint: true,
         readOnly: true,
       },
+      player: new CodingPlayer(),
       videoInfo: undefined,
       elapsedTime: 0,
       totalTime: 0,
@@ -90,42 +82,15 @@ export default Vue.extend({
       }
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
-      const stream = new CodingStream(video)
-      console.log(video)
-      this.videoInfo = video.header
-      const { language, recordingTime } = video.header
-      if (language == undefined) {
-        throw new Error('video is not language data')
-      }
+      this.player.load(video, this.editor)
+      this.videoInfo = this.player.videoInfo
+      const { recordingTime } = video.header
       this.totalTime = recordingTime
-      this.editor?.setOption('mode', language.tag)
-      this.editor?.setValue('')
-      this.editor?.focus()
-
-      doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
-        const { text, from, to, origin } = stream.current.changeData
-        const cursor = stream.current.cursor
-        this.editor?.replaceRange(text, from, to, origin)
-        this.editor?.setCursor(cursor)
-        this.elapsedTime = stream.current.timestamp
-        stream.next()
-        const isNext = stream.isNext()
-        if (stream.from === undefined) {
-          return { isNext: isNext, nextSpan: stream.current.timestamp }
-        }
-        if (stream.to === undefined) {
-          // 次の要素が無いので最後の要素を表示して終了
-          console.log('終了')
-          const { text, from, to, origin } = stream.current.changeData
-          const cursor = stream.current.cursor
-          this.editor?.replaceRange(text, from, to, origin)
-          this.editor?.setCursor(cursor)
+      this.player.start(this.editor, (stream: CodingStream) => {
+        if (stream.isNext()) {
+          this.elapsedTime = stream.current.timestamp
+        } else {
           this.elapsedTime = this.totalTime
-          return { isNext: isNext, nextSpan: 1 }
-        }
-        return {
-          isNext: isNext,
-          nextSpan: stream.to.timestamp - stream.current.timestamp,
         }
       })
     },
