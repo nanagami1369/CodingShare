@@ -7,7 +7,7 @@
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
-      <SliderBar :value="playbackPosition" />
+      <VideoSliderBar :elapsedTime="elapsedTime" :totalTime="totalTime" />
     </div>
   </div>
 </template>
@@ -28,12 +28,13 @@ import { Video } from '@/models/Video.js'
 import { CodingStream } from '@/CodingStream'
 import { ViewVideo } from '@/models/ViewVideo'
 import VideoInfo from '@/components/VideoInfo.vue'
-import SliderBar from '@/components/SliderBar.vue'
+import VideoSliderBar from '@/components/VideoSliderBar.vue'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   videoInfo: ViewVideo | undefined
-  playbackPosition: number
+  elapsedTime: number
+  totalTime: number
 }
 
 function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
@@ -62,7 +63,7 @@ export default Vue.extend({
   name: 'PlayerPage',
   components: {
     VideoInfo,
-    SliderBar,
+    VideoSliderBar,
   },
   data(): DataType {
     return {
@@ -75,7 +76,8 @@ export default Vue.extend({
         readOnly: true,
       },
       videoInfo: undefined,
-      playbackPosition: 0,
+      elapsedTime: 0,
+      totalTime: 0,
     }
   },
   methods: {
@@ -95,6 +97,7 @@ export default Vue.extend({
       if (language == undefined) {
         throw new Error('video is not language data')
       }
+      this.totalTime = recordingTime
       this.editor?.setOption('mode', language.tag)
       this.editor?.setValue('')
       this.editor?.focus()
@@ -102,10 +105,9 @@ export default Vue.extend({
       doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
         const { text, from, to, origin } = stream.current.changeData
         const cursor = stream.current.cursor
-        const elapsedTime = (stream.current.timestamp / recordingTime) * 100
         this.editor?.replaceRange(text, from, to, origin)
         this.editor?.setCursor(cursor)
-        this.playbackPosition = elapsedTime
+        this.elapsedTime = stream.current.timestamp
         stream.next()
         const isNext = stream.isNext()
         if (stream.from === undefined) {
@@ -118,7 +120,7 @@ export default Vue.extend({
           const cursor = stream.current.cursor
           this.editor?.replaceRange(text, from, to, origin)
           this.editor?.setCursor(cursor)
-          this.playbackPosition = 100
+          this.elapsedTime = this.totalTime
           return { isNext: isNext, nextSpan: 1 }
         }
         return {
