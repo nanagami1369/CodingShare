@@ -36,10 +36,14 @@ export class CodingPlayer {
       if (this._stream == undefined) {
         throw new Error('video is not Load')
       }
-      const { text, from, to, origin } = this._stream.current.changeData
-      const cursor = this._stream.current.cursor
-      editor.replaceRange(text, from, to, origin)
-      editor.setCursor(cursor)
+      if (this._stream.current.changeData != undefined) {
+        const { text, from, to, origin } = this._stream.current.changeData
+        editor.replaceRange(text, from, to, origin)
+      }
+      if (this._stream.current.cursor != undefined) {
+        const cursor = this._stream.current.cursor
+        editor.setCursor(cursor)
+      }
       appendDo(this._stream)
       this._stream.next()
       const isNext = this._stream.isNext()
@@ -50,10 +54,14 @@ export class CodingPlayer {
       if (this._stream.to === undefined) {
         // 次の要素が無いので最後の要素を表示して終了
         console.log('終了')
-        const { text, from, to, origin } = this._stream.current.changeData
-        const cursor = this._stream.current.cursor
-        editor.replaceRange(text, from, to, origin)
-        editor.setCursor(cursor)
+        if (this._stream.current.changeData != undefined) {
+          const { text, from, to, origin } = this._stream.current.changeData
+          editor.replaceRange(text, from, to, origin)
+        }
+        if (this._stream.current.cursor != undefined) {
+          const cursor = this._stream.current.cursor
+          editor.setCursor(cursor)
+        }
         appendDo(this._stream)
         return { isNext: isNext, nextSpan: 1 }
       }
