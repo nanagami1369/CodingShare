@@ -7,8 +7,8 @@
           {{ lang.name }}
         </option>
       </select>
-      <button @click="recordStart">開始</button>
-      <button @click="recordStop">停止</button>
+      <button v-if="recorder.isRecording" @click="recordStop">停止</button>
+      <button v-else @click="recordStart">開始</button>
       <div v-if="recorder.isRecording" class="recoding-status">
         <span class="recoding-icon">●</span>録画中
       </div>
@@ -108,9 +108,8 @@ export default Vue.extend({
     },
   },
   mounted() {
-    const editorAria: HTMLTextAreaElement | null = document.querySelector(
-      '#editor-aria'
-    )
+    const editorAria: HTMLTextAreaElement | null =
+      document.querySelector('#editor-aria')
     if (editorAria == null) {
       throw new Error('textarea not found for CodeMirror')
     }
