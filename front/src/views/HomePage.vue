@@ -11,8 +11,8 @@
       </p>
     </div>
     <div class="controll-panel">
-      <a href="/#/editor"><i class="fas fa-video"></i>録画画面へ</a>
-      <a href="/#/player"><i class="fas fa-file-video"></i>再生画面へ</a>
+      <a href="/editor"><i class="fas fa-video"></i>録画画面へ</a>
+      <a href="/player"><i class="fas fa-file-video"></i>再生画面へ</a>
     </div>
   </div>
 </template>
