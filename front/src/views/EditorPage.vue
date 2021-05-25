@@ -9,6 +9,9 @@
       </select>
       <button @click="recordStart">開始</button>
       <button @click="recordStop">停止</button>
+      <div v-if="recorder.isRecording" class="recoding-status">
+        <span class="recoding-icon">●</span>録画中
+      </div>
     </div>
     <div id="editor-panel">
       <textarea id="editor-aria"></textarea>
@@ -138,5 +141,15 @@ h1 {
 }
 #editor-panel {
   grid-column: 2;
+}
+
+.recoding-icon {
+  color: red;
+  font-size: 2em;
+  vertical-align: sub;
+}
+.recoding-status {
+  font-size: 1.5em;
+  text-align: center;
 }
 </style>
