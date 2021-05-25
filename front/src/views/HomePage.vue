@@ -11,8 +11,10 @@
       </p>
     </div>
     <div class="controll-panel">
-      <a href="/editor"><i class="fas fa-video"></i>録画画面へ</a>
-      <a href="/player"><i class="fas fa-file-video"></i>再生画面へ</a>
+      <!-- prettier-ignore -->
+      <router-link to="/editor"><i class="fas fa-video"></i>録画画面へ</router-link>
+      <!-- prettier-ignore -->
+      <router-link to="/player"><i class="fas fa-file-video"></i>再生画面へ</router-link>
     </div>
   </div>
 </template>
