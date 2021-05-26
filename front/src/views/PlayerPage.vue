@@ -96,9 +96,8 @@ export default Vue.extend({
     },
   },
   mounted() {
-    const editorAria: HTMLTextAreaElement | null = document.querySelector(
-      '#editor-aria'
-    )
+    const editorAria: HTMLTextAreaElement | null =
+      document.querySelector('#editor-aria')
     if (editorAria == null) {
       throw new Error('textarea not found for CodeMirror')
     }

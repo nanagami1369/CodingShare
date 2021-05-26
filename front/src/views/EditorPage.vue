@@ -7,8 +7,11 @@
           {{ lang.name }}
         </option>
       </select>
-      <button @click="recordStart">開始</button>
-      <button @click="recordStop">停止</button>
+      <button v-if="recorder.isRecording" @click="recordStop">停止</button>
+      <button v-else @click="recordStart">開始</button>
+      <div v-if="recorder.isRecording" class="recoding-status">
+        <span class="recoding-icon">●</span>録画中
+      </div>
     </div>
     <div id="editor-panel">
       <textarea id="editor-aria"></textarea>
@@ -28,6 +31,7 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
+import 'codemirror/addon/comment/comment.js'
 import { Language } from '@/models/language'
 import { CodingRecorder } from '@/CodingRecorder'
 type DataType = {
@@ -51,7 +55,10 @@ export default Vue.extend({
         theme: 'monokai',
         autoCloseBrackets: true,
         showHint: true,
-        extraKeys: { 'Ctrl-Space': 'autocomplete' },
+        extraKeys: {
+          'Ctrl-Space': 'autocomplete',
+          'Ctrl-/': (e: CodeMirror.Editor) => e.toggleComment(),
+        },
       },
       recorder: new CodingRecorder(),
       languages: [
@@ -105,9 +112,8 @@ export default Vue.extend({
     },
   },
   mounted() {
-    const editorAria: HTMLTextAreaElement | null = document.querySelector(
-      '#editor-aria'
-    )
+    const editorAria: HTMLTextAreaElement | null =
+      document.querySelector('#editor-aria')
     if (editorAria == null) {
       throw new Error('textarea not found for CodeMirror')
     }
@@ -138,5 +144,15 @@ h1 {
 }
 #editor-panel {
   grid-column: 2;
+}
+
+.recoding-icon {
+  color: red;
+  font-size: 2em;
+  vertical-align: sub;
+}
+.recoding-status {
+  font-size: 1.5em;
+  text-align: center;
 }
 </style>
