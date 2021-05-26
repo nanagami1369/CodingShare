@@ -31,6 +31,7 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
+import 'codemirror/addon/comment/comment.js'
 import { Language } from '@/models/language'
 import { CodingRecorder } from '@/CodingRecorder'
 type DataType = {
@@ -54,7 +55,10 @@ export default Vue.extend({
         theme: 'monokai',
         autoCloseBrackets: true,
         showHint: true,
-        extraKeys: { 'Ctrl-Space': 'autocomplete' },
+        extraKeys: {
+          'Ctrl-Space': 'autocomplete',
+          'Ctrl-/': (e: CodeMirror.Editor) => e.toggleComment(),
+        },
       },
       recorder: new CodingRecorder(),
       languages: [
