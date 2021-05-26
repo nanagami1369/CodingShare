@@ -10,10 +10,11 @@
         これに同意できない場合、あなたは本ソフトを使用することができません。
       </p>
     </div>
+    <!-- prettier-ignore -->
     <div class="controll-panel">
-      <a href="/CodingShare/#/editor"><i class="fas fa-video"></i>録画画面へ</a>
+      <a href="editor"><i class="fas fa-video"></i>録画画面へ</a>
       <!-- prettier-ignore -->
-      <a href="/CodingShare/#/editor"><i class="fas fa-file-video"></i>再生画面へ</a>
+      <a href="editor"><i class="fas fa-file-video"></i>再生画面へ</a>
     </div>
   </div>
 </template>
