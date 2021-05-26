@@ -12,9 +12,9 @@
     </div>
     <!-- prettier-ignore -->
     <div class="controll-panel">
-      <router-link to="editor"><i class="fas fa-video"></i>録画画面へ</router-link>
+      <router-link to="/editor"><i class="fas fa-video"></i>録画画面へ</router-link>
       <!-- prettier-ignore -->
-      <router-link to="player"><i class="fas fa-file-video"></i>再生画面へ</router-link>
+      <router-link to="/player"><i class="fas fa-file-video"></i>再生画面へ</router-link>
     </div>
   </div>
 </template>
