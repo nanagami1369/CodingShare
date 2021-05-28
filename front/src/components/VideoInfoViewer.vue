@@ -1,5 +1,5 @@
 <template>
-  <div id="video-info">
+  <div id="video-info-viewer">
     <p>
       タイトル:<cite>{{ videoInfo.title }}</cite>
     </p>
@@ -18,7 +18,7 @@ import { format } from 'date-fns'
 import Vue, { PropType } from 'vue'
 
 export default Vue.extend({
-  name: 'VideoInfo',
+  name: 'VideoInfoViewer',
   props: {
     videoInfo: {
       type: Object as PropType<VideoInfo>,
@@ -53,7 +53,7 @@ export default Vue.extend({
 })
 </script>
 <style scoped>
-#video-info {
+#video-info-viewer {
   margin: 1em;
 }
 #video-info p {
