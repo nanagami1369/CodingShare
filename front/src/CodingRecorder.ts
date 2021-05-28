@@ -66,7 +66,7 @@ export class CodingRecorder {
     }
     const startData = editor.getValue().split('\n')
     const startCursor = editor.getCursor()
-    const startTimestamp = 1
+    const startTimestamp = 0
     const startChangeData: CodeMirror.EditorChangeLinkedList = {
       from: { line: 0, ch: 0, sticky: undefined },
       to: { line: 0, ch: 0, sticky: undefined },
