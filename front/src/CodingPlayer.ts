@@ -5,20 +5,19 @@ import { VideoInfo } from './models/VideoInfo'
 
 export class CodingPlayer {
   private _stream: CodingStream | undefined
-  private _videoInfo: VideoInfo | undefined
   public load(video: Video, editor: CodeMirror.Editor | undefined): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
-    this._videoInfo = video.header
     this._stream = new CodingStream(video)
-    const { language } = this._videoInfo
+    const { language } = video.header
     if (language == undefined) {
       throw new Error('video is not language data')
     }
     editor.setOption('mode', language.tag)
     editor.setValue('')
     editor.focus()
+    this._stream = this._stream.toNormalization(500)
   }
 
   public start(
@@ -31,15 +30,18 @@ export class CodingPlayer {
     if (this._stream == undefined) {
       throw new Error('video is not Load')
     }
-
     doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
       if (this._stream == undefined) {
         throw new Error('video is not Load')
       }
-      const { text, from, to, origin } = this._stream.current.changeData
-      const cursor = this._stream.current.cursor
-      editor.replaceRange(text, from, to, origin)
-      editor.setCursor(cursor)
+      if (this._stream.current.changeData != undefined) {
+        const { text, from, to, origin } = this._stream.current.changeData
+        editor.replaceRange(text, from, to, origin)
+      }
+      if (this._stream.current.cursor != undefined) {
+        const cursor = this._stream.current.cursor
+        editor.setCursor(cursor)
+      }
       appendDo(this._stream)
       this._stream.next()
       const isNext = this._stream.isNext()
@@ -50,10 +52,14 @@ export class CodingPlayer {
       if (this._stream.to === undefined) {
         // 次の要素が無いので最後の要素を表示して終了
         console.log('終了')
-        const { text, from, to, origin } = this._stream.current.changeData
-        const cursor = this._stream.current.cursor
-        editor.replaceRange(text, from, to, origin)
-        editor.setCursor(cursor)
+        if (this._stream.current.changeData != undefined) {
+          const { text, from, to, origin } = this._stream.current.changeData
+          editor.replaceRange(text, from, to, origin)
+        }
+        if (this._stream.current.cursor != undefined) {
+          const cursor = this._stream.current.cursor
+          editor.setCursor(cursor)
+        }
         appendDo(this._stream)
         return { isNext: isNext, nextSpan: 1 }
       }
@@ -66,7 +72,7 @@ export class CodingPlayer {
   }
 
   public get videoInfo(): VideoInfo | undefined {
-    return this._videoInfo
+    return this._stream?.videoInfo
   }
 }
 
