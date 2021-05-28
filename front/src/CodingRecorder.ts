@@ -8,7 +8,6 @@ export class CodingRecorder {
   private _timer: number = new Date().getTime()
   private _isRecording = false
   private _uploadTime = -1
-  private _recordingTime = -1
 
   public register(editor: CodeMirror.Editor | undefined): void {
     if (editor == null) {
@@ -87,7 +86,8 @@ export class CodingRecorder {
     this._isRecording = false
     const time = new Date().getTime()
     this._uploadTime = time
-    this._recordingTime = time - this._timer
+    const recordingTime = time - this._timer
+    this._video.push(new CodingSequence(recordingTime, undefined, undefined))
   }
 
   public outputVideo(
@@ -111,7 +111,7 @@ export class CodingRecorder {
         title: title,
         language: language,
         uploadTime: this._uploadTime,
-        recordingTime: this._recordingTime,
+        recordingTime: video.slice(-1)[0].timestamp,
       },
       value: video,
     }
