@@ -3,7 +3,7 @@
     <div id="side-panel">
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
-      <VideoInfoComponent :videoInfo="videoInfo" />
+      <VideoInfoComponent :videoInfo="player.videoInfo" />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -34,7 +34,6 @@ type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
-  videoInfo: VideoInfo | undefined
   elapsedTime: number
   totalTime: number
 }
@@ -67,7 +66,6 @@ export default Vue.extend({
         readOnly: true,
       },
       player: new CodingPlayer(),
-      videoInfo: undefined,
       elapsedTime: 0,
       totalTime: 0,
     }
@@ -83,7 +81,6 @@ export default Vue.extend({
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
       this.player.load(video, this.editor)
-      this.videoInfo = this.player.videoInfo
       const { recordingTime } = video.header
       this.totalTime = recordingTime
       this.player.start(this.editor, (stream: CodingStream) => {
