@@ -3,7 +3,7 @@
     <div id="side-panel">
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
-      <VideoInfoComponent :videoInfo="videoInfo" />
+      <VideoInfoViewer :videoInfo="player.videoInfo" />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -26,15 +26,13 @@ import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import { Video } from '@/models/Video'
 import { CodingStream } from '@/CodingStream'
-import { VideoInfo } from '@/models/VideoInfo'
-import VideoInfoComponent from '@/components/VideoInfo.vue'
+import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import { CodingPlayer } from '@/CodingPlayer'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
-  videoInfo: VideoInfo | undefined
   elapsedTime: number
   totalTime: number
 }
@@ -53,7 +51,7 @@ function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
 export default Vue.extend({
   name: 'PlayerPage',
   components: {
-    VideoInfoComponent,
+    VideoInfoViewer,
     VideoSliderBar,
   },
   data(): DataType {
@@ -67,7 +65,6 @@ export default Vue.extend({
         readOnly: true,
       },
       player: new CodingPlayer(),
-      videoInfo: undefined,
       elapsedTime: 0,
       totalTime: 0,
     }
@@ -83,7 +80,6 @@ export default Vue.extend({
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
       this.player.load(video, this.editor)
-      this.videoInfo = this.player.videoInfo
       const { recordingTime } = video.header
       this.totalTime = recordingTime
       this.player.start(this.editor, (stream: CodingStream) => {
@@ -96,9 +92,8 @@ export default Vue.extend({
     },
   },
   mounted() {
-    const editorAria: HTMLTextAreaElement | null = document.querySelector(
-      '#editor-aria'
-    )
+    const editorAria: HTMLTextAreaElement | null =
+      document.querySelector('#editor-aria')
     if (editorAria == null) {
       throw new Error('textarea not found for CodeMirror')
     }
