@@ -9,42 +9,45 @@ export class CodingStream {
     this._video = JSON.parse(JSON.stringify(video)) as Video
   }
 
-  public toNormalization(): CodingStream {
+  public toNormalization(timeSpan: number): CodingStream {
     const video = JSON.parse(JSON.stringify(this._video)) as Video
-    const codingSequence: CodingSequence[] = []
-    const firstCodingSequence = video.value[0]
-    codingSequence.push(firstCodingSequence)
-    for (let index = 1; index < video.value.length; index++) {
-      const startTimestamp = video.value[index - 1].timestamp
-      const elapsedTime =
-        video.value[index].timestamp - video.value[index - 1].timestamp
-      codingSequence.push(
-        ...this.createNonCodingSequence(startTimestamp, elapsedTime)
-      )
-      codingSequence.push(video.value[index])
+    // 最後の要素がキリの良い数字になるように調整
+    const recordingTime = this.getNextTimeSpan(
+      video.value.slice(-1)[0].timestamp,
+      timeSpan
+    )
+    if (video.value.slice(-1)[0].timestamp !== recordingTime) {
+      video.value.push(new CodingSequence(recordingTime, undefined, undefined))
     }
-    console.log(codingSequence)
-    console.log(video)
+    // 正規化
+    const codingSequence: CodingSequence[] = []
+    let index = 0
+    // prettier-ignore
+    for (let timestamp = timeSpan; timestamp <= recordingTime; timestamp += timeSpan) {
+      while (timestamp > video.value[index].timestamp) {
+        codingSequence.push(video.value[index])
+        index++
+      }
+      if (timestamp === video.value[index].timestamp) {
+        codingSequence.push(video.value[index])
+        index++
+      } else {
+        codingSequence.push(this.createNonCodingSequence(timestamp))
+      }
+    }
     video.value = codingSequence
+    video.header.recordingTime = recordingTime
     console.log(video)
     return new CodingStream(video)
   }
 
-  private createNonCodingSequence(
-    startTimestamp: number,
-    elapsedTime: number
-  ): CodingSequence[] {
-    const oneSecond = 1000
-    const codingSequence: CodingSequence[] = []
-    const howManyTimes1SecondPassed = Math.floor(elapsedTime / oneSecond)
-    let currentTimestamp = startTimestamp
-    for (let count = 0; count < howManyTimes1SecondPassed; count++) {
-      currentTimestamp += oneSecond
-      codingSequence.push(
-        new CodingSequence(currentTimestamp, undefined, undefined)
-      )
-    }
-    return codingSequence
+  private getNextTimeSpan(timestamp: number, timeSpan: number): number {
+    timestamp
+    return Math.floor(timestamp / timeSpan) * timeSpan + timeSpan
+  }
+
+  private createNonCodingSequence(timestamp: number): CodingSequence {
+    return new CodingSequence(timestamp, undefined, undefined)
   }
 
   public isNext(): boolean {

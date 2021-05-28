@@ -31,7 +31,7 @@ export class CodingPlayer {
     if (this._stream == undefined) {
       throw new Error('video is not Load')
     }
-    this._stream = this._stream.toNormalization()
+    this._stream = this._stream.toNormalization(500)
     doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
       if (this._stream == undefined) {
         throw new Error('video is not Load')
