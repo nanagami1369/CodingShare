@@ -65,10 +65,7 @@ export class CodingPlayer {
     })
   }
 
-  public get videoInfo(): VideoInfo {
-    if (this._videoInfo == undefined) {
-      throw new Error('video is not Load')
-    }
+  public get videoInfo(): VideoInfo | undefined {
     return this._videoInfo
   }
 }
