@@ -5,14 +5,12 @@ import { VideoInfo } from './models/VideoInfo'
 
 export class CodingPlayer {
   private _stream: CodingStream | undefined
-  private _videoInfo: VideoInfo | undefined
   public load(video: Video, editor: CodeMirror.Editor | undefined): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
-    this._videoInfo = video.header
     this._stream = new CodingStream(video)
-    const { language } = this._videoInfo
+    const { language } = video.header
     if (language == undefined) {
       throw new Error('video is not language data')
     }
@@ -74,7 +72,7 @@ export class CodingPlayer {
   }
 
   public get videoInfo(): VideoInfo | undefined {
-    return this._videoInfo
+    return this._stream?.videoInfo
   }
 }
 

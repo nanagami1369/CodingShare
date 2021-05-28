@@ -1,5 +1,6 @@
 import { CodingSequence } from './models/CodingSequence'
 import { Video } from './models/Video'
+import { VideoInfo } from './models/VideoInfo'
 
 export class CodingStream {
   private _video: Video
@@ -48,6 +49,10 @@ export class CodingStream {
 
   private createNonCodingSequence(timestamp: number): CodingSequence {
     return new CodingSequence(timestamp, undefined, undefined)
+  }
+
+  public get videoInfo(): VideoInfo {
+    return this._video.header
   }
 
   public isNext(): boolean {
