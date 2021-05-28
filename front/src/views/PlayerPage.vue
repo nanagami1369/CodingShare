@@ -3,7 +3,7 @@
     <div id="side-panel">
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
-      <VideoInfoComponent :videoInfo="player.videoInfo" />
+      <VideoInfoViewer :videoInfo="player.videoInfo" />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -26,8 +26,7 @@ import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import { Video } from '@/models/Video'
 import { CodingStream } from '@/CodingStream'
-import { VideoInfo } from '@/models/VideoInfo'
-import VideoInfoComponent from '@/components/VideoInfo.vue'
+import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import { CodingPlayer } from '@/CodingPlayer'
 type DataType = {
@@ -52,7 +51,7 @@ function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
 export default Vue.extend({
   name: 'PlayerPage',
   components: {
-    VideoInfoComponent,
+    VideoInfoViewer,
     VideoSliderBar,
   },
   data(): DataType {
