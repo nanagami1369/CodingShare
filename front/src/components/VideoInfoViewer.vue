@@ -56,7 +56,7 @@ export default Vue.extend({
 #video-info-viewer {
   margin: 1em;
 }
-#video-info p {
+#video-info-viewer p {
   text-align: left;
 }
 </style>
