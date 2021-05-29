@@ -4,6 +4,22 @@
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
       <VideoInfoViewer :videoInfo="player.videoInfo" />
+      <button
+        v-if="player.info.isPlay"
+        @click="pouse"
+        class="player-control-button"
+        :disabled="!player.isLoaded"
+      >
+        <FontAwesomeIcon icon="pause" />
+      </button>
+      <button
+        v-else
+        @click="start"
+        class="player-control-button"
+        :disabled="!player.isLoaded"
+      >
+        <FontAwesomeIcon icon="play" />
+      </button>
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -27,10 +43,16 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { Video } from '@/models/Video'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import { CodingPlayer } from '@/CodingPlayer'
+
+library.add(faPlay, faPause)
+
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
@@ -53,6 +75,7 @@ export default Vue.extend({
   components: {
     VideoInfoViewer,
     VideoSliderBar,
+    FontAwesomeIcon,
   },
   data(): DataType {
     return {
@@ -78,7 +101,12 @@ export default Vue.extend({
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
       this.player.load(video, this.editor)
+    },
+    start: function (): void {
       this.player.start(this.editor)
+    },
+    pouse: function (): void {
+      this.player.pause()
     },
   },
   mounted() {
@@ -110,5 +138,20 @@ h1 {
 }
 #player-panel {
   grid-column: 2;
+}
+
+.player-control-button {
+  font-size: 1.2em;
+  padding: 5px 20px;
+  border-radius: 25px;
+  border: solid 2px #9f9f9f;
+}
+
+.player-control-button:disabled {
+  border: solid 2px #dddddd;
+}
+
+.player-control-button:active {
+  border: solid 2px #222222;
 }
 </style>
