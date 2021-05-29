@@ -142,5 +142,16 @@ h1 {
 
 .player-control-button {
   font-size: 1.2em;
+  padding: 5px 20px;
+  border-radius: 25px;
+  border: solid 2px #9f9f9f;
+}
+
+.player-control-button:disabled {
+  border: solid 2px #dddddd;
+}
+
+.player-control-button:active {
+  border: solid 2px #222222;
 }
 </style>
