@@ -8,7 +8,7 @@
         v-if="player.info.isPlay"
         @click="pouse"
         class="player-control-button"
-        :enabled="player.isLoaded"
+        :disabled="!player.isLoaded"
       >
         ||
       </button>
@@ -16,7 +16,7 @@
         v-else
         @click="start"
         class="player-control-button"
-        :enabled="player.isLoaded"
+        :disabled="!player.isLoaded"
       >
         ▶
       </button>

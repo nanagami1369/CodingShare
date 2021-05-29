@@ -94,6 +94,10 @@ export class CodingPlayer {
   public get info(): PlayerInfo {
     return this._info
   }
+
+  public get isLoaded(): boolean {
+    return this._stream !== undefined
+  }
 }
 
 function doSomethingLoop(
