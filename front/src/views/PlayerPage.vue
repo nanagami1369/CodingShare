@@ -4,6 +4,22 @@
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
       <VideoInfoViewer :videoInfo="player.videoInfo" />
+      <button
+        v-if="player.info.isPlay"
+        @click="pouse"
+        class="player-control-button"
+        :enabled="player.isLoaded"
+      >
+        ||
+      </button>
+      <button
+        v-else
+        @click="start"
+        class="player-control-button"
+        :enabled="player.isLoaded"
+      >
+        ▶
+      </button>
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -78,7 +94,12 @@ export default Vue.extend({
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
       this.player.load(video, this.editor)
+    },
+    start: function (): void {
       this.player.start(this.editor)
+    },
+    pouse: function (): void {
+      this.player.pause()
     },
   },
   mounted() {
@@ -110,5 +131,9 @@ h1 {
 }
 #player-panel {
   grid-column: 2;
+}
+
+.player-control-button {
+  font-size: 1.2em;
 }
 </style>

@@ -43,6 +43,9 @@ export class CodingPlayer {
       if (this._stream == undefined) {
         throw new Error('video is not Load')
       }
+      if (!this.info.isPlay) {
+        return { isNext: false, nextSpan: 0 }
+      }
       if (this._stream.current.changeData != undefined) {
         const { text, from, to, origin } = this._stream.current.changeData
         editor.replaceRange(text, from, to, origin)
@@ -81,6 +84,9 @@ export class CodingPlayer {
     })
   }
 
+  public pause(): void {
+    this.info.isPlay = false
+  }
   public get videoInfo(): VideoInfo | undefined {
     return this._stream?.videoInfo
   }
