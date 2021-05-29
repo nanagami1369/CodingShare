@@ -10,7 +10,7 @@
         class="player-control-button"
         :disabled="!player.isLoaded"
       >
-        ||
+        <FontAwesomeIcon icon="pause" />
       </button>
       <button
         v-else
@@ -18,7 +18,7 @@
         class="player-control-button"
         :disabled="!player.isLoaded"
       >
-        ▶
+        <FontAwesomeIcon icon="play" />
       </button>
     </div>
     <div id="player-panel">
@@ -43,10 +43,16 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { Video } from '@/models/Video'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import { CodingPlayer } from '@/CodingPlayer'
+
+library.add(faPlay, faPause)
+
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
@@ -69,6 +75,7 @@ export default Vue.extend({
   components: {
     VideoInfoViewer,
     VideoSliderBar,
+    FontAwesomeIcon,
   },
   data(): DataType {
     return {
