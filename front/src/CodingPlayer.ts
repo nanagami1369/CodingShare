@@ -29,6 +29,17 @@ export class CodingPlayer {
     editor.focus()
     this._stream = this._stream.toNormalization(500)
     this._info.totalTime = this._stream.videoInfo.recordingTime
+    // 最初の要素を描画
+    if (this._stream.current.changeData != undefined) {
+      const { text, from, to, origin } = this._stream.current.changeData
+      editor.replaceRange(text, from, to, origin)
+    }
+    if (this._stream.current.cursor != undefined) {
+      const cursor = this._stream.current.cursor
+      editor.setCursor(cursor)
+    }
+    this.setElapsedTime(this._stream)
+    this._stream.next()
   }
 
   public start(editor: CodeMirror.Editor | undefined): void {
@@ -57,10 +68,6 @@ export class CodingPlayer {
       this.setElapsedTime(this._stream)
       this._stream.next()
       const isNext = this._stream.isNext()
-      if (this._stream.from === undefined) {
-        this.setElapsedTime(this._stream)
-        return { isNext: isNext, nextSpan: this._stream.current.timestamp }
-      }
       if (this._stream.to === undefined) {
         // 次の要素が無いので最後の要素を表示して終了
         console.log('終了')
