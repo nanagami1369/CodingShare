@@ -8,6 +8,7 @@ export class CodingPlayer {
   private _info: PlayerInfo = {
     elapsedTime: 0,
     totalTime: 0,
+    isPlay: false,
   }
 
   private setElapsedTime(stream: CodingStream): void {
@@ -37,6 +38,7 @@ export class CodingPlayer {
     if (this._stream == undefined) {
       throw new Error('video is not Load')
     }
+    this._info.isPlay = true
     doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
       if (this._stream == undefined) {
         throw new Error('video is not Load')
@@ -68,6 +70,7 @@ export class CodingPlayer {
           editor.setCursor(cursor)
         }
         this.setElapsedTime(this._stream)
+        this._info.isPlay = false
         return { isNext: isNext, nextSpan: 1 }
       }
       this.setElapsedTime(this._stream)
