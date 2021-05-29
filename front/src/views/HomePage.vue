@@ -12,20 +12,26 @@
     </div>
     <div class="controll-panel">
       <!-- prettier-ignore -->
-      <router-link to="/editor"><i class="fas fa-video"></i>録画画面へ</router-link>
+      <router-link to="/editor"><FontAwesomeIcon icon="video" />録画画面へ</router-link>
       <!-- prettier-ignore -->
-      <router-link to="/player"><i class="fas fa-file-video"></i>再生画面へ</router-link>
+      <router-link to="/player"><FontAwesomeIcon icon="file-video" />再生画面へ</router-link>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import '@fortawesome/fontawesome-free/js/fontawesome'
-import '@fortawesome/fontawesome-free/js/solid'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faFileVideo, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Vue from 'vue'
+
+library.add(faFileVideo, faVideo)
 
 export default Vue.extend({
   name: 'HomePage',
+  components: {
+    FontAwesomeIcon,
+  },
 })
 </script>
 
