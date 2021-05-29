@@ -7,7 +7,10 @@
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
-      <VideoSliderBar :elapsedTime="elapsedTime" :totalTime="totalTime" />
+      <VideoSliderBar
+        :elapsedTime="player.info.elapsedTime"
+        :totalTime="player.info.totalTime"
+      />
     </div>
   </div>
 </template>
@@ -25,7 +28,6 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import { Video } from '@/models/Video'
-import { CodingStream } from '@/CodingStream'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import { CodingPlayer } from '@/CodingPlayer'
@@ -33,8 +35,6 @@ type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
-  elapsedTime: number
-  totalTime: number
 }
 
 function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
@@ -65,8 +65,6 @@ export default Vue.extend({
         readOnly: true,
       },
       player: new CodingPlayer(),
-      elapsedTime: 0,
-      totalTime: 0,
     }
   },
   methods: {
@@ -80,15 +78,7 @@ export default Vue.extend({
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
       this.player.load(video, this.editor)
-      const { recordingTime } = video.header
-      this.totalTime = recordingTime
-      this.player.start(this.editor, (stream: CodingStream) => {
-        if (stream.isNext()) {
-          this.elapsedTime = stream.current.timestamp
-        } else {
-          this.elapsedTime = this.totalTime
-        }
-      })
+      this.player.start(this.editor)
     },
   },
   mounted() {

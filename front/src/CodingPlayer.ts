@@ -2,9 +2,18 @@ import { CodingStream } from './CodingStream'
 import { Video } from './models/Video'
 import CodeMirror from 'codemirror'
 import { VideoInfo } from './models/VideoInfo'
-
+import { PlayerInfo } from '@/models/PlayerInfo'
 export class CodingPlayer {
   private _stream: CodingStream | undefined
+  private _info: PlayerInfo = {
+    elapsedTime: 0,
+    totalTime: 0,
+  }
+
+  private setElapsedTime(stream: CodingStream): void {
+    this._info.elapsedTime = stream.current.timestamp
+  }
+
   public load(video: Video, editor: CodeMirror.Editor | undefined): void {
     if (editor == null) {
       throw new Error('editor is undefined')
@@ -18,12 +27,10 @@ export class CodingPlayer {
     editor.setValue('')
     editor.focus()
     this._stream = this._stream.toNormalization(500)
+    this._info.totalTime = this._stream.videoInfo.recordingTime
   }
 
-  public start(
-    editor: CodeMirror.Editor | undefined,
-    appendDo: (stream: CodingStream) => void
-  ): void {
+  public start(editor: CodeMirror.Editor | undefined): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -42,11 +49,11 @@ export class CodingPlayer {
         const cursor = this._stream.current.cursor
         editor.setCursor(cursor)
       }
-      appendDo(this._stream)
+      this.setElapsedTime(this._stream)
       this._stream.next()
       const isNext = this._stream.isNext()
       if (this._stream.from === undefined) {
-        appendDo(this._stream)
+        this.setElapsedTime(this._stream)
         return { isNext: isNext, nextSpan: this._stream.current.timestamp }
       }
       if (this._stream.to === undefined) {
@@ -60,10 +67,10 @@ export class CodingPlayer {
           const cursor = this._stream.current.cursor
           editor.setCursor(cursor)
         }
-        appendDo(this._stream)
+        this.setElapsedTime(this._stream)
         return { isNext: isNext, nextSpan: 1 }
       }
-      appendDo(this._stream)
+      this.setElapsedTime(this._stream)
       return {
         isNext: isNext,
         nextSpan: this._stream.to.timestamp - this._stream.current.timestamp,
@@ -73,6 +80,10 @@ export class CodingPlayer {
 
   public get videoInfo(): VideoInfo | undefined {
     return this._stream?.videoInfo
+  }
+
+  public get info(): PlayerInfo {
+    return this._info
   }
 }
 
