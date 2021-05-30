@@ -92,6 +92,28 @@ export class CodingPlayer {
     this._stream.next()
   }
 
+  public stepForward(editor: CodeMirror.Editor | undefined): void {
+    if (editor == null) {
+      throw new Error('editor is undefined')
+    }
+    if (this._stream == undefined) {
+      throw new Error('video is not Load')
+    }
+    this.pause()
+    while (
+      this._stream.to != undefined &&
+      this._stream.current.changeData == undefined &&
+      this._stream.current.cursor == undefined
+    ) {
+      console.log(this._stream.current)
+      this._stream.next()
+    }
+    console.log(`do!:${JSON.stringify(this._stream.current)}`)
+    this.readAndExecCodingSequence(editor, this._stream.current)
+    this.setElapsedTime(this._stream)
+    this._stream.next()
+  }
+
   private readAndExecCodingSequence(
     editor: CodeMirror.Editor,
     codingSequence: CodingSequence
