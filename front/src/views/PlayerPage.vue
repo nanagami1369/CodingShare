@@ -27,6 +27,13 @@
       >
         <FontAwesomeIcon icon="play" />
       </button>
+      <button
+        class="player-control-button"
+        @click="stepForward"
+        :disabled="!player.isLoaded"
+      >
+        <FontAwesomeIcon icon="step-forward" />
+      </button>
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -50,15 +57,20 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPlay, faPause, faUndo } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { Video } from '@/models/Video'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import { CodingPlayer } from '@/CodingPlayer'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {
+  faPlay,
+  faPause,
+  faUndo,
+  faStepForward,
+} from '@fortawesome/free-solid-svg-icons'
 
-library.add(faPlay, faPause, faUndo)
+library.add(faPlay, faPause, faUndo, faStepForward)
 
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
@@ -117,6 +129,9 @@ export default Vue.extend({
     },
     backToTheBeginning: function (): void {
       this.player.backToTheBeginning(this.editor)
+    },
+    stepForward: function (): void {
+      this.player.stepForward(this.editor)
     },
   },
   mounted() {

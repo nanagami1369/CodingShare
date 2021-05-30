@@ -92,6 +92,19 @@ export class CodingPlayer {
     this._stream.next()
   }
 
+  public stepForward(editor: CodeMirror.Editor | undefined): void {
+    if (editor == null) {
+      throw new Error('editor is undefined')
+    }
+    if (this._stream == undefined) {
+      throw new Error('video is not Load')
+    }
+    this.pause()
+    this.readAndExecCodingSequence(editor, this._stream.current)
+    this.setElapsedTime(this._stream)
+    this._stream.next()
+  }
+
   private readAndExecCodingSequence(
     editor: CodeMirror.Editor,
     codingSequence: CodingSequence
