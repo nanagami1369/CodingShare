@@ -5,6 +5,13 @@
       <input type="file" @change="loadData" value="読み込み" />
       <VideoInfoViewer :videoInfo="player.videoInfo" />
       <button
+        @click="backToTheBeginning"
+        class="player-control-button"
+        :disabled="!player.isLoaded"
+      >
+        <FontAwesomeIcon icon="undo" />
+      </button>
+      <button
         v-if="player.info.isPlay"
         @click="pouse"
         class="player-control-button"
@@ -44,14 +51,14 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
+import { faPlay, faPause, faUndo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { Video } from '@/models/Video'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import { CodingPlayer } from '@/CodingPlayer'
 
-library.add(faPlay, faPause)
+library.add(faPlay, faPause, faUndo)
 
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
@@ -107,6 +114,9 @@ export default Vue.extend({
     },
     pouse: function (): void {
       this.player.pause()
+    },
+    backToTheBeginning: function (): void {
+      this.player.backToTheBeginning(this.editor)
     },
   },
   mounted() {
