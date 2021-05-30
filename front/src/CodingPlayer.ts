@@ -100,6 +100,15 @@ export class CodingPlayer {
       throw new Error('video is not Load')
     }
     this.pause()
+    while (
+      this._stream.to != undefined &&
+      this._stream.current.changeData == undefined &&
+      this._stream.current.cursor == undefined
+    ) {
+      console.log(this._stream.current)
+      this._stream.next()
+    }
+    console.log(`do!:${JSON.stringify(this._stream.current)}`)
     this.readAndExecCodingSequence(editor, this._stream.current)
     this.setElapsedTime(this._stream)
     this._stream.next()
