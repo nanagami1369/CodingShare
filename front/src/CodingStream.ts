@@ -42,6 +42,10 @@ export class CodingStream {
     return new CodingStream(video)
   }
 
+  public reset(): void {
+    this._index = 0
+  }
+
   private getNextTimeSpan(timestamp: number, timeSpan: number): number {
     timestamp
     return Math.floor(timestamp / timeSpan) * timeSpan + timeSpan

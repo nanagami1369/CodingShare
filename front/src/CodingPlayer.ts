@@ -94,6 +94,31 @@ export class CodingPlayer {
   public pause(): void {
     this.info.isPlay = false
   }
+
+  public backToTheBeginning(editor: CodeMirror.Editor | undefined): void {
+    if (editor == null) {
+      throw new Error('editor is undefined')
+    }
+    if (this._stream == undefined) {
+      throw new Error('video is not Load')
+    }
+    this.pause()
+    editor.focus()
+    editor.setValue('')
+    this._stream.reset()
+    // 最初の要素を描画
+    if (this._stream.current.changeData != undefined) {
+      const { text, from, to, origin } = this._stream.current.changeData
+      editor.replaceRange(text, from, to, origin)
+    }
+    if (this._stream.current.cursor != undefined) {
+      const cursor = this._stream.current.cursor
+      editor.setCursor(cursor)
+    }
+    this.setElapsedTime(this._stream)
+    this._stream.next()
+  }
+
   public get videoInfo(): VideoInfo | undefined {
     return this._stream?.videoInfo
   }
