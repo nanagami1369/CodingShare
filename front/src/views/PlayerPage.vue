@@ -34,6 +34,21 @@
       >
         <FontAwesomeIcon icon="step-forward" />
       </button>
+      <p>速度</p>
+      <VueSlider
+        :style="{ padding: '1em 2em' }"
+        :process-style="{ backgroundColor: '#28e270' }"
+        :tooltip-style="{
+          backgroundColor: '#116230',
+          borderColor: '#116230',
+        }"
+        :data="speedSliderIndex"
+        v-model="speed"
+        :marks="true"
+        :adsorb="true"
+        :lazy="true"
+        :contained="true"
+      />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -60,6 +75,8 @@ import 'codemirror/addon/edit/closebrackets.js'
 import { Video } from '@/models/Video'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
 import { CodingPlayer } from '@/CodingPlayer'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -76,6 +93,7 @@ type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
+  speedSliderIndex: string[]
 }
 
 function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
@@ -95,6 +113,7 @@ export default Vue.extend({
     VideoInfoViewer,
     VideoSliderBar,
     FontAwesomeIcon,
+    VueSlider,
   },
   data(): DataType {
     return {
@@ -107,7 +126,20 @@ export default Vue.extend({
         readOnly: true,
       },
       player: new CodingPlayer(),
+      speedSliderIndex: ['50%', '100%', '200%'],
     }
+  },
+  computed: {
+    speed: {
+      get: function (): string {
+        return `${this.player.info.speed}%`
+      },
+      set: function (value: string) {
+        // valueから「％」を取る
+        const stringNumber = value.slice(0, -1)
+        this.player.info.speed = parseInt(stringNumber, 10)
+      },
+    },
   },
   methods: {
     loadData: async function (event: Event): Promise<void> {
@@ -161,6 +193,7 @@ h1 {
 #side-panel {
   grid-column: 1;
 }
+
 #player-panel {
   grid-column: 2;
 }

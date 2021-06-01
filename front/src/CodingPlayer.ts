@@ -10,6 +10,7 @@ export class CodingPlayer {
     elapsedTime: 0,
     totalTime: 0,
     isPlay: false,
+    speed: 100,
   }
 
   private setElapsedTime(stream: CodingStream): void {
@@ -66,7 +67,9 @@ export class CodingPlayer {
       this.setElapsedTime(this._stream)
       return {
         isNext: isNext,
-        nextSpan: this._stream.to.timestamp - this._stream.current.timestamp,
+        nextSpan:
+          // prettier-ignore
+          (this._stream.to.timestamp - this._stream.current.timestamp) / (this.info.speed / 100),
       }
     })
   }
