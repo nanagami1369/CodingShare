@@ -71,7 +71,7 @@ export class CodingRecorder {
       to: { line: 0, ch: 0, sticky: undefined },
       text: startData,
       removed: [''],
-      origin: 'input',
+      origin: '+input',
     }
     this._video.push(
       new CodingSequence(startTimestamp, startChangeData, startCursor)
