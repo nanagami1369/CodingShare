@@ -9,8 +9,16 @@ export class CodingPlayer {
   private _info: PlayerInfo = {
     elapsedTime: 0,
     totalTime: 0,
-    isPlay: false,
     speed: 100,
+  }
+  private _isPlay = false
+
+  public get isPlay(): boolean {
+    return this._isPlay
+  }
+
+  public set isPlay(value: boolean) {
+    this._isPlay = value
   }
 
   private setElapsedTime(stream: CodingStream): void {
@@ -44,12 +52,12 @@ export class CodingPlayer {
     if (this._stream == undefined) {
       throw new Error('video is not Load')
     }
-    this._info.isPlay = true
+    this._isPlay = true
     doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
       if (this._stream == undefined) {
         throw new Error('video is not Load')
       }
-      if (!this.info.isPlay) {
+      if (!this.isPlay) {
         return { isNext: false, nextSpan: 0 }
       }
       this.readAndExecCodingSequence(editor, this._stream.current)
@@ -61,7 +69,7 @@ export class CodingPlayer {
         console.log('終了')
         this.readAndExecCodingSequence(editor, this._stream.current)
         this.setElapsedTime(this._stream)
-        this._info.isPlay = false
+        this.isPlay = false
         return { isNext: isNext, nextSpan: 1 }
       }
       this.setElapsedTime(this._stream)
@@ -75,7 +83,7 @@ export class CodingPlayer {
   }
 
   public pause(): void {
-    this.info.isPlay = false
+    this.isPlay = false
   }
 
   public backToTheBeginning(editor: CodeMirror.Editor | undefined): void {
