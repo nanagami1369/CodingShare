@@ -11,13 +11,23 @@ export class CodingPlayer {
     totalTime: 0,
     speed: 100,
   }
-  private _isPlay = false
+  private _currentTimeoutId = -1
+  public set currentTimeoutId(value: number) {
+    this._currentTimeoutId = value
+  }
+  public get currentTimeoutId(): number {
+    return this._currentTimeoutId
+  }
 
+  private _isPlay = false
   public get isPlay(): boolean {
     return this._isPlay
   }
 
   public set isPlay(value: boolean) {
+    if (!value) {
+      clearTimeout(this.currentTimeoutId)
+    }
     this._isPlay = value
   }
 
@@ -53,7 +63,7 @@ export class CodingPlayer {
       throw new Error('video is not Load')
     }
     this._isPlay = true
-    doSomethingLoop((): { isNext: boolean; nextSpan: number } => {
+    doSomethingLoop(this, (): { isNext: boolean; nextSpan: number } => {
       if (this._stream == undefined) {
         throw new Error('video is not Load')
       }
@@ -152,12 +162,13 @@ export class CodingPlayer {
 }
 
 function doSomethingLoop(
+  player: CodingPlayer,
   doSomething: () => { nextSpan: number; isNext: boolean }
 ): void {
   const { isNext, nextSpan } = doSomething()
   if (isNext) {
-    setTimeout(function () {
-      doSomethingLoop(doSomething)
+    player.currentTimeoutId = setTimeout(function () {
+      doSomethingLoop(player, doSomething)
     }, nextSpan)
   }
 }
