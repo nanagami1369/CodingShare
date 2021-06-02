@@ -12,7 +12,7 @@
         <FontAwesomeIcon icon="undo" />
       </button>
       <button
-        v-if="player.info.isPlay"
+        v-if="player.isPlay"
         @click="pouse"
         class="player-control-button"
         :disabled="!player.isLoaded"
