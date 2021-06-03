@@ -56,4 +56,24 @@ body {
 .CodeMirror-hint {
   font-size: 2em !important;
 }
+
+.CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursors {
+  visibility: visible !important;
+}
+
+.CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursor {
+  animation: flash 1s linear infinite;
+}
+
+@keyframes flash {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
 </style>
