@@ -57,12 +57,12 @@ body {
   font-size: 2em !important;
 }
 
-/* PlayerPageのCodeMirrorで再生中のみカーソルを表示するCSS */
-#player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursors {
+/* PlayerPageで常にカーソルを表示するCSS */
+#player-page .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursors {
   visibility: visible !important;
 }
 
-#player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursor {
+#player-page .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursor {
   animation: flash 1s linear infinite;
 }
 
