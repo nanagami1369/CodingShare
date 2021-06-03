@@ -57,6 +57,7 @@ body {
   font-size: 2em !important;
 }
 
+/* PlayerPageのCodeMirrorで再生中のみカーソルを表示するCSS */
 #player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursors {
   visibility: visible !important;
 }
