@@ -1,5 +1,5 @@
 <template>
-  <div id="player-page">
+  <div id="player-page" :class="{ 'is-play': player.isPlay }">
     <div id="side-panel">
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
