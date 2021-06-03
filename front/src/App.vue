@@ -57,11 +57,11 @@ body {
   font-size: 2em !important;
 }
 
-#player-page .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursors {
+#player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursors {
   visibility: visible !important;
 }
 
-#player-page .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursor {
+#player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursor {
   animation: flash 1s linear infinite;
 }
 
