@@ -46,7 +46,6 @@ export class CodingPlayer {
     }
     editor.setOption('mode', language.tag)
     editor.setValue('')
-    editor.focus()
     this._stream = this._stream.toNormalization(500)
     this._info.totalTime = this._stream.videoInfo.recordingTime
     // 最初の要素を描画
@@ -104,7 +103,6 @@ export class CodingPlayer {
       throw new Error('video is not Load')
     }
     this.pause()
-    editor.focus()
     editor.setValue('')
     this._stream.reset()
     // 最初の要素を描画
