@@ -111,7 +111,7 @@ export default Vue.extend({
       )
       const a = document.createElement('a')
       a.href = url
-      a.download = 'video.json'
+      a.download = `${data.name}_${data.title}_video.json`
       a.click()
     },
     recordCancel: function (): void {
