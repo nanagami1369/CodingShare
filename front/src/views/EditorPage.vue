@@ -55,7 +55,6 @@ export default Vue.extend({
   data(): DataType {
     return {
       defualtConfig: {
-        mode: 'text/x-csrc',
         lineNumbers: true,
         indentUnit: 4,
         theme: 'monokai',
@@ -132,6 +131,7 @@ export default Vue.extend({
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
     this.editor?.setSize('100%', '70vh')
+    this.editor.setOption('mode', this.selectedLanguage.tag)
     this.recorder.register(this.editor)
   },
   beforeDestroy() {
