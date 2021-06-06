@@ -9,13 +9,13 @@
       <div class="save-video-modal">
         <h4>録画データの保存</h4>
         <label
-          >名前
+          >作者
           <ValidationProvider
             :immediate="true"
             rules="required"
             v-slot="{ errors }"
           >
-            <input type="text" name="名前" v-model="data.name" />
+            <input type="text" name="作者" v-model="data.name" />
             <span class="error-message">{{ errors[0] }}</span>
           </ValidationProvider>
         </label>
