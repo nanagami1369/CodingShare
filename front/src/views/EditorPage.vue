@@ -55,7 +55,7 @@ export default Vue.extend({
   data(): DataType {
     return {
       defualtConfig: {
-        mode: 'javascript',
+        mode: 'text/x-csrc',
         lineNumbers: true,
         indentUnit: 4,
         theme: 'monokai',
@@ -86,8 +86,8 @@ export default Vue.extend({
         },
       ],
       selectedLanguage: {
-        tag: 'javascript',
-        name: 'JavaScript',
+        tag: 'text/x-csrc',
+        name: 'C言語',
       },
     }
   },
