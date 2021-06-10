@@ -63,6 +63,10 @@ export class CodingStream {
     return this._index
   }
 
+  public get length(): number {
+    return this._video.value.length
+  }
+
   public isNext(): boolean {
     const index = this._index + 1
     return index !== this._video.value.length
