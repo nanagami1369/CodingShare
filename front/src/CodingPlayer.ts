@@ -177,9 +177,9 @@ export class CodingPlayer {
   private createSnapshot(video: Video, editor: CodeMirror.Editor): Snapshot[] {
     const stream = new CodingStream(video)
     const snapshots: Snapshot[] = []
-    snapshots.push(
-      new Snapshot(stream.current.changeData?.text.join('\n') ?? '')
-    )
+    this.readAndExecCodingSequence(editor, stream.current)
+    const fastData = editor.getValue()
+    snapshots.push(new Snapshot(fastData))
     while (stream.to != undefined) {
       this.readAndExecCodingSequence(editor, stream.current)
       stream.next()
