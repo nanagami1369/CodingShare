@@ -185,7 +185,7 @@ export class CodingPlayer {
       stream.next()
     }
     const lastData = editor.getValue()
-    editor.getValue('')
+    editor.setValue('')
     this._snapshot.push(new Snapshot(lastData))
     return this._snapshot
   }
