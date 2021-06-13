@@ -176,18 +176,18 @@ export class CodingPlayer {
 
   private createSnapshot(video: Video, editor: CodeMirror.Editor): Snapshot[] {
     const stream = new CodingStream(video)
-
-    this._snapshot.push(
-      new Snapshot(stream.current.changeData?.text.join('\n') ?? '')
-    )
+    const snapshots: Snapshot[] = []
+    this.readAndExecCodingSequence(editor, stream.current)
+    const fastData = editor.getValue()
+    snapshots.push(new Snapshot(fastData))
     while (stream.to != undefined) {
       this.readAndExecCodingSequence(editor, stream.current)
       stream.next()
     }
     const lastData = editor.getValue()
-    editor.getValue('')
-    this._snapshot.push(new Snapshot(lastData))
-    return this._snapshot
+    editor.setValue('')
+    snapshots.push(new Snapshot(lastData))
+    return snapshots
   }
 
   public get videoInfo(): VideoInfo | undefined {
