@@ -4,6 +4,7 @@
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
       <VideoInfoViewer :videoInfo="player.videoInfo" />
+      <textarea id="background-editor-aria"></textarea>
       <button
         @click="backToTheBeginning"
         class="player-control-button"
@@ -95,6 +96,7 @@ library.add(faPlay, faPause, faUndo, faStepForward, faFastForward)
 
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
+  backgroundEditor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
   speedSliderIndex: string[]
@@ -171,6 +173,15 @@ export default Vue.extend({
     },
   },
   mounted() {
+    // 裏で動かす用のエディタ
+    const backgroundEditorArea: HTMLTextAreaElement | null =
+      document.querySelector('#background-editor-aria')
+    if (backgroundEditorArea == null) {
+      throw new Error('textarea not found for Background CodeMirror')
+    }
+    this.backgroundEditor = CodeMirror.fromTextArea(backgroundEditorArea)
+    this.backgroundEditor.setSize('0px', '0px')
+    // 画面を再生する用のエディタ
     const editorAria: HTMLTextAreaElement | null =
       document.querySelector('#editor-aria')
     if (editorAria == null) {
