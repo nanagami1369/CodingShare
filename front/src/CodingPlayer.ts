@@ -166,10 +166,7 @@ export class CodingPlayer {
     const stream = new CodingStream(video)
 
     this._snapshot.push(
-      new Snapshot(
-        stream.index,
-        stream.current.changeData?.text.join('\n') ?? ''
-      )
+      new Snapshot(stream.current.changeData?.text.join('\n') ?? '')
     )
     while (stream.to != undefined) {
       this.readAndExecCodingSequence(editor, stream.current)
@@ -177,7 +174,7 @@ export class CodingPlayer {
     }
     const lastData = editor.getValue()
     editor.getValue('')
-    this._snapshot.push(new Snapshot(stream.index, lastData))
+    this._snapshot.push(new Snapshot(lastData))
     return this._snapshot
   }
 
