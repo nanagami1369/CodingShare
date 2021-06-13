@@ -4,6 +4,7 @@ import CodeMirror from 'codemirror'
 import { VideoInfo } from './models/VideoInfo'
 import { PlayerInfo } from '@/models/PlayerInfo'
 import { CodingSequence } from './models/CodingSequence'
+import { Snapshot } from './models/Snapshot'
 export class CodingPlayer {
   private _stream: CodingStream | undefined
   private _info: PlayerInfo = {
@@ -11,6 +12,8 @@ export class CodingPlayer {
     totalTime: 0,
     speed: 100,
   }
+  private _snapshot: Snapshot[] = []
+
   private _currentTimeoutId = -1
   public set currentTimeoutId(value: number) {
     this._currentTimeoutId = value
@@ -35,7 +38,20 @@ export class CodingPlayer {
     this._info.elapsedTime = stream.current.timestamp
   }
 
-  public load(video: Video, editor: CodeMirror.Editor | undefined): void {
+  public load(
+    video: Video,
+    editor: CodeMirror.Editor | undefined,
+    backgroundEditor: CodeMirror.Editor | undefined
+  ): void {
+    // スナップショット作成
+    if (backgroundEditor == null) {
+      throw new Error('backgroundEditor is undefined')
+    }
+    setTimeout(() => {
+      this._snapshot = this.createSnapshot(video, backgroundEditor)
+      console.log(this._snapshot)
+    }, 0)
+    // エディタ準備
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -146,6 +162,25 @@ export class CodingPlayer {
     }
   }
 
+  private createSnapshot(video: Video, editor: CodeMirror.Editor): Snapshot[] {
+    const stream = new CodingStream(video)
+
+    this._snapshot.push(
+      new Snapshot(
+        stream.index,
+        stream.current.changeData?.text.join('\n') ?? ''
+      )
+    )
+    while (stream.to != undefined) {
+      this.readAndExecCodingSequence(editor, stream.current)
+      stream.next()
+    }
+    const lastData = editor.getValue()
+    editor.getValue('')
+    this._snapshot.push(new Snapshot(stream.index, lastData))
+    return this._snapshot
+  }
+
   public get videoInfo(): VideoInfo | undefined {
     return this._stream?.videoInfo
   }
@@ -155,7 +190,7 @@ export class CodingPlayer {
   }
 
   public get isLoaded(): boolean {
-    return this._stream !== undefined
+    return this._stream != null && this._snapshot != null
   }
 }
 

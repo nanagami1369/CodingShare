@@ -157,7 +157,7 @@ export default Vue.extend({
       }
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
-      this.player.load(video, this.editor)
+      this.player.load(video, this.editor, this.backgroundEditor)
     },
     start: function (): void {
       this.player.start(this.editor)
