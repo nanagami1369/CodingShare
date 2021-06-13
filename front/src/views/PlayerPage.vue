@@ -34,6 +34,9 @@
       >
         <FontAwesomeIcon icon="step-forward" />
       </button>
+      <button class="player-control-button" :disabled="!player.isLoaded">
+        <FontAwesomeIcon icon="fast-forward" />
+      </button>
       <p>速度</p>
       <VueSlider
         :style="{ padding: '1em 2em' }"
@@ -85,9 +88,10 @@ import {
   faPause,
   faUndo,
   faStepForward,
+  faFastForward,
 } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faPlay, faPause, faUndo, faStepForward)
+library.add(faPlay, faPause, faUndo, faStepForward, faFastForward)
 
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
