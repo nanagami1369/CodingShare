@@ -35,7 +35,11 @@
       >
         <FontAwesomeIcon icon="step-forward" />
       </button>
-      <button class="player-control-button" :disabled="!player.isLoaded">
+      <button
+        class="player-control-button"
+        @click="fastForward"
+        :disabled="!player.isLoaded"
+      >
         <FontAwesomeIcon icon="fast-forward" />
       </button>
       <p>速度</p>
@@ -170,6 +174,9 @@ export default Vue.extend({
     },
     stepForward: function (): void {
       this.player.stepForward(this.editor)
+    },
+    fastForward: function (): void {
+      this.player.fastForward(this.editor)
     },
   },
   mounted() {

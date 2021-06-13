@@ -149,6 +149,18 @@ export class CodingPlayer {
     this._stream.next()
   }
 
+  public fastForward(editor: CodeMirror.Editor | undefined): void {
+    if (editor == null) {
+      throw new Error('editor is undefined')
+    }
+    if (this._stream == undefined) {
+      throw new Error('video is not Load')
+    }
+    editor.setValue(this._snapshot.slice(-1)[0].value)
+    this._info.elapsedTime = this._stream.videoInfo.recordingTime
+    this._stream.seek(this._stream.length - 1)
+  }
+
   private readAndExecCodingSequence(
     editor: CodeMirror.Editor,
     codingSequence: CodingSequence
