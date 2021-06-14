@@ -156,6 +156,7 @@ export class CodingPlayer {
     if (this._stream == undefined) {
       throw new Error('video is not Load')
     }
+    this.pause()
     editor.setValue(this._snapshot.slice(-1)[0].value)
     this._info.elapsedTime = this._stream.videoInfo.recordingTime
     this._stream.seek(this._stream.length - 1)
