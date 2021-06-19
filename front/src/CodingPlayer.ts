@@ -65,7 +65,7 @@ export class CodingPlayer {
     this._stream = this._stream.toNormalization(500)
     this._info.totalTime = this._stream.videoInfo.recordingTime
     // 最初の要素を描画
-    this.readAndExecCodingSequence(editor, this._stream.current)
+    readAndExecCodingSequence(editor, this._stream.current)
     this.setElapsedTime(this._stream)
     this._stream.next()
   }
@@ -85,14 +85,14 @@ export class CodingPlayer {
       if (!this.isPlay) {
         return { isNext: false, nextSpan: 0 }
       }
-      this.readAndExecCodingSequence(editor, this._stream.current)
+      readAndExecCodingSequence(editor, this._stream.current)
       this.setElapsedTime(this._stream)
       this._stream.next()
       const isNext = this._stream.isNext()
       if (this._stream.to === undefined) {
         // 次の要素が無いので最後の要素を表示して終了
         console.log('終了')
-        this.readAndExecCodingSequence(editor, this._stream.current)
+        readAndExecCodingSequence(editor, this._stream.current)
         this.setElapsedTime(this._stream)
         this.isPlay = false
         return { isNext: isNext, nextSpan: 1 }
@@ -122,7 +122,7 @@ export class CodingPlayer {
     editor.setValue('')
     this._stream.reset()
     // 最初の要素を描画
-    this.readAndExecCodingSequence(editor, this._stream.current)
+    readAndExecCodingSequence(editor, this._stream.current)
     this.setElapsedTime(this._stream)
     this._stream.next()
   }
@@ -144,7 +144,7 @@ export class CodingPlayer {
       this._stream.next()
     }
     console.log(`do!:${JSON.stringify(this._stream.current)}`)
-    this.readAndExecCodingSequence(editor, this._stream.current)
+    readAndExecCodingSequence(editor, this._stream.current)
     this.setElapsedTime(this._stream)
     this._stream.next()
   }
@@ -162,27 +162,14 @@ export class CodingPlayer {
     this._stream.seek(this._stream.length - 1)
   }
 
-  private readAndExecCodingSequence(
-    editor: CodeMirror.Editor,
-    codingSequence: CodingSequence
-  ): void {
-    if (codingSequence.changeData != undefined) {
-      const { text, from, to, origin } = codingSequence.changeData
-      editor.replaceRange(text, from, to, origin)
-    }
-    if (codingSequence.cursor != undefined) {
-      editor.setCursor(codingSequence.cursor)
-    }
-  }
-
   private createSnapshot(video: Video, editor: CodeMirror.Editor): Snapshot[] {
     const stream = new CodingStream(video)
     const snapshots: Snapshot[] = []
-    this.readAndExecCodingSequence(editor, stream.current)
+    readAndExecCodingSequence(editor, stream.current)
     const fastData = editor.getValue()
     snapshots.push(new Snapshot(fastData))
     while (stream.to != undefined) {
-      this.readAndExecCodingSequence(editor, stream.current)
+      readAndExecCodingSequence(editor, stream.current)
       stream.next()
     }
     const lastData = editor.getValue()
@@ -213,5 +200,18 @@ function doSomethingLoop(
     player.currentTimeoutId = setTimeout(function () {
       doSomethingLoop(player, doSomething)
     }, nextSpan)
+  }
+}
+
+const readAndExecCodingSequence = (
+  editor: CodeMirror.Editor,
+  codingSequence: CodingSequence
+) => {
+  if (codingSequence.changeData != undefined) {
+    const { text, from, to, origin } = codingSequence.changeData
+    editor.replaceRange(text, from, to, origin)
+  }
+  if (codingSequence.cursor != undefined) {
+    editor.setCursor(codingSequence.cursor)
   }
 }
