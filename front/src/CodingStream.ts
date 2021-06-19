@@ -46,6 +46,14 @@ export class CodingStream {
     this._index = 0
   }
 
+  public seek(index: number): boolean {
+    const isSeek = 0 <= index && index < this._video.value.length
+    if (isSeek) {
+      this._index = index
+    }
+    return isSeek
+  }
+
   private getNextTimeSpan(timestamp: number, timeSpan: number): number {
     timestamp
     return Math.floor(timestamp / timeSpan) * timeSpan + timeSpan
@@ -57,6 +65,14 @@ export class CodingStream {
 
   public get videoInfo(): VideoInfo {
     return this._video.header
+  }
+
+  public get index(): number {
+    return this._index
+  }
+
+  public get length(): number {
+    return this._video.value.length
   }
 
   public isNext(): boolean {

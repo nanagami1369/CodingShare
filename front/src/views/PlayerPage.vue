@@ -4,6 +4,7 @@
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
       <VideoInfoViewer :videoInfo="player.videoInfo" />
+      <textarea id="background-editor-aria"></textarea>
       <button
         @click="backToTheBeginning"
         class="player-control-button"
@@ -33,6 +34,13 @@
         :disabled="!player.isLoaded"
       >
         <FontAwesomeIcon icon="step-forward" />
+      </button>
+      <button
+        class="player-control-button"
+        @click="fastForward"
+        :disabled="!player.isLoaded"
+      >
+        <FontAwesomeIcon icon="fast-forward" />
       </button>
       <p>速度</p>
       <VueSlider
@@ -85,12 +93,14 @@ import {
   faPause,
   faUndo,
   faStepForward,
+  faFastForward,
 } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faPlay, faPause, faUndo, faStepForward)
+library.add(faPlay, faPause, faUndo, faStepForward, faFastForward)
 
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
+  backgroundEditor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
   speedSliderIndex: string[]
@@ -151,7 +161,7 @@ export default Vue.extend({
       }
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
-      this.player.load(video, this.editor)
+      this.player.load(video, this.editor, this.backgroundEditor)
     },
     start: function (): void {
       this.player.start(this.editor)
@@ -165,8 +175,20 @@ export default Vue.extend({
     stepForward: function (): void {
       this.player.stepForward(this.editor)
     },
+    fastForward: function (): void {
+      this.player.fastForward(this.editor)
+    },
   },
   mounted() {
+    // 裏で動かす用のエディタ
+    const backgroundEditorArea: HTMLTextAreaElement | null =
+      document.querySelector('#background-editor-aria')
+    if (backgroundEditorArea == null) {
+      throw new Error('textarea not found for Background CodeMirror')
+    }
+    this.backgroundEditor = CodeMirror.fromTextArea(backgroundEditorArea)
+    this.backgroundEditor.setSize('0px', '0px')
+    // 画面を再生する用のエディタ
     const editorAria: HTMLTextAreaElement | null =
       document.querySelector('#editor-aria')
     if (editorAria == null) {

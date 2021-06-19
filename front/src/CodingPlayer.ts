@@ -4,6 +4,7 @@ import CodeMirror from 'codemirror'
 import { VideoInfo } from './models/VideoInfo'
 import { PlayerInfo } from '@/models/PlayerInfo'
 import { CodingSequence } from './models/CodingSequence'
+import { Snapshot } from './models/Snapshot'
 export class CodingPlayer {
   private _stream: CodingStream | undefined
   private _info: PlayerInfo = {
@@ -11,6 +12,8 @@ export class CodingPlayer {
     totalTime: 0,
     speed: 100,
   }
+  private _snapshot: Snapshot[] = []
+
   private _currentTimeoutId = -1
   public set currentTimeoutId(value: number) {
     this._currentTimeoutId = value
@@ -35,7 +38,20 @@ export class CodingPlayer {
     this._info.elapsedTime = stream.current.timestamp
   }
 
-  public load(video: Video, editor: CodeMirror.Editor | undefined): void {
+  public load(
+    video: Video,
+    editor: CodeMirror.Editor | undefined,
+    backgroundEditor: CodeMirror.Editor | undefined
+  ): void {
+    // スナップショット作成
+    if (backgroundEditor == null) {
+      throw new Error('backgroundEditor is undefined')
+    }
+    setTimeout(() => {
+      this._snapshot = this.createSnapshot(video, backgroundEditor)
+      console.log(this._snapshot)
+    }, 0)
+    // エディタ準備
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -133,6 +149,19 @@ export class CodingPlayer {
     this._stream.next()
   }
 
+  public fastForward(editor: CodeMirror.Editor | undefined): void {
+    if (editor == null) {
+      throw new Error('editor is undefined')
+    }
+    if (this._stream == undefined) {
+      throw new Error('video is not Load')
+    }
+    this.pause()
+    editor.setValue(this._snapshot.slice(-1)[0].value)
+    this._info.elapsedTime = this._stream.videoInfo.recordingTime
+    this._stream.seek(this._stream.length - 1)
+  }
+
   private readAndExecCodingSequence(
     editor: CodeMirror.Editor,
     codingSequence: CodingSequence
@@ -146,6 +175,22 @@ export class CodingPlayer {
     }
   }
 
+  private createSnapshot(video: Video, editor: CodeMirror.Editor): Snapshot[] {
+    const stream = new CodingStream(video)
+    const snapshots: Snapshot[] = []
+    this.readAndExecCodingSequence(editor, stream.current)
+    const fastData = editor.getValue()
+    snapshots.push(new Snapshot(fastData))
+    while (stream.to != undefined) {
+      this.readAndExecCodingSequence(editor, stream.current)
+      stream.next()
+    }
+    const lastData = editor.getValue()
+    editor.setValue('')
+    snapshots.push(new Snapshot(lastData))
+    return snapshots
+  }
+
   public get videoInfo(): VideoInfo | undefined {
     return this._stream?.videoInfo
   }
@@ -155,7 +200,7 @@ export class CodingPlayer {
   }
 
   public get isLoaded(): boolean {
-    return this._stream !== undefined
+    return this._stream != null && this._snapshot != null
   }
 }
 
