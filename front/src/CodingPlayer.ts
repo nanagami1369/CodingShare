@@ -48,7 +48,7 @@ export class CodingPlayer {
       throw new Error('backgroundEditor is undefined')
     }
     setTimeout(() => {
-      this._snapshot = this.createSnapshot(video, backgroundEditor)
+      this._snapshot = createSnapshot(video, backgroundEditor)
       console.log(this._snapshot)
     }, 0)
     // エディタ準備
@@ -162,22 +162,6 @@ export class CodingPlayer {
     this._stream.seek(this._stream.length - 1)
   }
 
-  private createSnapshot(video: Video, editor: CodeMirror.Editor): Snapshot[] {
-    const stream = new CodingStream(video)
-    const snapshots: Snapshot[] = []
-    readAndExecCodingSequence(editor, stream.current)
-    const fastData = editor.getValue()
-    snapshots.push(new Snapshot(fastData))
-    while (stream.to != undefined) {
-      readAndExecCodingSequence(editor, stream.current)
-      stream.next()
-    }
-    const lastData = editor.getValue()
-    editor.setValue('')
-    snapshots.push(new Snapshot(lastData))
-    return snapshots
-  }
-
   public get videoInfo(): VideoInfo | undefined {
     return this._stream?.videoInfo
   }
@@ -214,4 +198,23 @@ const readAndExecCodingSequence = (
   if (codingSequence.cursor != undefined) {
     editor.setCursor(codingSequence.cursor)
   }
+}
+
+const createSnapshot = (
+  video: Video,
+  editor: CodeMirror.Editor
+): Snapshot[] => {
+  const stream = new CodingStream(video)
+  const snapshots: Snapshot[] = []
+  readAndExecCodingSequence(editor, stream.current)
+  const fastData = editor.getValue()
+  snapshots.push(new Snapshot(fastData))
+  while (stream.to != undefined) {
+    readAndExecCodingSequence(editor, stream.current)
+    stream.next()
+  }
+  const lastData = editor.getValue()
+  editor.setValue('')
+  snapshots.push(new Snapshot(lastData))
+  return snapshots
 }
