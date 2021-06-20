@@ -4,7 +4,7 @@ export type VideoInfo = {
   userId: number
   title: string
   name: string
-  language: Language | undefined
+  language?: Language
   uploadTime: number
   recordingTime: number
 }

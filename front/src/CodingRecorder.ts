@@ -9,7 +9,7 @@ export class CodingRecorder {
   private _isRecording = false
   private _uploadTime = -1
 
-  public register(editor: CodeMirror.Editor | undefined): void {
+  public register(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -24,7 +24,7 @@ export class CodingRecorder {
     )
   }
 
-  public unregister(editor: CodeMirror.Editor | undefined): void {
+  public unregister(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -57,7 +57,7 @@ export class CodingRecorder {
     }
   }
 
-  public start(editor: CodeMirror.Editor | undefined): void {
+  public start(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
