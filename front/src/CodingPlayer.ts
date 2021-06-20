@@ -62,7 +62,8 @@ export class CodingPlayer {
     }
     editor.setOption('mode', language.tag)
     editor.setValue('')
-    this._stream = this._stream.toNormalization(500)
+    const normalizationVideo = NormalizationForVideo(500, video)
+    this._stream = new CodingStream(normalizationVideo)
     this._info.totalTime = this._stream.videoInfo.recordingTime
     // 最初の要素を描画
     readAndExecCodingSequence(editor, this._stream.current)
@@ -217,4 +218,56 @@ const createSnapshot = (
   editor.setValue('')
   snapshots.push(new Snapshot(lastData))
   return snapshots
+}
+
+const getNextTimeSpan = (timestamp: number, timeSpan: number): number => {
+  timestamp
+  return Math.floor(timestamp / timeSpan) * timeSpan + timeSpan
+}
+
+const createNonCodingSequence = (timestamp: number): CodingSequence => {
+  return new CodingSequence(timestamp, undefined, undefined)
+}
+
+const NormalizationForVideo = (timeSpan: number, video: Video): Video => {
+  const processingVideo = JSON.parse(JSON.stringify(video)) as Video
+
+  // 最後の要素のTimestampがTimeSpanで割り切れる数字になるように調整
+  const recordingTime = getNextTimeSpan(
+    processingVideo.value.slice(-1)[0].timestamp,
+    timeSpan
+  )
+  if (processingVideo.value.slice(-1)[0].timestamp !== recordingTime) {
+    processingVideo.value.push(createNonCodingSequence(recordingTime))
+  }
+
+  //最後の要素のTimestamp を書き換えたものに調整
+  const header = processingVideo.header
+  header.recordingTime = recordingTime
+
+  // 正規化
+  const codingSequence: CodingSequence[] = []
+  let index = 0
+  // prettier-ignore
+  for (let timestamp = timeSpan; timestamp <= recordingTime; timestamp += timeSpan) {
+
+    // TimeSpanと次のTimeSpanの間に入るCodingSequenceを追加
+    while (timestamp > processingVideo.value[index].timestamp) {
+      codingSequence.push(processingVideo.value[index])
+      index++
+    }
+
+    // TimeSpanにCodingSequenceがあれば追加，なければ空のCodingSequenceを追加する
+    if (timestamp === processingVideo.value[index].timestamp) {
+      codingSequence.push(processingVideo.value[index])
+      index++
+    } else {
+      codingSequence.push(createNonCodingSequence(timestamp))
+    }
+  }
+
+  return {
+    header: processingVideo.header,
+    value: codingSequence,
+  }
 }
