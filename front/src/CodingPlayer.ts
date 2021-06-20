@@ -138,8 +138,8 @@ export class CodingPlayer {
     this.pause()
     while (
       this._stream.to != undefined &&
-      this._stream.current.changeData == undefined &&
-      this._stream.current.cursor == undefined
+      this._stream.current.changeData == null &&
+      this._stream.current.cursor == null
     ) {
       console.log(this._stream.current)
       this._stream.next()
@@ -192,11 +192,11 @@ const readAndExecCodingSequence = (
   editor: CodeMirror.Editor,
   codingSequence: CodingSequence
 ) => {
-  if (codingSequence.changeData != undefined) {
+  if (codingSequence.changeData != null) {
     const { text, from, to, origin } = codingSequence.changeData
     editor.replaceRange(text, from, to, origin)
   }
-  if (codingSequence.cursor != undefined) {
+  if (codingSequence.cursor != null) {
     editor.setCursor(codingSequence.cursor)
   }
 }
@@ -226,7 +226,7 @@ const getNextTimeSpan = (timestamp: number, timeSpan: number): number => {
 }
 
 const createNonCodingSequence = (timestamp: number): CodingSequence => {
-  return { timestamp: timestamp, changeData: undefined, cursor: undefined }
+  return { timestamp: timestamp, changeData: null, cursor: null }
 }
 
 const NormalizationForVideo = (timeSpan: number, video: Video): Video => {

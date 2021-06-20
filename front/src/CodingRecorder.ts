@@ -96,8 +96,8 @@ export class CodingRecorder {
     const recordingTime = time - this._timer
     const lastCodingSequence: CodingSequence = {
       timestamp: recordingTime,
-      changeData: undefined,
-      cursor: undefined,
+      changeData: null,
+      cursor: null,
     }
     this._video.push(lastCodingSequence)
   }
