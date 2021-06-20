@@ -6,7 +6,7 @@ import { PlayerInfo } from '@/models/PlayerInfo'
 import { CodingSequence } from './models/CodingSequence'
 import { Snapshot } from './models/Snapshot'
 export class CodingPlayer {
-  private _stream: CodingStream | undefined
+  private _stream?: CodingStream
   private _info: PlayerInfo = {
     elapsedTime: 0,
     totalTime: 0,
@@ -40,8 +40,8 @@ export class CodingPlayer {
 
   public load(
     video: Video,
-    editor: CodeMirror.Editor | undefined,
-    backgroundEditor: CodeMirror.Editor | undefined
+    editor?: CodeMirror.Editor,
+    backgroundEditor?: CodeMirror.Editor
   ): void {
     // スナップショット作成
     if (backgroundEditor == null) {
@@ -71,7 +71,7 @@ export class CodingPlayer {
     this._stream.next()
   }
 
-  public start(editor: CodeMirror.Editor | undefined): void {
+  public start(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -112,7 +112,7 @@ export class CodingPlayer {
     this.isPlay = false
   }
 
-  public backToTheBeginning(editor: CodeMirror.Editor | undefined): void {
+  public backToTheBeginning(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -128,7 +128,7 @@ export class CodingPlayer {
     this._stream.next()
   }
 
-  public stepForward(editor: CodeMirror.Editor | undefined): void {
+  public stepForward(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -150,7 +150,7 @@ export class CodingPlayer {
     this._stream.next()
   }
 
-  public fastForward(editor: CodeMirror.Editor | undefined): void {
+  public fastForward(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
