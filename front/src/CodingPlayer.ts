@@ -226,7 +226,7 @@ const getNextTimeSpan = (timestamp: number, timeSpan: number): number => {
 }
 
 const createNonCodingSequence = (timestamp: number): CodingSequence => {
-  return new CodingSequence(timestamp, undefined, undefined)
+  return { timestamp: timestamp, changeData: undefined, cursor: undefined }
 }
 
 const NormalizationForVideo = (timeSpan: number, video: Video): Video => {
