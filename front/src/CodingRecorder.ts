@@ -47,7 +47,11 @@ export class CodingRecorder {
     if (this._isRecording) {
       const cursor = editor.getCursor()
       const time = new Date().getTime() - this._timer
-      const codingSequence = new CodingSequence(time, changeObj, cursor)
+      const codingSequence: CodingSequence = {
+        timestamp: time,
+        changeData: changeObj,
+        cursor: cursor,
+      }
       this._video.push(codingSequence)
       console.log(JSON.stringify(codingSequence))
     }
@@ -73,9 +77,12 @@ export class CodingRecorder {
       removed: [''],
       origin: '+input',
     }
-    this._video.push(
-      new CodingSequence(startTimestamp, startChangeData, startCursor)
-    )
+    const startCodingSequence: CodingSequence = {
+      timestamp: startTimestamp,
+      changeData: startChangeData,
+      cursor: startCursor,
+    }
+    this._video.push(startCodingSequence)
     this._isRecording = true
     this._timer = new Date().getTime()
   }
@@ -87,7 +94,12 @@ export class CodingRecorder {
     const time = new Date().getTime()
     this._uploadTime = time
     const recordingTime = time - this._timer
-    this._video.push(new CodingSequence(recordingTime, undefined, undefined))
+    const lastCodingSequence: CodingSequence = {
+      timestamp: recordingTime,
+      changeData: undefined,
+      cursor: undefined,
+    }
+    this._video.push(lastCodingSequence)
   }
 
   public outputVideo(
