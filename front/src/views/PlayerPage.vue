@@ -155,7 +155,7 @@ export default Vue.extend({
     loadData: async function (event: Event): Promise<void> {
       const target = event.target as HTMLInputElement
       const file = target.files?.item(0)
-      if (file == undefined || file == null) {
+      if (file == null) {
         // ファイルがなければ何もしない
         return
       }

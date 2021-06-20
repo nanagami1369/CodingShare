@@ -57,7 +57,7 @@ export class CodingPlayer {
     }
     this._stream = new CodingStream(video)
     const { language } = video.header
-    if (language == undefined) {
+    if (language == null) {
       throw new Error('video is not language data')
     }
     editor.setOption('mode', language.tag)
@@ -75,12 +75,12 @@ export class CodingPlayer {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
-    if (this._stream == undefined) {
+    if (this._stream == null) {
       throw new Error('video is not Load')
     }
     this._isPlay = true
     doSomethingLoop(this, (): { isNext: boolean; nextSpan: number } => {
-      if (this._stream == undefined) {
+      if (this._stream == null) {
         throw new Error('video is not Load')
       }
       if (!this.isPlay) {
@@ -90,7 +90,7 @@ export class CodingPlayer {
       this.setElapsedTime(this._stream)
       this._stream.next()
       const isNext = this._stream.isNext()
-      if (this._stream.to === undefined) {
+      if (this._stream.to == null) {
         // 次の要素が無いので最後の要素を表示して終了
         console.log('終了')
         readAndExecCodingSequence(editor, this._stream.current)
@@ -116,7 +116,7 @@ export class CodingPlayer {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
-    if (this._stream == undefined) {
+    if (this._stream == null) {
       throw new Error('video is not Load')
     }
     this.pause()
@@ -132,12 +132,12 @@ export class CodingPlayer {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
-    if (this._stream == undefined) {
+    if (this._stream == null) {
       throw new Error('video is not Load')
     }
     this.pause()
     while (
-      this._stream.to != undefined &&
+      this._stream.to != null &&
       this._stream.current.changeData == null &&
       this._stream.current.cursor == null
     ) {
@@ -154,7 +154,7 @@ export class CodingPlayer {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
-    if (this._stream == undefined) {
+    if (this._stream == null) {
       throw new Error('video is not Load')
     }
     this.pause()
@@ -210,7 +210,7 @@ const createSnapshot = (
   readAndExecCodingSequence(editor, stream.current)
   const fastData = editor.getValue()
   snapshots.push(new Snapshot(fastData))
-  while (stream.to != undefined) {
+  while (stream.to != null) {
     readAndExecCodingSequence(editor, stream.current)
     stream.next()
   }
