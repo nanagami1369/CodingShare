@@ -3,8 +3,6 @@
     <div id="side-panel">
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
-      <VideoInfoViewer :videoInfo="player.videoInfo" />
-      <textarea id="background-editor-aria"></textarea>
       <button
         @click="backToTheBeginning"
         class="player-control-button"
@@ -57,6 +55,8 @@
         :lazy="true"
         :contained="true"
       />
+      <VideoInfoViewer :videoInfo="player.videoInfo" />
+      <textarea id="background-editor-aria"></textarea>
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -233,5 +233,9 @@ h1 {
 
 .player-control-button:active {
   border: solid 2px #222222;
+}
+
+input[type='file'] {
+  padding: 20px 0px;
 }
 </style>
