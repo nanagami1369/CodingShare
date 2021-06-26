@@ -4,6 +4,7 @@
     :adaptive="true"
     :clickToClose="false"
     :scrollable="true"
+    :height="350"
   >
     <ValidationObserver :immediate="true" v-slot="{ invalid }">
       <div class="save-video-modal">
@@ -30,6 +31,8 @@
             <span class="error-message">{{ errors[0] }}</span>
           </ValidationProvider>
         </label>
+        <label>コメント</label>
+        <textarea rows="5" resize="none" v-model="data.comment"></textarea>
         <button
           class="submit-button"
           type="button"
@@ -74,6 +77,7 @@ export default Vue.extend({
       data: {
         name: '',
         title: '',
+        comment: '',
       },
     }
   },
@@ -84,6 +88,7 @@ export default Vue.extend({
       this.data = {
         name: '',
         title: '',
+        comment: '',
       }
     },
     cancel: function (): void {
@@ -92,6 +97,7 @@ export default Vue.extend({
       this.data = {
         name: '',
         title: '',
+        comment: '',
       }
     },
   },

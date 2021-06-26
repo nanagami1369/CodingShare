@@ -3,60 +3,62 @@
     <div id="side-panel">
       <h1>Player</h1>
       <input type="file" @change="loadData" value="読み込み" />
+      <div class="player-control">
+        <button
+          @click="backToTheBeginning"
+          class="player-control-button"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="undo" />
+        </button>
+        <button
+          v-if="player.isPlay"
+          @click="pouse"
+          class="player-control-button"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="pause" />
+        </button>
+        <button
+          v-else
+          @click="start"
+          class="player-control-button"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="play" />
+        </button>
+        <button
+          class="player-control-button"
+          @click="stepForward"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="step-forward" />
+        </button>
+        <button
+          class="player-control-button"
+          @click="fastForward"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="fast-forward" />
+        </button>
+        <p>速度</p>
+        <VueSlider
+          :style="{ padding: '1em 2em' }"
+          :process-style="{ backgroundColor: '#28e270' }"
+          :tooltip-style="{
+            backgroundColor: '#116230',
+            borderColor: '#116230',
+          }"
+          :data="speedSliderIndex"
+          v-model="speed"
+          :marks="true"
+          :adsorb="true"
+          :lazy="true"
+          :contained="true"
+        />
+      </div>
       <VideoInfoViewer :videoInfo="player.videoInfo" />
       <textarea id="background-editor-aria"></textarea>
-      <button
-        @click="backToTheBeginning"
-        class="player-control-button"
-        :disabled="!player.isLoaded"
-      >
-        <FontAwesomeIcon icon="undo" />
-      </button>
-      <button
-        v-if="player.isPlay"
-        @click="pouse"
-        class="player-control-button"
-        :disabled="!player.isLoaded"
-      >
-        <FontAwesomeIcon icon="pause" />
-      </button>
-      <button
-        v-else
-        @click="start"
-        class="player-control-button"
-        :disabled="!player.isLoaded"
-      >
-        <FontAwesomeIcon icon="play" />
-      </button>
-      <button
-        class="player-control-button"
-        @click="stepForward"
-        :disabled="!player.isLoaded"
-      >
-        <FontAwesomeIcon icon="step-forward" />
-      </button>
-      <button
-        class="player-control-button"
-        @click="fastForward"
-        :disabled="!player.isLoaded"
-      >
-        <FontAwesomeIcon icon="fast-forward" />
-      </button>
-      <p>速度</p>
-      <VueSlider
-        :style="{ padding: '1em 2em' }"
-        :process-style="{ backgroundColor: '#28e270' }"
-        :tooltip-style="{
-          backgroundColor: '#116230',
-          borderColor: '#116230',
-        }"
-        :data="speedSliderIndex"
-        v-model="speed"
-        :marks="true"
-        :adsorb="true"
-        :lazy="true"
-        :contained="true"
-      />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -233,5 +235,9 @@ h1 {
 
 .player-control-button:active {
   border: solid 2px #222222;
+}
+
+input[type='file'] {
+  padding: 20px 0px;
 }
 </style>
