@@ -106,7 +106,8 @@ export class CodingRecorder {
     userId: number,
     name: string,
     title: string,
-    language: Language
+    language: Language,
+    comment: string
   ): Video {
     if (this._video.length == 0) {
       throw new Error('video is not found')
@@ -123,6 +124,7 @@ export class CodingRecorder {
         title: title,
         language: language,
         uploadTime: this._uploadTime,
+        comment: comment,
         recordingTime: video.slice(-1)[0].timestamp,
       },
       value: video,

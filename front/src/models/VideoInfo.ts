@@ -7,4 +7,5 @@ export type VideoInfo = {
   language?: Language
   uploadTime: number
   recordingTime: number
+  comment: string
 }

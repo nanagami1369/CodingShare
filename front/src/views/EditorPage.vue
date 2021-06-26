@@ -103,7 +103,8 @@ export default Vue.extend({
         -1,
         data.name,
         data.title,
-        this.selectedLanguage
+        this.selectedLanguage,
+        data.comment
       )
       var url = (window.URL || window.webkitURL).createObjectURL(
         new Blob([JSON.stringify(video)], { type: 'application/json' })
