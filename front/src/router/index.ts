@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../views/HomePage.vue'
+import NotFoundPage from '../views/NotFoundPage.vue'
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,11 @@ const routes: Array<RouteConfig> = [
     path: '/player',
     name: 'Player',
     component: () => import('../views/PlayerPage.vue'),
+  },
+  {
+    path: '*',
+    name: 'NotFound',
+    component: NotFoundPage,
   },
 ]
 
