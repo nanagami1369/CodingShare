@@ -48,8 +48,8 @@ export class CodingPlayer {
       throw new Error('backgroundEditor is undefined')
     }
     setTimeout(() => {
-      this._snapshot = createSnapshot(video, backgroundEditor)
-      console.log(this._snapshot)
+      this._snapshot = createSnapshot(backgroundEditor, video, 3)
+      this._snapshot.forEach((x) => console.log(x.value))
     }, 0)
     // エディタ準備
     if (editor == null) {
@@ -200,23 +200,50 @@ const readAndExecCodingSequence = (
     editor.setCursor(codingSequence.cursor)
   }
 }
+/**
+  差分が記録されているcodingSequenceからスナップショットを作成する
+  デフォルトで差分は初期状態と最終状態の２つ作成される
+  divisionNumberを設定すると更に分割してスナップショットを作成する
+  例：divisionNumber=0 (開始地点と最終地点) スナップショットの数 2
+  |-----------------------------------|
+  例：divisionNumber=1 (開始地点と最終地点とその間に1) スナップショットの数 3
+  |-----------------|-----------------|
+  例：divisionNumber=2 (開始地点と最終地点とその間に2) スナップショットの数 4
+  |-----------|-----------|-----------|
+  @param divisionNumber 分割数 初期値=0
+**/
 
-const createSnapshot = (
+export const createSnapshot = (
+  editor: CodeMirror.Editor,
   video: Video,
-  editor: CodeMirror.Editor
+  divisionNumber = 0
 ): Snapshot[] => {
+  // 分割数 + 1 (最後の要素)
+  const size = divisionNumber + 1
+  // 分割するタイミング
+  const span = Math.floor(video.header.recordingTime / size)
+
   const stream = new CodingStream(video)
   const snapshots: Snapshot[] = []
   readAndExecCodingSequence(editor, stream.current)
+  // 開始地点
+  let time = span
   const fastData = editor.getValue()
-  snapshots.push(new Snapshot(fastData))
+  const fastTimestamp = 0
+  snapshots.push(new Snapshot(fastTimestamp, fastData))
+  // 途中
   while (stream.to != null) {
+    if (stream.current.timestamp > time) {
+      snapshots.push(new Snapshot(time, editor.getValue()))
+      time += span
+    }
     readAndExecCodingSequence(editor, stream.current)
     stream.next()
   }
+  // 最終地点
   const lastData = editor.getValue()
   editor.setValue('')
-  snapshots.push(new Snapshot(lastData))
+  snapshots.push(new Snapshot(stream.videoInfo.recordingTime, lastData))
   return snapshots
 }
 
