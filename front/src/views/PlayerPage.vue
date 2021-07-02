@@ -65,6 +65,7 @@
       <VideoSliderBar
         :elapsedTime="player.info.elapsedTime"
         :totalTime="player.info.totalTime"
+        :disabled="!player.isLoaded || player.isPlay"
       />
     </div>
   </div>
