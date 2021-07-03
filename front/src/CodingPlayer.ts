@@ -5,6 +5,8 @@ import { VideoInfo } from './models/VideoInfo'
 import { PlayerInfo } from '@/models/PlayerInfo'
 import { CodingSequence } from './models/CodingSequence'
 import { Snapshot } from './models/Snapshot'
+import { readAndExecCodingSequence } from '@/readAndExecCodingSequence'
+
 export class CodingPlayer {
   private _stream?: CodingStream
   private _info: PlayerInfo = {
@@ -188,18 +190,6 @@ function doSomethingLoop(
   }
 }
 
-const readAndExecCodingSequence = (
-  editor: CodeMirror.Editor,
-  codingSequence: CodingSequence
-) => {
-  if (codingSequence.changeData != null) {
-    const { text, from, to, origin } = codingSequence.changeData
-    editor.replaceRange(text, from, to, origin)
-  }
-  if (codingSequence.cursor != null) {
-    editor.setCursor(codingSequence.cursor)
-  }
-}
 /**
  * 差分が記録されているcodingSequenceからスナップショットを作成する
  * @param divisionNumber 分割数 初期値=0
