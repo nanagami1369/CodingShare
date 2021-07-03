@@ -238,36 +238,34 @@ export const createSnapshot = (
   return snapshots
 }
 
-const getNextTimeSpan = (timestamp: number, timeSpan: number): number => {
+const getPreviousTimeSpan = (timestamp: number, timeSpan: number): number => {
   timestamp
-  return Math.floor(timestamp / timeSpan) * timeSpan + timeSpan
+  return Math.ceil(timestamp / timeSpan) * timeSpan - timeSpan
 }
 
 const createNonCodingSequence = (timestamp: number): CodingSequence => {
   return { timestamp: timestamp, changeData: null, cursor: null }
 }
-
+/**
+ * @function NormalizationForVideo ビデオを正規化する
+ * timeSpanに合わせて空のCodingSequenceを入れるtimeSpanにCodingSequenceがある場合は何もしない
+ * @param timeSpan CodingSequenceを入れる間隔
+ * @param video 正規化処理を行う素となるVideo
+ * @returns 正規化処理が終わったVideo
+ */
 const NormalizationForVideo = (timeSpan: number, video: Video): Video => {
   const processingVideo = JSON.parse(JSON.stringify(video)) as Video
 
-  // 最後の要素のTimestampがTimeSpanで割り切れる数字になるように調整
-  const recordingTime = getNextTimeSpan(
+  // 正規化処理ができる範囲を調べる
+  const divisibleRecodingTime = getPreviousTimeSpan(
     processingVideo.value.slice(-1)[0].timestamp,
     timeSpan
   )
-  if (processingVideo.value.slice(-1)[0].timestamp !== recordingTime) {
-    processingVideo.value.push(createNonCodingSequence(recordingTime))
-  }
-
-  //最後の要素のTimestamp を書き換えたものに調整
-  const header = processingVideo.header
-  header.recordingTime = recordingTime
-
-  // 正規化
+  // 正規化処理
   const codingSequence: CodingSequence[] = []
   let index = 0
   // prettier-ignore
-  for (let timestamp = timeSpan; timestamp <= recordingTime; timestamp += timeSpan) {
+  for (let timestamp = timeSpan; timestamp <= divisibleRecodingTime; timestamp += timeSpan) {
 
     // TimeSpanと次のTimeSpanの間に入るCodingSequenceを追加
     while (timestamp > processingVideo.value[index].timestamp) {
@@ -283,7 +281,11 @@ const NormalizationForVideo = (timeSpan: number, video: Video): Video => {
       codingSequence.push(createNonCodingSequence(timestamp))
     }
   }
-
+  // 残ったCodingSequenceがあれば追加
+  while (index < processingVideo.value.length) {
+    codingSequence.push(processingVideo.value[index])
+    index++
+  }
   return {
     header: processingVideo.header,
     value: codingSequence,
