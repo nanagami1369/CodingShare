@@ -50,8 +50,7 @@ export class CodingPlayer {
       throw new Error('backgroundEditor is undefined')
     }
     setTimeout(() => {
-      this._snapshot = createSnapshot(backgroundEditor, video, 3)
-      this._snapshot.forEach((x) => console.log(x.value))
+      this._snapshot = createSnapshot(backgroundEditor, video, 30000)
     }, 0)
     // エディタ準備
     if (editor == null) {
@@ -191,50 +190,57 @@ function doSomethingLoop(
 }
 
 /**
- * 差分が記録されているcodingSequenceからスナップショットを作成する
- * @param divisionNumber 分割数 初期値=0
- * @example
- * デフォルトで差分は初期状態と最終状態の２つ作成される
- * divisionNumberを設定すると更に分割してスナップショットを作成する
- * 例：divisionNumber=0 (開始地点と最終地点) スナップショットの数 2
- * |-----------------------------------|
- * 例：divisionNumber=1 (開始地点と最終地点とその間に1) スナップショットの数 3
- * |-----------------|-----------------|
- * 例：divisionNumber=2 (開始地点と最終地点とその間に2) スナップショットの数 4
- * |-----------|-----------|-----------|
+ * @function createSnapshot CodingSequenceからスナップショットを作成する
+ * @description
+ * 差分は初期状態と最終状態の２つとTimeSpanの時間毎に作成される。
+ * CodingSequenceと同じタイミングでSnapshotが作成された場合CodingSequenceは実行されていないものとする
+ * @param editor CodingSequenseをテキスト形式に変換するのに使う
+ * @param video CodingSequenseを見るため
+ * @param timeSpan 何ミリ秒ごとにスナップショットを作成するか？
+ *
+ * @returns スナップショット
+ *
  */
 
 export const createSnapshot = (
   editor: CodeMirror.Editor,
   video: Video,
-  divisionNumber = 0
+  timeSpan: number
 ): Snapshot[] => {
-  // 分割数 + 1 (最後の要素)
-  const size = divisionNumber + 1
-  // 分割するタイミング
-  const span = Math.floor(video.header.recordingTime / size)
-
-  const stream = new CodingStream(video)
+  // 途中のスナップショットが作れる作成範囲を調べる
+  const CanBeCreatedRecodingTime = getPreviousTimeSpan(
+    video.value.slice(-1)[0].timestamp,
+    timeSpan
+  )
+  // 正規化処理
   const snapshots: Snapshot[] = []
-  readAndExecCodingSequence(editor, stream.current)
+  const stream = new CodingStream(video)
   // 開始地点
-  let time = span
+  readAndExecCodingSequence(editor, stream.current)
+  stream.next()
   const fastData = editor.getValue()
   const fastTimestamp = 0
   snapshots.push(new Snapshot(fastTimestamp, fastData))
-  // 途中
-  while (stream.to != null) {
-    if (stream.current.timestamp > time) {
-      snapshots.push(new Snapshot(time, editor.getValue()))
-      time += span
+  // prettier-ignore
+  for (let timestamp = timeSpan; timestamp <= CanBeCreatedRecodingTime; timestamp += timeSpan) {
+    // TimeSpanと次のTimeSpanの間に入るCodingSequenceを実行
+    while (timestamp > stream.current.timestamp) {
+      readAndExecCodingSequence(editor, stream.current)
+      stream.next()
     }
+    // Snapshotを作成し次の処理へ移動する
+    snapshots.push(new Snapshot(timestamp,editor.getValue()))
+  }
+  // 残ったCodingSequenceがあれば実行
+  while (stream.isNext()) {
     readAndExecCodingSequence(editor, stream.current)
     stream.next()
   }
   // 最終地点
   const lastData = editor.getValue()
+  snapshots.push(new Snapshot(video.header.recordingTime, lastData))
+  // エディタの初期化処理
   editor.setValue('')
-  snapshots.push(new Snapshot(stream.videoInfo.recordingTime, lastData))
   return snapshots
 }
 
