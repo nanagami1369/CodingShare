@@ -222,13 +222,11 @@ export const createSnapshot = (
   )
   // 正規化処理
   const snapshots: Snapshot[] = []
-  const stream = new CodingStream(video)
   // 開始地点
-  readAndExecCodingSequence(editor, stream.current)
-  stream.next()
-  const fastData = editor.getValue()
+  const fastTimeData = ''
   const fastTimestamp = 0
-  snapshots.push(new Snapshot(fastTimestamp, fastData))
+  snapshots.push(new Snapshot(fastTimestamp, fastTimeData))
+  const stream = new CodingStream(video)
   // prettier-ignore
   for (let timestamp = timeSpan; timestamp <= CanBeCreatedRecodingTime; timestamp += timeSpan) {
     // TimeSpanと次のTimeSpanの間に入るCodingSequenceを実行
