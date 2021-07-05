@@ -8,6 +8,7 @@ import { Snapshot } from './models/Snapshot'
 
 export class CodingPlayer {
   private _stream?: CodingStream
+  private _snapShotTimeSpan: number
   private _info: PlayerInfo = {
     elapsedTime: 0,
     totalTime: 0,
@@ -35,6 +36,10 @@ export class CodingPlayer {
     this._isPlay = value
   }
 
+  public constructor(snapShotTimeSpan: number) {
+    this._snapShotTimeSpan = snapShotTimeSpan
+  }
+
   private setElapsedTime(stream: CodingStream): void {
     this._info.elapsedTime = stream.current.timestamp
   }
@@ -49,7 +54,11 @@ export class CodingPlayer {
       throw new Error('backgroundEditor is undefined')
     }
     setTimeout(() => {
-      this._snapshot = createSnapshot(backgroundEditor, video, 30000)
+      this._snapshot = createSnapshot(
+        backgroundEditor,
+        video,
+        this._snapShotTimeSpan
+      )
     }, 0)
     // エディタ準備
     if (editor == null) {

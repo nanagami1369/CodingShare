@@ -129,6 +129,7 @@ export default Vue.extend({
     VueSlider,
   },
   data(): DataType {
+    const snapShotTimeSpan = 30000
     return {
       defualtConfig: {
         mode: 'javascript',
@@ -138,7 +139,7 @@ export default Vue.extend({
         showHint: true,
         readOnly: true,
       },
-      player: new CodingPlayer(),
+      player: new CodingPlayer(snapShotTimeSpan),
       speedSliderIndex: ['50%', '100%', '200%'],
     }
   },
