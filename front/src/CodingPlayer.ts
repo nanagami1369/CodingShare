@@ -193,8 +193,8 @@ function doSomethingLoop(
  * @description
  * 差分は初期状態と最終状態の２つとTimeSpanの時間毎に作成される。
  * CodingSequenceと同じタイミングでSnapshotが作成された場合CodingSequenceは実行されていないものとする
- * @param editor CodingSequenseをテキスト形式に変換するのに使う
- * @param video CodingSequenseを見るため
+ * @param editor CodingSequenceをテキスト形式に変換するのに使う
+ * @param video CodingSequenceを見るため
  * @param timeSpan 何ミリ秒ごとにスナップショットを作成するか？
  *
  * @returns スナップショット
