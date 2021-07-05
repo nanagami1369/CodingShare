@@ -5,7 +5,6 @@ import { VideoInfo } from './models/VideoInfo'
 import { PlayerInfo } from '@/models/PlayerInfo'
 import { CodingSequence } from './models/CodingSequence'
 import { Snapshot } from './models/Snapshot'
-import { readAndExecCodingSequence } from '@/readAndExecCodingSequence'
 
 export class CodingPlayer {
   private _stream?: CodingStream
@@ -242,6 +241,19 @@ export const createSnapshot = (
   // エディタの初期化処理
   editor.setValue('')
   return snapshots
+}
+
+const readAndExecCodingSequence = (
+  editor: CodeMirror.Editor,
+  codingSequence: CodingSequence
+): void => {
+  if (codingSequence.changeData != null) {
+    const { text, from, to, origin } = codingSequence.changeData
+    editor.replaceRange(text, from, to, origin)
+  }
+  if (codingSequence.cursor != null) {
+    editor.setCursor(codingSequence.cursor)
+  }
 }
 
 const getPreviousTimeSpan = (timestamp: number, timeSpan: number): number => {
