@@ -172,6 +172,48 @@ export class CodingPlayer {
     this._stream.seek(this._stream.length - 1)
   }
 
+  public move(time: number, editor?: CodeMirror.Editor): void {
+    if (editor == null) {
+      throw new Error('editor is undefined')
+    }
+    if (this._stream == null) {
+      throw new Error('stream is undefined')
+    }
+    let snapshot: Snapshot | null = null
+    // スナップショットを展開
+    if (time === this.videoInfo?.recordingTime) {
+      snapshot = this._snapshot.slice(-1)[0]
+      editor.setValue(snapshot.value)
+      return
+    }
+
+    const snapshotIndex = getClosestTimeSpanIndex(time, this._snapShotTimeSpan)
+    snapshot = this._snapshot[snapshotIndex]
+    editor.setValue(snapshot.value)
+    const { index, indexStatus } = identificationBetweenSequences(
+      snapshot.timestamp,
+      this._stream
+    )
+    switch (indexStatus) {
+      case 'None':
+        // 基本的にこのエラーは出ない
+        throw new Error('データが見つかりませんでした')
+      case 'Equals':
+        this._stream?.seek(index)
+        break
+      case 'Greater':
+        this._stream.seek(index + 1)
+        break
+      case 'Smaller':
+        this._stream.seek(index)
+        break
+    }
+    while (this._stream.to != null && this._stream.current.timestamp <= time) {
+      readAndExecCodingSequence(editor, this._stream.current)
+      this._stream.next()
+    }
+  }
+
   public get videoInfo(): VideoInfo | undefined {
     return this._stream?.videoInfo
   }
@@ -195,6 +237,45 @@ function doSomethingLoop(
       doSomethingLoop(player, doSomething)
     }, nextSpan)
   }
+}
+
+type IndexStatus = 'None' | 'Equals' | 'Smaller' | 'Greater'
+
+function identificationBetweenSequences(
+  searchValue: number,
+  stream: CodingStream
+): { index: number; indexStatus: IndexStatus } {
+  const currentIndex = stream.index
+  let range = stream.length / 2
+  let rowIndex = range
+  let index = Math.ceil(rowIndex)
+  stream.seek(index)
+  let value = stream.current.timestamp
+  let previousValue = -1
+  let indexStatus: IndexStatus = 'None'
+  while (previousValue !== value) {
+    previousValue = value
+    range /= 2
+    if (value == searchValue) {
+      indexStatus = 'Equals'
+      break
+    }
+    if (value > searchValue) {
+      rowIndex -= range
+      index = Math.ceil(rowIndex)
+      stream.seek(index)
+      value = stream.current.timestamp
+      indexStatus = 'Smaller'
+    } else {
+      rowIndex += range
+      index = Math.ceil(rowIndex)
+      stream.seek(index)
+      value = stream.current.timestamp
+      indexStatus = 'Greater'
+    }
+  }
+  stream.seek(currentIndex)
+  return { index, indexStatus }
 }
 
 /**
@@ -273,6 +354,18 @@ const getPreviousTimeSpan = (timestamp: number, timeSpan: number): number => {
 const createNonCodingSequence = (timestamp: number): CodingSequence => {
   return { timestamp: timestamp, changeData: null, cursor: null }
 }
+
+const getClosestTimeSpanIndex = (
+  timestamp: number,
+  timeSpan: number
+): number => {
+  const divisibleTimeSpan = Math.ceil(timestamp / timeSpan) * timeSpan
+  if (divisibleTimeSpan == timestamp) {
+    return Math.ceil(timestamp / timeSpan)
+  }
+  return Math.ceil(timestamp / timeSpan) - 1
+}
+
 /**
  * @function NormalizationForVideo ビデオを正規化する
  * timeSpanに合わせて空のCodingSequenceを入れるtimeSpanにCodingSequenceがある場合は何もしない

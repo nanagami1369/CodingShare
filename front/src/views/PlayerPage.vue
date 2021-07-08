@@ -66,6 +66,7 @@
         :elapsedTime="player.info.elapsedTime"
         :totalTime="player.info.totalTime"
         :disabled="!player.isLoaded || player.isPlay"
+        @change="move"
       />
     </div>
   </div>
@@ -181,6 +182,9 @@ export default Vue.extend({
     },
     fastForward: function (): void {
       this.player.fastForward(this.editor)
+    },
+    move: function (time: number): void {
+      this.player.move(time, this.editor)
     },
   },
   mounted() {
