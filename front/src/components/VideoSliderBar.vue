@@ -23,6 +23,7 @@
         height: '1em',
         'border-radius': '0px',
       }"
+      @change="change"
     />
     <span class="elapsedTime">{{ playbackPosition }}</span>
   </div>
@@ -66,6 +67,10 @@ export default Vue.extend({
     tooltipFormatter: function (value: number): string {
       return format(value, 'mm:ss')
     },
+    change: function (time: number): void {
+      this.$emit('change', time)
+    },
+  },
   watch: {
     elapsedTime: function (newElapsedTime: number): void {
       this.value = newElapsedTime
