@@ -65,6 +65,8 @@
       <VideoSliderBar
         :elapsedTime="player.info.elapsedTime"
         :totalTime="player.info.totalTime"
+        :disabled="!player.isLoaded || player.isPlay"
+        @change="move"
       />
     </div>
   </div>
@@ -128,6 +130,7 @@ export default Vue.extend({
     VueSlider,
   },
   data(): DataType {
+    const snapShotTimeSpan = 30000
     return {
       defualtConfig: {
         mode: 'javascript',
@@ -137,7 +140,7 @@ export default Vue.extend({
         showHint: true,
         readOnly: true,
       },
-      player: new CodingPlayer(),
+      player: new CodingPlayer(snapShotTimeSpan),
       speedSliderIndex: ['50%', '100%', '200%'],
     }
   },
@@ -179,6 +182,9 @@ export default Vue.extend({
     },
     fastForward: function (): void {
       this.player.fastForward(this.editor)
+    },
+    move: function (time: number): void {
+      this.player.move(time, this.editor)
     },
   },
   mounted() {

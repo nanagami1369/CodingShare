@@ -1,3 +1,3 @@
 export class Snapshot {
-  constructor(public value: string) {}
+  constructor(public timestamp: number, public value: string) {}
 }
