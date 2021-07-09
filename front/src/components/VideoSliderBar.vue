@@ -2,7 +2,7 @@
   <div class="slider-component">
     <VueSlider
       :lazy="true"
-      v-model="elapsedTimePositon"
+      v-model="value"
       :max="totalTime"
       :disabled="disabled"
       :tooltip-formatter="tooltipFormatter"
@@ -23,6 +23,7 @@
         height: '1em',
         'border-radius': '0px',
       }"
+      @change="change"
     />
     <span class="elapsedTime">{{ playbackPosition }}</span>
   </div>
@@ -31,6 +32,9 @@
 import { format } from 'date-fns'
 import VueSlider from 'vue-slider-component'
 import Vue from 'vue'
+
+type DataType = { value: number }
+
 export default Vue.extend({
   name: 'VideoSliderBar',
   components: {
@@ -50,23 +54,26 @@ export default Vue.extend({
       default: false,
     },
   },
+  data(): DataType {
+    return { value: 0 }
+  },
   computed: {
     playbackPosition: function (): string {
       // prettier-ignore
       return `${format(this.elapsedTime, 'mm:ss')}/${format(this.totalTime,'mm:ss')}`
     },
-    elapsedTimePositon: {
-      get: function (): number {
-        return this.elapsedTime
-      },
-      set: function (value: number): void {
-        // 入れられても困るので何もしない
-      },
-    },
   },
   methods: {
     tooltipFormatter: function (value: number): string {
       return format(value, 'mm:ss')
+    },
+    change: function (time: number): void {
+      this.$emit('change', time)
+    },
+  },
+  watch: {
+    elapsedTime: function (newElapsedTime: number): void {
+      this.value = newElapsedTime
     },
   },
 })
