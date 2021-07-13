@@ -184,6 +184,7 @@ export class CodingPlayer {
     if (time === this.videoInfo?.recordingTime) {
       snapshot = this._snapshot.slice(-1)[0]
       editor.setValue(snapshot.value)
+      this._stream.seek(this._stream.length - 1)
       return
     }
 
