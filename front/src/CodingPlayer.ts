@@ -191,6 +191,7 @@ export class CodingPlayer {
     if (time === 0) {
       snapshot = this._snapshot[0]
       editor.setValue(snapshot.value)
+      this._stream.reset()
       this._stream.next()
       return
     }
