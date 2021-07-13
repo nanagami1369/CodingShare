@@ -188,6 +188,13 @@ export class CodingPlayer {
       return
     }
 
+    if (time === 0) {
+      snapshot = this._snapshot[0]
+      editor.setValue(snapshot.value)
+      this._stream.next()
+      return
+    }
+
     const snapshotIndex = getClosestTimeSpanIndex(time, this._snapShotTimeSpan)
     snapshot = this._snapshot[snapshotIndex]
     editor.setValue(snapshot.value)
