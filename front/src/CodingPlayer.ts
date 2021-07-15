@@ -5,6 +5,7 @@ import { VideoInfo } from './models/VideoInfo'
 import { PlayerInfo } from '@/models/PlayerInfo'
 import { CodingSequence } from './models/CodingSequence'
 import { Snapshot } from './models/Snapshot'
+import NormalizationWorker from 'worker-loader!@/worker/Normalization.worker.ts'
 import { getPreviousTimeSpan } from './getPreviousTimeSpan'
 
 export class CodingPlayer {
@@ -50,35 +51,50 @@ export class CodingPlayer {
     editor?: CodeMirror.Editor,
     backgroundEditor?: CodeMirror.Editor
   ): void {
+    console.time('total time')
+    const worker = new NormalizationWorker()
+    worker.onmessage = (message: MessageEvent<Video>) => {
+      const normalizationVideo = message.data
+      this._stream = new CodingStream(normalizationVideo)
+      this._info.totalTime = this._stream.videoInfo.recordingTime
+      this.setElapsedTime(this._stream)
+      this._stream.next()
+      console.timeEnd('nor time')
+      console.log('nor end')
+      console.timeEnd('total time')
+      worker.terminate()
+    }
+    console.log('nor start')
+    console.time('nor time')
+    worker.postMessage({ timeSpan: 500, video: video })
+
     // スナップショット作成
     if (backgroundEditor == null) {
       throw new Error('backgroundEditor is undefined')
     }
     setTimeout(() => {
+      console.log('snapshot start')
+      console.time('snapshot time')
       this._snapshot = createSnapshot(
         backgroundEditor,
         video,
         this._snapShotTimeSpan
       )
+      console.timeEnd('snapshot time')
+      console.log('snapshot end')
     }, 0)
     // エディタ準備
     if (editor == null) {
       throw new Error('editor is undefined')
     }
-    this._stream = new CodingStream(video)
     const { language } = video.header
     if (language == null) {
       throw new Error('video is not language data')
     }
     editor.setOption('mode', language.tag)
     editor.setValue('')
-    const normalizationVideo = NormalizationForVideo(500, video)
-    this._stream = new CodingStream(normalizationVideo)
-    this._info.totalTime = this._stream.videoInfo.recordingTime
     // 最初の要素を描画
-    readAndExecCodingSequence(editor, this._stream.current)
-    this.setElapsedTime(this._stream)
-    this._stream.next()
+    readAndExecCodingSequence(editor, video.value[0])
   }
 
   public start(editor?: CodeMirror.Editor): void {
@@ -356,10 +372,6 @@ const readAndExecCodingSequence = (
   }
 }
 
-const createNonCodingSequence = (timestamp: number): CodingSequence => {
-  return { timestamp: timestamp, changeData: null, cursor: null }
-}
-
 const getClosestTimeSpanIndex = (
   timestamp: number,
   timeSpan: number
@@ -369,50 +381,4 @@ const getClosestTimeSpanIndex = (
     return Math.ceil(timestamp / timeSpan)
   }
   return Math.ceil(timestamp / timeSpan) - 1
-}
-
-/**
- * @function NormalizationForVideo ビデオを正規化する
- * timeSpanに合わせて空のCodingSequenceを入れるtimeSpanにCodingSequenceがある場合は何もしない
- * @param timeSpan CodingSequenceを入れる間隔
- * @param video 正規化処理を行う素となるVideo
- * @returns 正規化処理が終わったVideo
- */
-const NormalizationForVideo = (timeSpan: number, video: Video): Video => {
-  const processingVideo = JSON.parse(JSON.stringify(video)) as Video
-
-  // 正規化処理ができる範囲を調べる
-  const divisibleRecodingTime = getPreviousTimeSpan(
-    processingVideo.value.slice(-1)[0].timestamp,
-    timeSpan
-  )
-  // 正規化処理
-  const codingSequence: CodingSequence[] = []
-  let index = 0
-  // prettier-ignore
-  for (let timestamp = timeSpan; timestamp <= divisibleRecodingTime; timestamp += timeSpan) {
-
-    // TimeSpanと次のTimeSpanの間に入るCodingSequenceを追加
-    while (timestamp > processingVideo.value[index].timestamp) {
-      codingSequence.push(processingVideo.value[index])
-      index++
-    }
-
-    // TimeSpanにCodingSequenceがあれば追加，なければ空のCodingSequenceを追加する
-    if (timestamp === processingVideo.value[index].timestamp) {
-      codingSequence.push(processingVideo.value[index])
-      index++
-    } else {
-      codingSequence.push(createNonCodingSequence(timestamp))
-    }
-  }
-  // 残ったCodingSequenceがあれば追加
-  while (index < processingVideo.value.length) {
-    codingSequence.push(processingVideo.value[index])
-    index++
-  }
-  return {
-    header: processingVideo.header,
-    value: codingSequence,
-  }
 }
