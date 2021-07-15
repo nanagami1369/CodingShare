@@ -5,6 +5,7 @@ import { VideoInfo } from './models/VideoInfo'
 import { PlayerInfo } from '@/models/PlayerInfo'
 import { CodingSequence } from './models/CodingSequence'
 import { Snapshot } from './models/Snapshot'
+import { getPreviousTimeSpan } from './getPreviousTimeSpan'
 
 export class CodingPlayer {
   private _stream?: CodingStream
@@ -353,11 +354,6 @@ const readAndExecCodingSequence = (
   if (codingSequence.cursor != null) {
     editor.setCursor(codingSequence.cursor)
   }
-}
-
-const getPreviousTimeSpan = (timestamp: number, timeSpan: number): number => {
-  timestamp
-  return Math.ceil(timestamp / timeSpan) * timeSpan - timeSpan
 }
 
 const createNonCodingSequence = (timestamp: number): CodingSequence => {
