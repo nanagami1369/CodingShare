@@ -16,6 +16,12 @@ export class CodingPlayer {
     totalTime: 0,
     speed: 100,
   }
+  private _isLoading = false
+
+  public get isLoading(): boolean {
+    return this._isLoading
+  }
+
   private _snapshot: Snapshot[] = []
 
   private _currentTimeoutId = -1
@@ -51,6 +57,7 @@ export class CodingPlayer {
     editor?: CodeMirror.Editor,
     backgroundEditor?: CodeMirror.Editor
   ): void {
+    this._isLoading = true
     console.time('total time')
     const worker = new NormalizationWorker()
     worker.onmessage = (message: MessageEvent<Video>) => {
@@ -62,6 +69,7 @@ export class CodingPlayer {
       console.timeEnd('nor time')
       console.log('nor end')
       console.timeEnd('total time')
+      this._isLoading = false
       worker.terminate()
     }
     console.log('nor start')
@@ -344,7 +352,7 @@ export const createSnapshot = (
       stream.next()
     }
     // Snapshotを作成し次の処理へ移動する
-    snapshots.push(new Snapshot(timestamp,editor.getValue()))
+    snapshots.push(new Snapshot(timestamp, editor.getValue()))
   }
   // 残ったCodingSequenceがあれば実行
   while (stream.isNext()) {

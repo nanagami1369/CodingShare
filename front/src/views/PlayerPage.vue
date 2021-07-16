@@ -59,6 +59,7 @@
       </div>
       <VideoInfoViewer :videoInfo="player.videoInfo" />
       <textarea id="background-editor-aria"></textarea>
+      <LoadingViwer v-show="player.isLoading" />
     </div>
     <div id="player-panel">
       <textarea id="editor-aria"></textarea>
@@ -87,6 +88,7 @@ import 'codemirror/addon/edit/closebrackets.js'
 import { Video } from '@/models/Video'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
+import LoadingViwer from '@/components/LoadingViewer.vue'
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
 import { CodingPlayer } from '@/CodingPlayer'
@@ -128,6 +130,7 @@ export default Vue.extend({
     VideoSliderBar,
     FontAwesomeIcon,
     VueSlider,
+    LoadingViwer,
   },
   data(): DataType {
     const snapShotTimeSpan = 30000
