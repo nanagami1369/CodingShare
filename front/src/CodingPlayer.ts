@@ -3,10 +3,14 @@ import { Video } from './models/Video'
 import CodeMirror from 'codemirror'
 import { VideoInfo } from './models/VideoInfo'
 import { PlayerInfo } from '@/models/PlayerInfo'
-import { CodingSequence } from './models/CodingSequence'
 import { Snapshot } from './models/Snapshot'
 import NormalizationWorker from 'worker-loader!@/worker/Normalization.worker.ts'
-import { getPreviousTimeSpan } from './getPreviousTimeSpan'
+import {
+  createSnapshot,
+  getClosestTimeSpanIndex,
+  identificationBetweenSequences,
+  readAndExecCodingSequence,
+} from './util'
 
 export class CodingPlayer {
   private _stream?: CodingStream
@@ -271,122 +275,4 @@ function doSomethingLoop(
       doSomethingLoop(player, doSomething)
     }, nextSpan)
   }
-}
-
-type IndexStatus = 'None' | 'Equals' | 'Smaller' | 'Greater'
-
-function identificationBetweenSequences(
-  searchValue: number,
-  stream: CodingStream
-): { index: number; indexStatus: IndexStatus } {
-  const currentIndex = stream.index
-  let range = stream.length / 2
-  let rowIndex = range
-  let index = Math.ceil(rowIndex)
-  stream.seek(index)
-  let value = stream.current.timestamp
-  let previousValue = -1
-  let indexStatus: IndexStatus = 'None'
-  while (previousValue !== value) {
-    previousValue = value
-    range /= 2
-    if (value == searchValue) {
-      indexStatus = 'Equals'
-      break
-    }
-    if (value > searchValue) {
-      rowIndex -= range
-      index = Math.ceil(rowIndex)
-      stream.seek(index)
-      value = stream.current.timestamp
-      indexStatus = 'Smaller'
-    } else {
-      rowIndex += range
-      index = Math.ceil(rowIndex)
-      stream.seek(index)
-      value = stream.current.timestamp
-      indexStatus = 'Greater'
-    }
-  }
-  stream.seek(currentIndex)
-  return { index, indexStatus }
-}
-
-/**
- * @function createSnapshot CodingSequenceからスナップショットを作成する
- * @description
- * 差分は初期状態と最終状態の２つとTimeSpanの時間毎に作成される。
- * CodingSequenceと同じタイミングでSnapshotが作成された場合CodingSequenceは実行されていないものとする
- * @param editor CodingSequenceをテキスト形式に変換するのに使う
- * @param video CodingSequenceを見るため
- * @param timeSpan 何ミリ秒ごとにスナップショットを作成するか？
- *
- * @returns スナップショット
- *
- */
-
-export const createSnapshot = (
-  editor: CodeMirror.Editor,
-  video: Video,
-  timeSpan: number
-): Snapshot[] => {
-  // 途中のスナップショットが作れる作成範囲を調べる
-  const CanBeCreatedRecodingTime = getPreviousTimeSpan(
-    video.value.slice(-1)[0].timestamp,
-    timeSpan
-  )
-  // 正規化処理
-  const snapshots: Snapshot[] = []
-  const stream = new CodingStream(video)
-  // 開始地点
-  readAndExecCodingSequence(editor, stream.current)
-  stream.next()
-  const fastData = editor.getValue()
-  const fastTimestamp = 0
-  snapshots.push(new Snapshot(fastTimestamp, fastData))
-  // prettier-ignore
-  for (let timestamp = timeSpan; timestamp <= CanBeCreatedRecodingTime; timestamp += timeSpan) {
-    // TimeSpanと次のTimeSpanの間に入るCodingSequenceを実行
-    while (timestamp > stream.current.timestamp) {
-      readAndExecCodingSequence(editor, stream.current)
-      stream.next()
-    }
-    // Snapshotを作成し次の処理へ移動する
-    snapshots.push(new Snapshot(timestamp, editor.getValue()))
-  }
-  // 残ったCodingSequenceがあれば実行
-  while (stream.isNext()) {
-    readAndExecCodingSequence(editor, stream.current)
-    stream.next()
-  }
-  // 最終地点
-  const lastData = editor.getValue()
-  snapshots.push(new Snapshot(video.header.recordingTime, lastData))
-  // エディタの初期化処理
-  editor.setValue('')
-  return snapshots
-}
-
-const readAndExecCodingSequence = (
-  editor: CodeMirror.Editor,
-  codingSequence: CodingSequence
-): void => {
-  if (codingSequence.changeData != null) {
-    const { text, from, to, origin } = codingSequence.changeData
-    editor.replaceRange(text, from, to, origin)
-  }
-  if (codingSequence.cursor != null) {
-    editor.setCursor(codingSequence.cursor)
-  }
-}
-
-const getClosestTimeSpanIndex = (
-  timestamp: number,
-  timeSpan: number
-): number => {
-  const divisibleTimeSpan = Math.ceil(timestamp / timeSpan) * timeSpan
-  if (divisibleTimeSpan == timestamp) {
-    return Math.ceil(timestamp / timeSpan)
-  }
-  return Math.ceil(timestamp / timeSpan) - 1
 }
