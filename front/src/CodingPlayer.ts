@@ -352,7 +352,7 @@ export const createSnapshot = (
       stream.next()
     }
     // Snapshotを作成し次の処理へ移動する
-    snapshots.push(new Snapshot(timestamp,editor.getValue()))
+    snapshots.push(new Snapshot(timestamp, editor.getValue()))
   }
   // 残ったCodingSequenceがあれば実行
   while (stream.isNext()) {
