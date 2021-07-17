@@ -9,6 +9,8 @@
     <p>言語:{{ language }}</p>
     <p>投稿日:{{ uploadTime }}</p>
     <p>動画時間:{{ recordingTime }}</p>
+    <p>コメント</p>
+    <p>{{ videoInfo.comment }}</p>
   </div>
 </template>
 
@@ -27,6 +29,7 @@ export default Vue.extend({
         title: '',
         name: '',
         language: undefined,
+        comment: '',
         uploadTime: -1,
         recordingTime: -1,
       }),

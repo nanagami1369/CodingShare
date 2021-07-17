@@ -9,7 +9,7 @@ export class CodingRecorder {
   private _isRecording = false
   private _uploadTime = -1
 
-  public register(editor: CodeMirror.Editor | undefined): void {
+  public register(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -24,7 +24,7 @@ export class CodingRecorder {
     )
   }
 
-  public unregister(editor: CodeMirror.Editor | undefined): void {
+  public unregister(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -47,13 +47,17 @@ export class CodingRecorder {
     if (this._isRecording) {
       const cursor = editor.getCursor()
       const time = new Date().getTime() - this._timer
-      const codingSequence = new CodingSequence(time, changeObj, cursor)
+      const codingSequence: CodingSequence = {
+        timestamp: time,
+        changeData: changeObj,
+        cursor: cursor,
+      }
       this._video.push(codingSequence)
       console.log(JSON.stringify(codingSequence))
     }
   }
 
-  public start(editor: CodeMirror.Editor | undefined): void {
+  public start(editor?: CodeMirror.Editor): void {
     if (editor == null) {
       throw new Error('editor is undefined')
     }
@@ -71,11 +75,14 @@ export class CodingRecorder {
       to: { line: 0, ch: 0, sticky: undefined },
       text: startData,
       removed: [''],
-      origin: 'input',
+      origin: '+input',
     }
-    this._video.push(
-      new CodingSequence(startTimestamp, startChangeData, startCursor)
-    )
+    const startCodingSequence: CodingSequence = {
+      timestamp: startTimestamp,
+      changeData: startChangeData,
+      cursor: startCursor,
+    }
+    this._video.push(startCodingSequence)
     this._isRecording = true
     this._timer = new Date().getTime()
   }
@@ -87,14 +94,20 @@ export class CodingRecorder {
     const time = new Date().getTime()
     this._uploadTime = time
     const recordingTime = time - this._timer
-    this._video.push(new CodingSequence(recordingTime, undefined, undefined))
+    const lastCodingSequence: CodingSequence = {
+      timestamp: recordingTime,
+      changeData: null,
+      cursor: null,
+    }
+    this._video.push(lastCodingSequence)
   }
 
   public outputVideo(
     userId: number,
     name: string,
     title: string,
-    language: Language
+    language: Language,
+    comment: string
   ): Video {
     if (this._video.length == 0) {
       throw new Error('video is not found')
@@ -111,6 +124,7 @@ export class CodingRecorder {
         title: title,
         language: language,
         uploadTime: this._uploadTime,
+        comment: comment,
         recordingTime: video.slice(-1)[0].timestamp,
       },
       value: video,

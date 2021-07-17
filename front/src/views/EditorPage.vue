@@ -1,6 +1,7 @@
 <template>
   <div id="editor-page">
     <div id="side-panel">
+      <SaveVideoModal @submit="recordSave" @cancel="recordCancel" />
       <h1>Editor</h1>
       <select v-model="selectedLanguage">
         <option v-for="lang in languages" :key="lang.tag" :value="lang">
@@ -34,6 +35,8 @@ import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/comment/comment.js'
 import { Language } from '@/models/language'
 import { CodingRecorder } from '@/CodingRecorder'
+import SaveVideoModal from '@/components/SaveVideoModal.vue'
+import { SaveVideoUserEditData } from '@/models/SaveVideoUserEditData.js'
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   recorder: CodingRecorder
@@ -46,10 +49,12 @@ interface EditorConfig extends EditorConfiguration {
 }
 export default Vue.extend({
   name: 'EditorPage',
+  components: {
+    SaveVideoModal,
+  },
   data(): DataType {
     return {
       defualtConfig: {
-        mode: 'javascript',
         lineNumbers: true,
         indentUnit: 4,
         theme: 'monokai',
@@ -80,8 +85,8 @@ export default Vue.extend({
         },
       ],
       selectedLanguage: {
-        tag: 'javascript',
-        name: 'JavaScript',
+        tag: 'text/x-csrc',
+        name: 'C言語',
       },
     }
   },
@@ -91,19 +96,26 @@ export default Vue.extend({
     },
     recordStop: function () {
       this.recorder.stop()
+      this.$modal.show('save-video-modal')
+    },
+    recordSave: function (data: SaveVideoUserEditData): void {
       const video = this.recorder.outputVideo(
         -1,
-        'test',
-        'test',
-        this.selectedLanguage
+        data.name,
+        data.title,
+        this.selectedLanguage,
+        data.comment
       )
       var url = (window.URL || window.webkitURL).createObjectURL(
         new Blob([JSON.stringify(video)], { type: 'application/json' })
       )
       const a = document.createElement('a')
       a.href = url
-      a.download = 'video.json'
+      a.download = `${data.name}_${data.title}_video.json`
       a.click()
+    },
+    recordCancel: function (): void {
+      this.recorder.clearVideo()
     },
   },
   watch: {
@@ -120,6 +132,7 @@ export default Vue.extend({
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
     this.editor?.setSize('100%', '70vh')
+    this.editor.setOption('mode', this.selectedLanguage.tag)
     this.recorder.register(this.editor)
   },
   beforeDestroy() {

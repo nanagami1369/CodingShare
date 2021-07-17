@@ -1,9 +1,7 @@
 import CodeMirror from 'codemirror'
 
-export class CodingSequence {
-  constructor(
-    public timestamp: number,
-    public changeData: CodeMirror.EditorChangeLinkedList | undefined,
-    public cursor: CodeMirror.Position | undefined
-  ) {}
+export type CodingSequence = {
+  timestamp: number
+  changeData: CodeMirror.EditorChangeLinkedList | null
+  cursor: CodeMirror.Position | null
 }
