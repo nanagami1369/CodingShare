@@ -15,10 +15,7 @@ export class CodingRecorder {
     }
     editor.on(
       'change',
-      (
-        editor: CodeMirror.Editor,
-        changeObj: CodeMirror.EditorChangeLinkedList
-      ) => {
+      (editor: CodeMirror.Editor, changeObj: CodeMirror.EditorChange) => {
         this.record(editor, changeObj)
       }
     )
@@ -30,10 +27,7 @@ export class CodingRecorder {
     }
     editor.on(
       'change',
-      (
-        editor: CodeMirror.Editor,
-        changeObj: CodeMirror.EditorChangeLinkedList
-      ) => {
+      (editor: CodeMirror.Editor, changeObj: CodeMirror.EditorChange) => {
         this.record(editor, changeObj)
       }
     )
@@ -42,7 +36,7 @@ export class CodingRecorder {
   private record(
     this: CodingRecorder,
     editor: CodeMirror.Editor,
-    changeObj: CodeMirror.EditorChangeLinkedList
+    changeObj: CodeMirror.EditorChange
   ): void {
     if (this._isRecording) {
       const cursor = editor.getCursor()
@@ -70,7 +64,7 @@ export class CodingRecorder {
     const startData = editor.getValue().split('\n')
     const startCursor = editor.getCursor()
     const startTimestamp = 0
-    const startChangeData: CodeMirror.EditorChangeLinkedList = {
+    const startChangeData: CodeMirror.EditorChange = {
       from: { line: 0, ch: 0, sticky: undefined },
       to: { line: 0, ch: 0, sticky: undefined },
       text: startData,
