@@ -8,8 +8,16 @@
           {{ lang.name }}
         </option>
       </select>
-      <button v-if="recorder.isRecording" @click="recordStop">停止</button>
-      <button v-else @click="recordStart">開始</button>
+      <button
+        v-if="!recorder.isRecording"
+        @click="recordStart"
+        class="recorder-control-button recoding-button"
+      >
+        <FontAwesomeIcon icon="circle" style="color: red" />
+      </button>
+      <button v-else @click="recordStop" class="recorder-control-button">
+        <FontAwesomeIcon icon="stop" />
+      </button>
       <div v-if="recorder.isRecording" class="recoding-status">
         <span class="recoding-icon">●</span>録画中
       </div>
@@ -37,6 +45,12 @@ import { Language } from '@/models/language'
 import { CodingRecorder } from '@/CodingRecorder'
 import SaveVideoModal from '@/components/SaveVideoModal.vue'
 import { SaveVideoUserEditData } from '@/models/SaveVideoUserEditData.js'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faCircle, faStop } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faCircle, faStop)
+
 type DataType = {
   editor?: CodeMirror.EditorFromTextArea
   recorder: CodingRecorder
@@ -51,6 +65,7 @@ export default Vue.extend({
   name: 'EditorPage',
   components: {
     SaveVideoModal,
+    FontAwesomeIcon,
   },
   data(): DataType {
     return {
@@ -157,6 +172,25 @@ h1 {
 }
 #editor-panel {
   grid-column: 2;
+}
+
+.recorder-control-button {
+  font-size: 1.2em;
+  padding: 5px 20px;
+  border-radius: 25px;
+  border: solid 2px #9f9f9f;
+}
+
+.recorder-control-button:disabled {
+  border: solid 2px #dddddd;
+}
+
+.recorder-control-button:active {
+  border: solid 2px #222222;
+}
+
+select {
+  margin: 0px 10px;
 }
 
 .recoding-icon {
