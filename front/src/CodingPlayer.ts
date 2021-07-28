@@ -4,6 +4,7 @@ import CodeMirror from 'codemirror'
 import { VideoInfo } from './models/VideoInfo'
 import { PlayerInfo } from '@/models/PlayerInfo'
 import { Snapshot } from './models/Snapshot'
+import { AsyncLoop } from './AsyncLoop'
 import NormalizationWorker from 'worker-loader!@/worker/Normalization.worker.ts'
 import {
   createSnapshot,
@@ -28,14 +29,6 @@ export class CodingPlayer {
 
   private _snapshot: Snapshot[] = []
 
-  private _currentTimeoutId = -1
-  public set currentTimeoutId(value: number) {
-    this._currentTimeoutId = value
-  }
-  public get currentTimeoutId(): number {
-    return this._currentTimeoutId
-  }
-
   private _isPlay = false
   public get isPlay(): boolean {
     return this._isPlay
@@ -43,10 +36,12 @@ export class CodingPlayer {
 
   public set isPlay(value: boolean) {
     if (!value) {
-      clearTimeout(this.currentTimeoutId)
+      this._asyncLoop.stop()
     }
     this._isPlay = value
   }
+
+  private _asyncLoop = new AsyncLoop()
 
   public constructor(snapShotTimeSpan: number) {
     this._snapShotTimeSpan = snapShotTimeSpan
@@ -117,7 +112,7 @@ export class CodingPlayer {
       throw new Error('video is not Load')
     }
     this._isPlay = true
-    doSomethingLoop(this, (): { isNext: boolean; nextSpan: number } => {
+    this._asyncLoop.loop((): { isNext: boolean; nextSpan: number } => {
       if (this._stream == null) {
         throw new Error('video is not Load')
       }
@@ -262,17 +257,5 @@ export class CodingPlayer {
 
   public get isLoaded(): boolean {
     return this._stream != null && this._snapshot != null
-  }
-}
-
-function doSomethingLoop(
-  player: CodingPlayer,
-  doSomething: () => { nextSpan: number; isNext: boolean }
-): void {
-  const { isNext, nextSpan } = doSomething()
-  if (isNext) {
-    player.currentTimeoutId = setTimeout(function () {
-      doSomethingLoop(player, doSomething)
-    }, nextSpan)
   }
 }
