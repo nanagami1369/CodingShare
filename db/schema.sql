@@ -6,7 +6,7 @@ CREATE TABLE users (
   user_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   name VARCHAR(32) NOT NULL,
   email VARCHAR(256) NOT NULL,
-  type ENUM('student', 'teacher', 'general') NOT NULL,
+  account_type ENUM('student', 'teacher', 'general') NOT NULL,
   student_number INT,
   password VARCHAR(200) NOT NULL
 ) Engine=InnoDB DEFAULT CHARSET=utf8mb4;

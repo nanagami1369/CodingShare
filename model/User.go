@@ -4,7 +4,7 @@ type User struct {
 	UserId        float64
 	Name          string
 	Email         string
-	Type          string
+	AccountType   string
 	StudentNumber float64
 	Password      string
 }
