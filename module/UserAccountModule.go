@@ -11,7 +11,7 @@ type UserAccountModuleImpl struct {
 	repository repository.UserAccountRepository
 }
 
-func NewUserAccountRepository(r repository.UserAccountRepository) UserAccountModule {
+func NewUserAccountModule(r repository.UserAccountRepository) UserAccountModule {
 	return &UserAccountModuleImpl{repository: r}
 }
 

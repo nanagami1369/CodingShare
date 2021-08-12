@@ -23,7 +23,7 @@ func (sm *SetupModule) GetUserAccountModule() (module UserAccountModule, err err
 		return nil, err
 	}
 	r := repository.NewUserAccountRepository(db)
-	return NewUserAccountRepository(r), nil
+	return NewUserAccountModule(r), nil
 }
 
 func (sm *SetupModule) GetRouter() (router *gin.Engine, err error) {
