@@ -29,7 +29,7 @@ func main() {
 			})
 			return
 		}
-		user, err := uam.Login(loginRequest.Email, loginRequest.Password)
+		user, err := uam.Login(loginRequest.Id, loginRequest.Password)
 		if err != nil {
 			// ログインに失敗したら失敗した事だけ伝える
 			c.JSON(http.StatusUnauthorized, gin.H{
@@ -39,7 +39,7 @@ func main() {
 		}
 		// ログイン成功
 		c.JSON(200, gin.H{
-			"message": "Login Ok Hello " + user.Name + "!",
+			"message": "Login Ok Hello " + user.UserId + "!",
 		})
 	})
 	router.Run(":8081")

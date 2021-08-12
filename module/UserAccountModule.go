@@ -15,8 +15,8 @@ func NewUserAccountRepository(r repository.UserAccountRepository) UserAccountMod
 	return &UserAccountModuleImpl{repository: r}
 }
 
-func (m *UserAccountModuleImpl) Login(email string, password string) (user *model.User, err error) {
-	user, err = m.repository.FindOne(email)
+func (m *UserAccountModuleImpl) Login(id string, password string) (user *model.User, err error) {
+	user, err = m.repository.FindOne(id)
 	if err != nil {
 		return nil, err
 	}

@@ -1,9 +1,7 @@
 package model
 
 type User struct {
-	UserId        float64
-	Name          string
-	Email         string
+	UserId        string `gorm:"primary_key not_null"`
 	AccountType   string
 	StudentNumber float64
 	Password      string

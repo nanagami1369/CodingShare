@@ -1,22 +1,19 @@
 USE account;
-INSERT INTO users (name, email, account_type, student_number, password)
+INSERT INTO users (user_id, account_type, student_number, password)
 VALUES (
-        '山田太郎',
-        's1121141@exsample.com',
+        '1121141',
         'student',
         '1121141',
         'sample'
     ),
     (
-        '田中太郎',
-        'tanaka@exsample.com',
+        'tanaka',
         'teacher',
         NULL,
         'sample'
     ),
     (
-        '鈴木太郎',
-        'suzuki@exsample.com',
+        'suzuki',
         'general',
         NULL,
         'sample'

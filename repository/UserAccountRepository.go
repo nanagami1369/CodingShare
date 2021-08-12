@@ -13,8 +13,8 @@ func NewUserAccountRepository(db *gorm.DB) UserAccountRepository {
 	return &UserAccountRepositoryImpl{db: db}
 }
 
-func (r *UserAccountRepositoryImpl) FindOne(email string) (user *model.User, err error) {
-	user = &model.User{UserId: -1}
-	err = r.db.Where("email = ?", email).First(user).Error
+func (r *UserAccountRepositoryImpl) FindOne(id string) (user *model.User, err error) {
+	user = &model.User{}
+	err = r.db.Where("user_id = ?", id).First(user).Error
 	return user, err
 }

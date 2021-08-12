@@ -3,9 +3,7 @@ CREATE DATABASE account;
 USE account;
 
 CREATE TABLE users (
-  user_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-  name VARCHAR(32) NOT NULL,
-  email VARCHAR(256) NOT NULL,
+  user_id VARCHAR(50) NOT NULL PRIMARY KEY,
   account_type ENUM('student', 'teacher', 'general') NOT NULL,
   student_number INT,
   password VARCHAR(200) NOT NULL
