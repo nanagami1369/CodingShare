@@ -33,6 +33,17 @@ func (sm *SetupModule) OpenDB(config *model.Config) (db *gorm.DB, err error) {
 	return gorm.Open(mysql.Open(connectURL), &gorm.Config{})
 }
 
+func (sm *SetupModule) CloseDB(db *gorm.DB) {
+	originalDB, err := db.DB()
+	if err != nil {
+		panic(err)
+	}
+
+	if err = originalDB.Close(); err != nil {
+		panic(err)
+	}
+}
+
 func (sm *SetupModule) ReadConfigFromEnv() (config *model.Config, err error) {
 	dbUser := os.Getenv("DB_USER")
 	if dbUser == "" {

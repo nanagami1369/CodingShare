@@ -20,6 +20,7 @@ func main() {
 		log.Panicf("open db err:&#v", err)
 	}
 	uam := sm.GetUserAccountModule(db)
+	defer sm.CloseDB(db)
 	router, _ := sm.GetRouter()
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
