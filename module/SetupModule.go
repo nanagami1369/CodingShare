@@ -18,17 +18,9 @@ func NewStupModule() *SetupModule {
 	return &SetupModule{}
 }
 
-func (sm *SetupModule) GetUserAccountModule() (module UserAccountModule, err error) {
-	config, err := sm.readConfigFromEnv()
-	if err != nil {
-		return nil, err
-	}
-	db, err := sm.openDB(config)
-	if err != nil {
-		return nil, err
-	}
+func (sm *SetupModule) GetUserAccountModule(db *gorm.DB) (module UserAccountModule) {
 	r := repository.NewUserAccountRepository(db)
-	return NewUserAccountModule(r), nil
+	return NewUserAccountModule(r)
 }
 
 func (sm *SetupModule) GetRouter() (router *gin.Engine, err error) {
@@ -36,12 +28,12 @@ func (sm *SetupModule) GetRouter() (router *gin.Engine, err error) {
 	return router, nil
 }
 
-func (sm *SetupModule) openDB(config *model.Config) (db *gorm.DB, err error) {
+func (sm *SetupModule) OpenDB(config *model.Config) (db *gorm.DB, err error) {
 	connectURL := config.DBUser + ":" + config.DBPassword + "@tcp(" + config.DBIp + ":" + config.DBPort + ")/" + config.DBName + "?charset=utf8mb4&parseTime=True&loc=Local"
 	return gorm.Open(mysql.Open(connectURL), &gorm.Config{})
 }
 
-func (sm *SetupModule) readConfigFromEnv() (config *model.Config, err error) {
+func (sm *SetupModule) ReadConfigFromEnv() (config *model.Config, err error) {
 	dbUser := os.Getenv("DB_USER")
 	if dbUser == "" {
 		return nil, errors.New("環境変数「DB_USER」が定義されていません")

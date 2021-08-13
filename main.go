@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,10 +11,15 @@ import (
 
 func main() {
 	sm := module.NewStupModule()
-	uam, err := sm.GetUserAccountModule()
+	config, err := sm.ReadConfigFromEnv()
 	if err != nil {
-		panic(err)
+		log.Panicf("read config err:&#v", err)
 	}
+	db, err := sm.OpenDB(config)
+	if err != nil {
+		log.Panicf("open db err:&#v", err)
+	}
+	uam := sm.GetUserAccountModule(db)
 	router, _ := sm.GetRouter()
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
