@@ -71,7 +71,7 @@ func main() {
 			})
 			return
 		}
-		user, err := uam.Login(loginRequest.Id, loginRequest.Password)
+		user, err := uam.Login(loginRequest)
 		if err != nil {
 			// ログインに失敗したら失敗した事だけ伝える
 			c.JSON(http.StatusUnauthorized, gin.H{
