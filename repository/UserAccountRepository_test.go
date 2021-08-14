@@ -94,5 +94,46 @@ func TestExist(t *testing.T) {
 				"actual  :%v", false, true)
 		}
 	})
+}
+
+func TestExistStudent(t *testing.T) {
+	// openDB
+	opts := []enttest.Option{
+		enttest.WithOptions(ent.Log(t.Log)),
+	}
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+	context := context.Background()
+	// set sample data
+	client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+
+	repository := NewUserAccountRepository(context, client)
+	t.Run("存在する場合", func(t *testing.T) {
+		result, err := repository.ExistsStudent(1821141)
+		if err != nil {
+			t.Fatalf("err:%#v", err)
+		}
+		if result != true {
+			t.Errorf("チェックに失敗しました \n"+
+				"expected:%v\n"+
+				"actual  :%v", true, false)
+		}
+	})
+	t.Run("存在しない場合", func(t *testing.T) {
+		result, err := repository.ExistsStudent(2021141)
+		if err != nil {
+			t.Fatalf("err:%#v", err)
+		}
+		if result != false {
+			t.Errorf("チェックに失敗しました \n"+
+				"expected:%v\n"+
+				"actual  :%v", false, true)
+		}
+	})
 
 }

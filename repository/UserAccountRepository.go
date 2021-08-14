@@ -44,3 +44,7 @@ func (r *UserAccountRepositoryImpl) Create(userId, rowPassword string, accountTy
 func (r *UserAccountRepositoryImpl) Exists(id string) (bool, error) {
 	return r.client.User.Query().Where(user.UserID(id)).Exist(r.context)
 }
+
+func (r *UserAccountRepositoryImpl) ExistsStudent(studentNumber int) (bool, error) {
+	return r.client.User.Query().Where(user.StudentNumber(studentNumber)).Exist(r.context)
+}
