@@ -1,26 +1,61 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nanagami1369/CodingShare/ent/migrate"
+	"github.com/nanagami1369/CodingShare/ent/user"
 	"github.com/nanagami1369/CodingShare/model"
 	"github.com/nanagami1369/CodingShare/module"
 )
 
 func main() {
 	sm := module.NewStupModule()
+	// db
 	config, err := sm.ReadConfigFromEnv()
 	if err != nil {
 		log.Panicf("read config err:&#v", err)
 	}
-	db, err := sm.OpenDB(config)
+	client, err := sm.ConnentDB(config)
 	if err != nil {
 		log.Panicf("open db err:&#v", err)
 	}
-	uam := sm.GetUserAccountModule(db)
-	defer sm.CloseDB(db)
+	context := context.Background()
+	uam := sm.GetUserAccountModule(client, context)
+	defer client.Close()
+
+	// migrate
+	err = client.Schema.Create(
+		context,
+		migrate.WithDropIndex(true),
+		migrate.WithDropColumn(true),
+	)
+	if err != nil {
+		log.Panicf("open db err:&#v", err)
+	}
+
+	// set sample data
+	client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+	client.User.Create().
+		SetUserID("tanaka").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeTeacher).
+		Save(context)
+	client.User.Create().
+		SetUserID("suzuki").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeGeneral).
+		Save(context)
+
+	// router
 	router, _ := sm.GetRouter()
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -46,7 +81,7 @@ func main() {
 		}
 		// ログイン成功
 		c.JSON(200, gin.H{
-			"message": "Login Ok Hello " + user.UserId + "!",
+			"message": "Login Ok Hello " + user.UserID + "!",
 		})
 	})
 	router.Run(":8081")

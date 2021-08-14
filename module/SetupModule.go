@@ -1,14 +1,15 @@
 package module
 
 import (
+	"context"
 	"errors"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-sql-driver/mysql"
+	"github.com/nanagami1369/CodingShare/ent"
 	"github.com/nanagami1369/CodingShare/model"
 	"github.com/nanagami1369/CodingShare/repository"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 type SetupModule struct {
@@ -18,8 +19,8 @@ func NewStupModule() *SetupModule {
 	return &SetupModule{}
 }
 
-func (sm *SetupModule) GetUserAccountModule(db *gorm.DB) (module UserAccountModule) {
-	r := repository.NewUserAccountRepository(db)
+func (sm *SetupModule) GetUserAccountModule(client *ent.Client, context context.Context) (module UserAccountModule) {
+	r := repository.NewUserAccountRepository(context, client)
 	return NewUserAccountModule(r)
 }
 
@@ -28,20 +29,17 @@ func (sm *SetupModule) GetRouter() (router *gin.Engine, err error) {
 	return router, nil
 }
 
-func (sm *SetupModule) OpenDB(config *model.Config) (db *gorm.DB, err error) {
-	connectURL := config.DBUser + ":" + config.DBPassword + "@tcp(" + config.DBIp + ":" + config.DBPort + ")/" + config.DBName + "?charset=utf8mb4&parseTime=True&loc=Local"
-	return gorm.Open(mysql.Open(connectURL), &gorm.Config{})
-}
-
-func (sm *SetupModule) CloseDB(db *gorm.DB) {
-	originalDB, err := db.DB()
-	if err != nil {
-		panic(err)
+func (sm *SetupModule) ConnentDB(config *model.Config) (Client *ent.Client, err error) {
+	dbConfig := &mysql.Config{
+		User:                 config.DBUser,
+		Passwd:               config.DBPassword,
+		Net:                  "tcp",
+		Addr:                 config.DBIp + ":" + config.DBPort,
+		DBName:               config.DBName,
+		AllowNativePasswords: true,
+		ParseTime:            true,
 	}
-
-	if err = originalDB.Close(); err != nil {
-		panic(err)
-	}
+	return ent.Open("mysql", dbConfig.FormatDSN())
 }
 
 func (sm *SetupModule) ReadConfigFromEnv() (config *model.Config, err error) {

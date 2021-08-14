@@ -1,20 +1,25 @@
 package repository
 
 import (
-	"github.com/nanagami1369/CodingShare/model"
-	"gorm.io/gorm"
+	"context"
+
+	"github.com/nanagami1369/CodingShare/ent"
+	"github.com/nanagami1369/CodingShare/ent/user"
 )
 
 type UserAccountRepositoryImpl struct {
-	db *gorm.DB
+	context context.Context
+	client  *ent.Client
 }
 
-func NewUserAccountRepository(db *gorm.DB) UserAccountRepository {
-	return &UserAccountRepositoryImpl{db: db}
+func NewUserAccountRepository(context context.Context, client *ent.Client) UserAccountRepository {
+	return &UserAccountRepositoryImpl{context: context, client: client}
 }
 
-func (r *UserAccountRepositoryImpl) FindOne(id string) (user *model.User, err error) {
-	user = &model.User{}
-	err = r.db.Where("user_id = ?", id).First(user).Error
+func (r *UserAccountRepositoryImpl) FindOne(id string) (selectedUser *ent.User, err error) {
+	user, err := r.client.User.Query().Where(user.UserID(id)).Only(r.context)
+	if err != nil {
+		return nil, err
+	}
 	return user, err
 }
