@@ -23,7 +23,7 @@ func (m *UserAccountModuleImpl) Login(request *model.LoginRequest) (user *ent.Us
 	if err != nil {
 		return nil, err
 	}
-	if user.Password != request.Password {
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.RowPassword)); err != nil {
 		return nil, errors.New("password is incorrect")
 	}
 	return user, nil

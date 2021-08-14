@@ -10,6 +10,7 @@ import (
 	"github.com/nanagami1369/CodingShare/ent/user"
 	"github.com/nanagami1369/CodingShare/model"
 	"github.com/nanagami1369/CodingShare/module"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
@@ -38,20 +39,22 @@ func main() {
 	}
 
 	// set sample data
+	samplePaswordHash, _ := bcrypt.GenerateFromPassword([]byte("sample"), bcrypt.DefaultCost)
+	samplePasword := string(samplePaswordHash)
 	client.User.Create().
 		SetUserID("1821141").
-		SetPassword("sample").
+		SetPassword(samplePasword).
 		SetAccountType(user.AccountTypeStudent).
 		SetStudentNumber(1821141).
 		Save(context)
 	client.User.Create().
 		SetUserID("tanaka").
-		SetPassword("sample").
+		SetPassword(samplePasword).
 		SetAccountType(user.AccountTypeTeacher).
 		Save(context)
 	client.User.Create().
 		SetUserID("suzuki").
-		SetPassword("sample").
+		SetPassword(samplePasword).
 		SetAccountType(user.AccountTypeGeneral).
 		Save(context)
 
