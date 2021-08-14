@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nanagami1369/CodingShare/ent/migrate"
@@ -56,6 +57,9 @@ func main() {
 		AccountType: user.AccountTypeGeneral,
 	})
 
+	// logger
+	loginLog := log.New(os.Stdout, "[LOGIN]", log.LstdFlags|log.LUTC)
+
 	// router
 	router, _ := sm.GetRouter()
 	router.GET("/", func(c *gin.Context) {
@@ -78,12 +82,14 @@ func main() {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"message": "Authentication failure",
 			})
+			loginLog.Printf("login err request: %v ,err: %v", loginRequest, err)
 			return
 		}
 		// ログイン成功
 		c.JSON(200, gin.H{
 			"message": "Login Ok Hello " + user.UserID + "!",
 		})
+		loginLog.Printf("login success request: %v, user: %v", loginRequest, user.UserID)
 	})
 	router.Run(":8081")
 }
