@@ -23,3 +23,20 @@ func (r *UserAccountRepositoryImpl) FindOne(id string) (selectedUser *ent.User, 
 	}
 	return user, err
 }
+
+func (r *UserAccountRepositoryImpl) Create(userId, rowPassword string, accountType user.AccountType, studentNumber *int) (user *ent.User, err error) {
+	if studentNumber == nil {
+		return r.client.User.Create().
+			SetUserID(userId).
+			SetPassword(rowPassword).
+			SetAccountType(accountType).
+			Save(r.context)
+	} else {
+		return r.client.User.Create().
+			SetUserID(userId).
+			SetPassword(rowPassword).
+			SetAccountType(accountType).
+			SetStudentNumber(*studentNumber).
+			Save(r.context)
+	}
+}

@@ -1,0 +1,120 @@
+package module
+
+import (
+	"context"
+	"errors"
+	"testing"
+
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/nanagami1369/CodingShare/ent"
+	"github.com/nanagami1369/CodingShare/ent/enttest"
+	"github.com/nanagami1369/CodingShare/ent/user"
+	"github.com/nanagami1369/CodingShare/model"
+	"github.com/nanagami1369/CodingShare/repository"
+)
+
+func TestCheckSignInRequestvalidation(t *testing.T) {
+	t.Run("正常値テスト", func(t *testing.T) {
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:          "nanagami1369@outlock.exsample",
+			RowPassword: "00000000",
+			AccountType: user.AccountTypeGeneral,
+		}, nil)
+	})
+	t.Run("UserId値無し", func(t *testing.T) {
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:          "",
+			RowPassword: "00000000",
+			AccountType: user.AccountTypeGeneral,
+		}, errors.New("sign in request error id is empty"))
+	})
+	t.Run("パスワード値無し", func(t *testing.T) {
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:          "nanagami1369@outlock.exsample",
+			RowPassword: "",
+			AccountType: user.AccountTypeGeneral,
+		}, errors.New("sign in request error password is 8 characters or more"))
+	})
+	t.Run("パスワード7文字", func(t *testing.T) {
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:          "nanagami1369@outlock.exsample",
+			RowPassword: "0000000",
+			AccountType: user.AccountTypeGeneral,
+		}, errors.New("sign in request error password is 8 characters or more"))
+	})
+	t.Run("AccountType値無し", func(t *testing.T) {
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:          "nanagami1369@outlock.exsample",
+			RowPassword: "00000000",
+		}, errors.New("sign in request error accountType is empty"))
+	})
+	t.Run("学生なのに学籍番号無し", func(t *testing.T) {
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:          "nanagami1369@outlock.exsample",
+			RowPassword: "00000000",
+			AccountType: user.AccountTypeStudent,
+		}, errors.New("sign in request error request is student ,but request have not a student Number"))
+	})
+}
+
+func testCheckSignInRequestvalidation(t *testing.T, in *model.SignInRequest, expected error) {
+	t.Helper()
+	if err := checkSignInRequestValidation(in); getErrorMessage(err) != getErrorMessage(expected) {
+		t.Errorf("チェックに失敗しました \n"+
+			"expected:%v\n"+
+			"actual  :%v", expected, err)
+	}
+}
+
+func TestSignIn(t *testing.T) {
+	// openDB
+	opts := []enttest.Option{
+		enttest.WithOptions(ent.Log(t.Log)),
+	}
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+	context := context.Background()
+	uam := NewUserAccountModule(repository.NewUserAccountRepository(context, client))
+	t.Run("正常値テスト(学生の場合)", func(t *testing.T) {
+		studentNumber := 1121141
+		request := &model.SignInRequest{
+			Id:            "1121141",
+			RowPassword:   "00000000",
+			AccountType:   user.AccountTypeStudent,
+			StudentNumber: &studentNumber}
+		_, err := uam.SignIn(request)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		// 登録したデータを取得できるか試す
+		_, err = client.User.Query().Where(user.UserID(request.Id)).Only(context)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+	})
+	t.Run("正常値テスト(学生以外の場合)", func(t *testing.T) {
+		request := &model.SignInRequest{
+			Id:          "tanaka",
+			RowPassword: "00000000",
+			AccountType: user.AccountTypeGeneral,
+		}
+		_, err := uam.SignIn(request)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		// 登録したデータを取得できるか試す
+		_, err = client.User.Query().Where(user.UserID(request.Id)).Only(context)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+	})
+
+}
+
+func getErrorMessage(err error) string {
+	if err == nil {
+		return "nil"
+	} else {
+		return err.Error()
+	}
+}
