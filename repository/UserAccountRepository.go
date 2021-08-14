@@ -40,3 +40,7 @@ func (r *UserAccountRepositoryImpl) Create(userId, rowPassword string, accountTy
 			Save(r.context)
 	}
 }
+
+func (r *UserAccountRepositoryImpl) Exists(id string) (bool, error) {
+	return r.client.User.Query().Where(user.UserID(id)).Exist(r.context)
+}
