@@ -5,6 +5,7 @@ import (
 
 	"github.com/nanagami1369/CodingShare/ent"
 	"github.com/nanagami1369/CodingShare/ent/user"
+	ent_user "github.com/nanagami1369/CodingShare/ent/user"
 	"github.com/nanagami1369/CodingShare/model"
 	"github.com/nanagami1369/CodingShare/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -33,6 +34,23 @@ func (m *UserAccountModuleImpl) SignIn(request *model.SignInRequest) (user *ent.
 	if err := checkSignInRequestValidation(request); err != nil {
 		return nil, err
 	}
+	isExists, err := m.repository.Exists(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	if isExists {
+		return nil, errors.New("sign in request error request id is Exists")
+	}
+	if request.AccountType == ent_user.AccountTypeStudent {
+		isExistsStudent, err := m.repository.ExistsStudent(*request.StudentNumber)
+		if err != nil {
+			return nil, err
+		}
+		if isExistsStudent {
+			return nil, errors.New("sign in request error request student number is Exists")
+		}
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.RowPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err

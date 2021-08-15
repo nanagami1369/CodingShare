@@ -74,7 +74,17 @@ func TestSignIn(t *testing.T) {
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
 	defer client.Close()
 	context := context.Background()
+
+	// set sample data
+	client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+
 	uam := NewUserAccountModule(repository.NewUserAccountRepository(context, client))
+
 	t.Run("正常値テスト(学生の場合)", func(t *testing.T) {
 		studentNumber := 1121141
 		request := &model.SignInRequest{
@@ -106,6 +116,36 @@ func TestSignIn(t *testing.T) {
 		_, err = client.User.Query().Where(user.UserID(request.Id)).Only(context)
 		if err != nil {
 			t.Fatalf(err.Error())
+		}
+	})
+	t.Run("異常値テスト(存在するアカウントを登録しようとする場合)", func(t *testing.T) {
+		request := &model.SignInRequest{
+			Id:          "1821141",
+			RowPassword: "00000000",
+			AccountType: user.AccountTypeGeneral,
+		}
+		expected := "sign in request error request id is Exists"
+		_, err := uam.SignIn(request)
+		if getErrorMessage(err) != expected {
+			t.Errorf("チェックに失敗しました \n"+
+				"expected:%v\n"+
+				"actual  :%v", expected, err)
+		}
+	})
+	t.Run("異常値テスト(存在する学籍番号を登録しようとする場合)", func(t *testing.T) {
+		studentNumber := 1821141
+		request := &model.SignInRequest{
+			Id:            "1821142",
+			RowPassword:   "00000000",
+			AccountType:   user.AccountTypeStudent,
+			StudentNumber: &studentNumber,
+		}
+		expected := "sign in request error request student number is Exists"
+		_, err := uam.SignIn(request)
+		if getErrorMessage(err) != expected {
+			t.Errorf("チェックに失敗しました \n"+
+				"expected:%v\n"+
+				"actual  :%v", expected, err)
 		}
 	})
 
