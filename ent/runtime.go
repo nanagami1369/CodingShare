@@ -16,7 +16,21 @@ func init() {
 	// userDescUserID is the schema descriptor for user_id field.
 	userDescUserID := userFields[0].Descriptor()
 	// user.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	user.UserIDValidator = userDescUserID.Validators[0].(func(string) error)
+	user.UserIDValidator = func() func(string) error {
+		validators := userDescUserID.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(user_id string) error {
+			for _, fn := range fns {
+				if err := fn(user_id); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// userDescPassword is the schema descriptor for password field.
 	userDescPassword := userFields[3].Descriptor()
 	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.

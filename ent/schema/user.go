@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"regexp"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 )
@@ -14,6 +16,7 @@ type User struct {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("user_id").
+			Match(regexp.MustCompile(`^[0-9a-zA-Z]*$`)).
 			Unique().
 			NotEmpty(),
 		field.Enum("account_type").

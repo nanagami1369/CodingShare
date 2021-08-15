@@ -2,6 +2,7 @@ package module
 
 import (
 	"errors"
+	"regexp"
 
 	"github.com/nanagami1369/CodingShare/ent"
 	"github.com/nanagami1369/CodingShare/ent/user"
@@ -75,6 +76,10 @@ func checkSignInRequestValidation(request *model.SignInRequest) error {
 	}
 	if request.AccountType == user.AccountTypeStudent && request.StudentNumber == nil {
 		return errors.New("sign in request error request is student ,but request have not a student Number")
+	}
+	r := regexp.MustCompile(`^[0-9a-zA-Z]*$`)
+	if !r.MatchString(request.Id) {
+		return errors.New("sign in request error only half-width alphanumeric characters can be used in the user id")
 	}
 	return nil
 }

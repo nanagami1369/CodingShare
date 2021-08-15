@@ -16,7 +16,7 @@ import (
 func TestCheckSignInRequestvalidation(t *testing.T) {
 	t.Run("正常値テスト", func(t *testing.T) {
 		testCheckSignInRequestvalidation(t, &model.SignInRequest{
-			Id:          "nanagami1369@outlock.exsample",
+			Id:          "nanagami1369outlockexsample",
 			RowPassword: "00000000",
 			AccountType: user.AccountTypeGeneral,
 		}, nil)
@@ -30,31 +30,39 @@ func TestCheckSignInRequestvalidation(t *testing.T) {
 	})
 	t.Run("パスワード値無し", func(t *testing.T) {
 		testCheckSignInRequestvalidation(t, &model.SignInRequest{
-			Id:          "nanagami1369@outlock.exsample",
+			Id:          "nanagami1369outlockexsample",
 			RowPassword: "",
 			AccountType: user.AccountTypeGeneral,
 		}, errors.New("sign in request error password is 8 characters or more"))
 	})
 	t.Run("パスワード7文字", func(t *testing.T) {
 		testCheckSignInRequestvalidation(t, &model.SignInRequest{
-			Id:          "nanagami1369@outlock.exsample",
+			Id:          "nanagami1369outlockexsample",
 			RowPassword: "0000000",
 			AccountType: user.AccountTypeGeneral,
 		}, errors.New("sign in request error password is 8 characters or more"))
 	})
 	t.Run("AccountType値無し", func(t *testing.T) {
 		testCheckSignInRequestvalidation(t, &model.SignInRequest{
-			Id:          "nanagami1369@outlock.exsample",
+			Id:          "nanagami1369outlockexsample",
 			RowPassword: "00000000",
 		}, errors.New("sign in request error accountType is empty"))
 	})
 	t.Run("学生なのに学籍番号無し", func(t *testing.T) {
 		testCheckSignInRequestvalidation(t, &model.SignInRequest{
-			Id:          "nanagami1369@outlock.exsample",
+			Id:          "nanagami1369outlockexsample",
 			RowPassword: "00000000",
 			AccountType: user.AccountTypeStudent,
 		}, errors.New("sign in request error request is student ,but request have not a student Number"))
 	})
+	t.Run("user idに半角英数以外を割り当てる", func(t *testing.T) {
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:          "日本語",
+			RowPassword: "00000000",
+			AccountType: user.AccountTypeTeacher,
+		}, errors.New("sign in request error only half-width alphanumeric characters can be used in the user id"))
+	})
+
 }
 
 func testCheckSignInRequestvalidation(t *testing.T, in *model.SignInRequest, expected error) {
