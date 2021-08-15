@@ -148,7 +148,22 @@ func TestSignIn(t *testing.T) {
 				"actual  :%v", expected, err)
 		}
 	})
-
+	t.Run("異常値テスト(学籍番号があるのに、学生では無い場合)", func(t *testing.T) {
+		studentNumber := 1821141
+		request := &model.SignInRequest{
+			Id:            "1821142",
+			RowPassword:   "00000000",
+			AccountType:   user.AccountTypeTeacher,
+			StudentNumber: &studentNumber,
+		}
+		expected := "sign in request error request has student number,but request is not student"
+		_, err := uam.SignIn(request)
+		if getErrorMessage(err) != expected {
+			t.Errorf("チェックに失敗しました \n"+
+				"expected:%v\n"+
+				"actual  :%v", expected, err)
+		}
+	})
 }
 
 func getErrorMessage(err error) string {

@@ -49,8 +49,11 @@ func (m *UserAccountModuleImpl) SignIn(request *model.SignInRequest) (user *ent.
 		if isExistsStudent {
 			return nil, errors.New("sign in request error request student number is Exists")
 		}
+	} else {
+		if request.StudentNumber != nil {
+			return nil, errors.New("sign in request error request has student number,but request is not student")
+		}
 	}
-
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.RowPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
