@@ -16,7 +16,7 @@ func NewUserAccountRepository(context context.Context, client *ent.Client) UserA
 	return &UserAccountRepositoryImpl{context: context, client: client}
 }
 
-func (r *UserAccountRepositoryImpl) FindOne(id string) (selectedUser *ent.User, err error) {
+func (r *UserAccountRepositoryImpl) FindOne(id string) (*ent.User, error) {
 	user, err := r.client.User.Query().Where(user.UserID(id)).Only(r.context)
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func (r *UserAccountRepositoryImpl) FindOne(id string) (selectedUser *ent.User, 
 	return user, err
 }
 
-func (r *UserAccountRepositoryImpl) Create(userId, rowPassword string, accountType user.AccountType, studentNumber *int) (user *ent.User, err error) {
+func (r *UserAccountRepositoryImpl) Create(userId, rowPassword string, accountType user.AccountType, studentNumber *int) (*ent.User, error) {
 	if studentNumber == nil {
 		return r.client.User.Create().
 			SetUserID(userId).

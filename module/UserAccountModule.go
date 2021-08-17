@@ -6,7 +6,6 @@ import (
 
 	"github.com/nanagami1369/CodingShare/ent"
 	"github.com/nanagami1369/CodingShare/ent/user"
-	ent_user "github.com/nanagami1369/CodingShare/ent/user"
 	"github.com/nanagami1369/CodingShare/model"
 	"github.com/nanagami1369/CodingShare/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -20,8 +19,8 @@ func NewUserAccountModule(r repository.UserAccountRepository) UserAccountModule 
 	return &UserAccountModuleImpl{repository: r}
 }
 
-func (m *UserAccountModuleImpl) Login(request *model.LoginRequest) (user *ent.User, err error) {
-	user, err = m.repository.FindOne(request.Id)
+func (m *UserAccountModuleImpl) Login(request *model.LoginRequest) (*ent.User, error) {
+	user, err := m.repository.FindOne(request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +30,7 @@ func (m *UserAccountModuleImpl) Login(request *model.LoginRequest) (user *ent.Us
 	return user, nil
 }
 
-func (m *UserAccountModuleImpl) SignIn(request *model.SignInRequest) (user *ent.User, err error) {
+func (m *UserAccountModuleImpl) SignIn(request *model.SignInRequest) (*ent.User, error) {
 	if err := checkSignInRequestValidation(request); err != nil {
 		return nil, err
 	}
@@ -42,7 +41,7 @@ func (m *UserAccountModuleImpl) SignIn(request *model.SignInRequest) (user *ent.
 	if isExists {
 		return nil, errors.New("sign in request error request id is Exists")
 	}
-	if request.AccountType == ent_user.AccountTypeStudent {
+	if request.AccountType == user.AccountTypeStudent {
 		isExistsStudent, err := m.repository.ExistsStudent(*request.StudentNumber)
 		if err != nil {
 			return nil, err

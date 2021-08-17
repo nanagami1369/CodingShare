@@ -6,8 +6,8 @@ import (
 )
 
 type UserAccountRepository interface {
-	FindOne(id string) (selectedUser *ent.User, err error)
-	Create(userId, rowPassword string, accountType user.AccountType, studentNumber *int) (user *ent.User, err error)
+	FindOne(id string) (*ent.User, error)
+	Create(userId, rowPassword string, accountType user.AccountType, studentNumber *int) (*ent.User, error)
 	Exists(id string) (bool, error)
 	ExistsStudent(studentNumber int) (bool, error)
 }

@@ -6,6 +6,6 @@ import (
 )
 
 type UserAccountModule interface {
-	Login(request *model.LoginRequest) (user *ent.User, err error)
-	SignIn(request *model.SignInRequest) (user *ent.User, err error)
+	Login(request *model.LoginRequest) (*ent.User, error)
+	SignIn(request *model.SignInRequest) (*ent.User, error)
 }
