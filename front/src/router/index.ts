@@ -22,6 +22,11 @@ const routes: Array<RouteConfig> = [
     component: () => import('../views/PlayerPage.vue'),
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/LoginPage.vue'),
+  },
+  {
     path: '*',
     name: 'NotFound',
     component: NotFoundPage,
