@@ -3,8 +3,10 @@ package module
 import (
 	"context"
 	"errors"
+
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/nanagami1369/CodingShare/ent"
@@ -26,6 +28,9 @@ func (sm *SetupModule) GetUserAccountModule(client *ent.Client, context context.
 
 func (sm *SetupModule) GetRouter() (router *gin.Engine, err error) {
 	router = gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"}
+	router.Use(cors.New(config))
 	return router, nil
 }
 
