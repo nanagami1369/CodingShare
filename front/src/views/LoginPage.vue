@@ -71,15 +71,20 @@ export default Vue.extend({
             password: this.password,
           }),
         })
-        const message = await response.json()
-        if (response.status != 200) {
-          //http status が 200(成功)以外ならエラーとして処理
-          //基本エラーの原因は返さないので失敗した事をそのまま伝える
-          this.errorMessage = 'ログインに失敗しました'
-          return
+        const message = await response.text()
+        switch (response.status) {
+          case 200:
+            // ログイン後の処理を書く
+            alert(JSON.parse(message).message)
+            break
+          case 401:
+            this.errorMessage = 'ログインに失敗しました'
+            break
+          default:
+            // それ以外はHTTP STATUSを返却するようにする
+            this.errorMessage = `Error:${response.status} ${response.statusText}`
+            break
         }
-        // ログイン後の処理を書く
-        alert(message.message)
       } catch (error: unknown) {
         // fetchの例外はエラーとして処理
         this.errorMessage = (error as Error).message
