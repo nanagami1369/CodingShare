@@ -6,4 +6,5 @@ type Config struct {
 	DBIp       string
 	DBPort     string
 	DBName     string
+	ApiUrl     string
 }

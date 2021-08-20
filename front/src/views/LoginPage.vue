@@ -64,13 +64,16 @@ export default Vue.extend({
         return
       }
       try {
-        const response = await fetch('http://localhost:8081/login', {
-          method: 'POST',
-          body: JSON.stringify({
-            id: this.id,
-            password: this.password,
-          }),
-        })
+        const response = await fetch(
+          `${process.env.VUE_APP_CODING_SHARE_API_URL}/login`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              id: this.id,
+              password: this.password,
+            }),
+          }
+        )
         const message = await response.text()
         switch (response.status) {
           case 200:

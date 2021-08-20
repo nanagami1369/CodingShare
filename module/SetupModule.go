@@ -68,12 +68,17 @@ func (sm *SetupModule) ReadConfigFromEnv() (config *model.Config, err error) {
 	if dbName == "" {
 		return nil, errors.New("環境変数「DB_NAME」が定義されていません")
 	}
+	apiUrl := os.Getenv("CODING_SHARE_API_URL")
+	if apiUrl == "" {
+		return nil, errors.New("環境変数「CODING_SHARE_API_URL」が定義されていません")
+	}
 	config = &model.Config{
 		DBUser:     dbUser,
 		DBPassword: dbPassword,
 		DBIp:       dbIp,
 		DBPort:     dbPort,
 		DBName:     dbName,
+		ApiUrl:     apiUrl,
 	}
 	return config, nil
 }
