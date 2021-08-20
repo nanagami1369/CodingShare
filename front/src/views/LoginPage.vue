@@ -31,6 +31,7 @@
         v-model="password"
       />
       <button @click="login" type="button">ログイン</button>
+      <button @click="isLogin" type="button">ログイン判定</button>
     </div>
   </div>
 </template>
@@ -68,6 +69,8 @@ export default Vue.extend({
           `${process.env.VUE_APP_CODING_SHARE_API_URL}/login`,
           {
             method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
             body: JSON.stringify({
               id: this.id,
               password: this.password,
@@ -92,6 +95,21 @@ export default Vue.extend({
         // fetchの例外はエラーとして処理
         this.errorMessage = (error as Error).message
       }
+    },
+    isLogin: async function () {
+      // ちゃんとしたログイン後画面ができたら削除するので
+      // エラーチェックが微妙
+      const response = await fetch(
+        `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/islogin`,
+        {
+          mode: 'cors',
+          credentials: 'include',
+        }
+      )
+      let message =
+        `message:${await response.text()}\n` +
+        `http status:${response.status} ${response.statusText}`
+      alert(message)
     },
   },
 })

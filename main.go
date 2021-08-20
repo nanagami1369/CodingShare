@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+
 	"github.com/nanagami1369/CodingShare/ent/migrate"
 	"github.com/nanagami1369/CodingShare/ent/user"
 	"github.com/nanagami1369/CodingShare/model"
@@ -61,7 +63,7 @@ func main() {
 	loginLog := log.New(os.Stdout, "[LOGIN]", log.LstdFlags|log.LUTC)
 
 	// router
-	router, _ := sm.GetRouter()
+	router, _ := sm.GetRouter(config)
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Hello World",
@@ -86,6 +88,9 @@ func main() {
 			return
 		}
 		// ログイン成功
+		session := sessions.Default(c)
+		session.Set("session_id", "Logind")
+		session.Save()
 		c.JSON(200, gin.H{
 			"message": "Login Ok Hello " + user.UserID + "!",
 		})

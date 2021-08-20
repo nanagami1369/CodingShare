@@ -3,10 +3,13 @@ package module
 import (
 	"context"
 	"errors"
+	"net/http"
 
 	"os"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/nanagami1369/CodingShare/ent"
@@ -26,11 +29,34 @@ func (sm *SetupModule) GetUserAccountModule(client *ent.Client, context context.
 	return NewUserAccountModule(r)
 }
 
-func (sm *SetupModule) GetRouter() (router *gin.Engine, err error) {
+func (sm *SetupModule) GetRouter(config *model.Config) (router *gin.Engine, err error) {
 	router = gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"*"}
-	router.Use(cors.New(config))
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{
+		config.WebUrl,
+	}
+	corsConfig.AllowCredentials = true
+	corsConfig.AllowHeaders = []string{
+		"Access-Control-Allow-Credentials",
+	}
+	router.Use(cors.New(corsConfig))
+	store := cookie.NewStore([]byte("secret"))
+	store.Options(sessions.Options{
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Path:     "/",
+		// 60s * 60 = 1h
+		// 1h * 24 = 1day
+		// 24h * 3 = 3day
+		MaxAge: 60 * 60 * 24 * 3,
+	})
+	router.Use(sessions.Sessions("codingshare", store))
+	api := router.Group("/api")
+	api.Use(sm.loginCheckMiddleware())
+	api.GET("/islogin", func(c *gin.Context) {
+		c.String(http.StatusOK, "ログイン済み")
+	})
 	return router, nil
 }
 
@@ -81,6 +107,10 @@ func (sm *SetupModule) ReadConfigFromEnv() (*model.Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	webUrl, err := sm.readEnv("CODING_SHARE_WEB_URL")
+	if err != nil {
+		return nil, err
+	}
 	certificateFilePath, err := sm.readEnv("CODING_SHARE_CERTIFICATE_FILE_PATH")
 	if err != nil {
 		return nil, err
@@ -96,8 +126,22 @@ func (sm *SetupModule) ReadConfigFromEnv() (*model.Config, error) {
 		DBPort:              dbPort,
 		DBName:              dbName,
 		ApiUrl:              apiUrl,
+		WebUrl:              webUrl,
 		CertificateFilePath: certificateFilePath,
 		KeyFilePath:         keyFilePath,
 	}
 	return config, nil
+}
+
+func (sm *SetupModule) loginCheckMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		sessionId := session.Get("session_id")
+		if session_id, ok := sessionId.(string); ok && session_id == "Logind" {
+			c.Next()
+		} else {
+			c.Status(http.StatusForbidden)
+			c.Abort()
+		}
+	}
 }
