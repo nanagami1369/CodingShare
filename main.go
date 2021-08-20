@@ -91,5 +91,7 @@ func main() {
 		})
 		loginLog.Printf("login success request: %v, user: %v", loginRequest, user.UserID)
 	})
-	router.Run(":8081")
+	router.RunTLS(":8081",
+		config.CertificateFilePath,
+		config.KeyFilePath)
 }

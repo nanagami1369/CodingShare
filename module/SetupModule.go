@@ -72,13 +72,23 @@ func (sm *SetupModule) ReadConfigFromEnv() (config *model.Config, err error) {
 	if apiUrl == "" {
 		return nil, errors.New("環境変数「CODING_SHARE_API_URL」が定義されていません")
 	}
+	certificateFilePath := os.Getenv("CODING_SHARE_CERTIFICATE_FILE_PATH")
+	if certificateFilePath == "" {
+		return nil, errors.New("環境変数「CODING_SHARE_CERTIFICATE_FILE_PATH」が定義されていません")
+	}
+	keyFilePath := os.Getenv("CODING_SHARE_KEY_FILE_PATH")
+	if keyFilePath == "" {
+		return nil, errors.New("環境変数「CODING_SHARE_CERTIFICATE_FILE_PATH」が定義されていません")
+	}
 	config = &model.Config{
-		DBUser:     dbUser,
-		DBPassword: dbPassword,
-		DBIp:       dbIp,
-		DBPort:     dbPort,
-		DBName:     dbName,
-		ApiUrl:     apiUrl,
+		DBUser:              dbUser,
+		DBPassword:          dbPassword,
+		DBIp:                dbIp,
+		DBPort:              dbPort,
+		DBName:              dbName,
+		ApiUrl:              apiUrl,
+		CertificateFilePath: certificateFilePath,
+		KeyFilePath:         keyFilePath,
 	}
 	return config, nil
 }
