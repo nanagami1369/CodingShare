@@ -57,23 +57,23 @@ func (sm *SetupModule) readEnv(key string) (string, error) {
 }
 
 func (sm *SetupModule) ReadConfigFromEnv() (*model.Config, error) {
-	dbUser, err := sm.readEnv("DB_USER")
+	dbUser, err := sm.readEnv("CODING_SHARE_DB_USER")
 	if err != nil {
 		return nil, err
 	}
-	dbPassword, err := sm.readEnv("DB_PASSWORD")
+	dbPassword, err := sm.readEnv("CODING_SHARE_DB_PASSWORD")
 	if err != nil {
 		return nil, err
 	}
-	dbIp, err := sm.readEnv("DB_IP")
+	dbIp, err := sm.readEnv("CODING_SHARE_DB_IP")
 	if err != nil {
 		return nil, err
 	}
-	dbPort, err := sm.readEnv("DB_PORT")
+	dbPort, err := sm.readEnv("CODING_SHARE_DB_PORT")
 	if err != nil {
 		return nil, err
 	}
-	dbName, err := sm.readEnv("DB_NAME")
+	dbName, err := sm.readEnv("CODING_SHARE_DB_NAME")
 	if err != nil {
 		return nil, err
 	}
