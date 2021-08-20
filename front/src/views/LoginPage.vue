@@ -18,7 +18,7 @@
       <input
         type="text"
         name="name"
-        autocomplete="name"
+        autocomplete="username"
         autocorrect="off"
         autocapitalize="off"
         v-model="id"
@@ -27,7 +27,7 @@
       <input
         type="password"
         name="password"
-        autocomplete="password"
+        autocomplete="current-password"
         v-model="password"
       />
       <button @click="login" type="button">ログイン</button>
