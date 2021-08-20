@@ -47,40 +47,49 @@ func (sm *SetupModule) ConnentDB(config *model.Config) (Client *ent.Client, err 
 	return ent.Open("mysql", dbConfig.FormatDSN())
 }
 
-func (sm *SetupModule) ReadConfigFromEnv() (config *model.Config, err error) {
-	dbUser := os.Getenv("DB_USER")
-	if dbUser == "" {
-		return nil, errors.New("環境変数「DB_USER」が定義されていません")
+func (sm *SetupModule) readEnv(key string) (string, error) {
+	value := os.Getenv(key)
+	if value == "" {
+		return "", errors.New("環境変数「" + key + "」が定義されていません")
 	}
-	dbPassword := os.Getenv("DB_PASSWORD")
-	if dbPassword == "" {
-		return nil, errors.New("環境変数「DB_PASSWORD」が定義されていません")
+	return value, nil
+
+}
+
+func (sm *SetupModule) ReadConfigFromEnv() (*model.Config, error) {
+	dbUser, err := sm.readEnv("DB_USER")
+	if err != nil {
+		return nil, err
 	}
-	dbIp := os.Getenv("DB_IP")
-	if dbIp == "" {
-		return nil, errors.New("環境変数「DB_IP」が定義されていません")
+	dbPassword, err := sm.readEnv("DB_PASSWORD")
+	if err != nil {
+		return nil, err
 	}
-	dbPort := os.Getenv("DB_PORT")
-	if dbPort == "" {
-		return nil, errors.New("環境変数「DB_PORT」が定義されていません")
+	dbIp, err := sm.readEnv("DB_IP")
+	if err != nil {
+		return nil, err
 	}
-	dbName := os.Getenv("DB_NAME")
-	if dbName == "" {
-		return nil, errors.New("環境変数「DB_NAME」が定義されていません")
+	dbPort, err := sm.readEnv("DB_PORT")
+	if err != nil {
+		return nil, err
 	}
-	apiUrl := os.Getenv("CODING_SHARE_API_URL")
-	if apiUrl == "" {
-		return nil, errors.New("環境変数「CODING_SHARE_API_URL」が定義されていません")
+	dbName, err := sm.readEnv("DB_NAME")
+	if err != nil {
+		return nil, err
 	}
-	certificateFilePath := os.Getenv("CODING_SHARE_CERTIFICATE_FILE_PATH")
-	if certificateFilePath == "" {
-		return nil, errors.New("環境変数「CODING_SHARE_CERTIFICATE_FILE_PATH」が定義されていません")
+	apiUrl, err := sm.readEnv("CODING_SHARE_API_URL")
+	if err != nil {
+		return nil, err
 	}
-	keyFilePath := os.Getenv("CODING_SHARE_KEY_FILE_PATH")
-	if keyFilePath == "" {
-		return nil, errors.New("環境変数「CODING_SHARE_CERTIFICATE_FILE_PATH」が定義されていません")
+	certificateFilePath, err := sm.readEnv("CODING_SHARE_CERTIFICATE_FILE_PATH")
+	if err != nil {
+		return nil, err
 	}
-	config = &model.Config{
+	keyFilePath, err := sm.readEnv("CODING_SHARE_KEY_FILE_PATH")
+	if err != nil {
+		return nil, err
+	}
+	config := &model.Config{
 		DBUser:              dbUser,
 		DBPassword:          dbPassword,
 		DBIp:                dbIp,
