@@ -3,6 +3,14 @@ import { CodingSequence } from './models/CodingSequence'
 import { Snapshot } from './models/Snapshot'
 import { Video } from './models/Video'
 
+export const formatRecordingTime = (value: number): string => {
+  const secondTime = value / 1000
+  const hours = ('00' + Math.floor(secondTime / 3600)).slice(-2)
+  const minutes = ('00' + Math.floor((secondTime / 60) % 60)).slice(-2)
+  const seconds = ('00' + Math.floor(secondTime % 60)).slice(-2)
+  return `${hours}:${minutes}:${seconds}`
+}
+
 export const getPreviousTimeSpan = (
   timestamp: number,
   timeSpan: number

@@ -17,6 +17,7 @@
 <script lang="ts">
 import { VideoInfo } from '@/models/VideoInfo'
 import { format } from 'date-fns'
+import { formatRecordingTime } from '@/util'
 import Vue, { PropType } from 'vue'
 
 export default Vue.extend({
@@ -50,7 +51,7 @@ export default Vue.extend({
       if (this.videoInfo.recordingTime < 0) {
         return ''
       }
-      return format(this.videoInfo.recordingTime, 'mm分ss秒')
+      return formatRecordingTime(this.videoInfo.recordingTime)
     },
   },
 })

@@ -29,8 +29,8 @@
   </div>
 </template>
 <script lang="ts">
-import { format } from 'date-fns'
 import VueSlider from 'vue-slider-component'
+import { formatRecordingTime } from '@/util'
 import Vue from 'vue'
 
 type DataType = { value: number }
@@ -60,12 +60,12 @@ export default Vue.extend({
   computed: {
     playbackPosition: function (): string {
       // prettier-ignore
-      return `${format(this.elapsedTime, 'mm:ss')}/${format(this.totalTime,'mm:ss')}`
+      return `${formatRecordingTime(this.elapsedTime)}/${formatRecordingTime(this.totalTime)}`
     },
   },
   methods: {
     tooltipFormatter: function (value: number): string {
-      return format(value, 'mm:ss')
+      return formatRecordingTime(value)
     },
     change: function (time: number): void {
       this.$emit('change', time)
