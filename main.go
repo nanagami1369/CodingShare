@@ -11,6 +11,7 @@ import (
 
 	"github.com/nanagami1369/CodingShare/ent/migrate"
 	"github.com/nanagami1369/CodingShare/ent/user"
+	"github.com/nanagami1369/CodingShare/middleware"
 	"github.com/nanagami1369/CodingShare/model"
 	"github.com/nanagami1369/CodingShare/module"
 )
@@ -63,7 +64,8 @@ func main() {
 	loginLog := log.New(os.Stdout, "[LOGIN]", log.LstdFlags|log.LUTC)
 
 	// router
-	router, _ := sm.GetRouter(config)
+	middleware := middleware.NewMiddleware()
+	router, _ := sm.GetRouter(config, middleware)
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Hello World",

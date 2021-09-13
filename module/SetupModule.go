@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/nanagami1369/CodingShare/ent"
+	"github.com/nanagami1369/CodingShare/middleware"
 	"github.com/nanagami1369/CodingShare/model"
 	"github.com/nanagami1369/CodingShare/repository"
 )
@@ -29,7 +30,7 @@ func (sm *SetupModule) GetUserAccountModule(client *ent.Client, context context.
 	return NewUserAccountModule(r)
 }
 
-func (sm *SetupModule) GetRouter(config *model.Config) (router *gin.Engine, err error) {
+func (sm *SetupModule) GetRouter(config *model.Config, middleware *middleware.Middleware) (router *gin.Engine, err error) {
 	router = gin.Default()
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{
@@ -53,7 +54,7 @@ func (sm *SetupModule) GetRouter(config *model.Config) (router *gin.Engine, err 
 	})
 	router.Use(sessions.Sessions("codingshare", store))
 	api := router.Group("/api")
-	api.Use(sm.loginCheckMiddleware())
+	api.Use(middleware.LoginCheckMiddleware())
 	api.GET("/islogin", func(c *gin.Context) {
 		c.String(http.StatusOK, "ログイン済み")
 	})
@@ -131,17 +132,4 @@ func (sm *SetupModule) ReadConfigFromEnv() (*model.Config, error) {
 		KeyFilePath:         keyFilePath,
 	}
 	return config, nil
-}
-
-func (sm *SetupModule) loginCheckMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session := sessions.Default(c)
-		sessionId := session.Get("session_id")
-		if session_id, ok := sessionId.(string); ok && session_id == "Logind" {
-			c.Next()
-		} else {
-			c.Status(http.StatusForbidden)
-			c.Abort()
-		}
-	}
 }
