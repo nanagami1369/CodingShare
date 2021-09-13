@@ -13,11 +13,11 @@ import (
 	"github.com/nanagami1369/CodingShare/ent/user"
 	"github.com/nanagami1369/CodingShare/middleware"
 	"github.com/nanagami1369/CodingShare/model"
-	"github.com/nanagami1369/CodingShare/module"
+	"github.com/nanagami1369/CodingShare/setup"
 )
 
 func main() {
-	sm := module.NewStupModule()
+	sm := setup.NewSetupManager()
 	// db
 	config, err := sm.ReadConfigFromEnv()
 	if err != nil {

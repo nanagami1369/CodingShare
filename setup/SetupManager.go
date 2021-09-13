@@ -1,4 +1,4 @@
-package module
+package setup
 
 import (
 	"context"
@@ -15,22 +15,23 @@ import (
 	"github.com/nanagami1369/CodingShare/ent"
 	"github.com/nanagami1369/CodingShare/middleware"
 	"github.com/nanagami1369/CodingShare/model"
+	"github.com/nanagami1369/CodingShare/module"
 	"github.com/nanagami1369/CodingShare/repository"
 )
 
-type SetupModule struct {
+type SetupManager struct {
 }
 
-func NewStupModule() *SetupModule {
-	return &SetupModule{}
+func NewSetupManager() *SetupManager {
+	return &SetupManager{}
 }
 
-func (sm *SetupModule) GetUserAccountModule(client *ent.Client, context context.Context) (module UserAccountModule) {
+func (sm *SetupManager) GetUserAccountModule(client *ent.Client, context context.Context) module.UserAccountModule {
 	r := repository.NewUserAccountRepository(context, client)
-	return NewUserAccountModule(r)
+	return module.NewUserAccountModule(r)
 }
 
-func (sm *SetupModule) GetRouter(config *model.Config, middleware *middleware.Middleware) (router *gin.Engine, err error) {
+func (sm *SetupManager) GetRouter(config *model.Config, middleware *middleware.Middleware) (router *gin.Engine, err error) {
 	router = gin.Default()
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{
@@ -61,7 +62,7 @@ func (sm *SetupModule) GetRouter(config *model.Config, middleware *middleware.Mi
 	return router, nil
 }
 
-func (sm *SetupModule) ConnentDB(config *model.Config) (Client *ent.Client, err error) {
+func (sm *SetupManager) ConnentDB(config *model.Config) (Client *ent.Client, err error) {
 	dbConfig := &mysql.Config{
 		User:                 config.DBUser,
 		Passwd:               config.DBPassword,
@@ -74,7 +75,7 @@ func (sm *SetupModule) ConnentDB(config *model.Config) (Client *ent.Client, err 
 	return ent.Open("mysql", dbConfig.FormatDSN())
 }
 
-func (sm *SetupModule) readEnv(key string) (string, error) {
+func (sm *SetupManager) readEnv(key string) (string, error) {
 	value := os.Getenv(key)
 	if value == "" {
 		return "", errors.New("環境変数「" + key + "」が定義されていません")
@@ -83,7 +84,7 @@ func (sm *SetupModule) readEnv(key string) (string, error) {
 
 }
 
-func (sm *SetupModule) ReadConfigFromEnv() (*model.Config, error) {
+func (sm *SetupManager) ReadConfigFromEnv() (*model.Config, error) {
 	dbUser, err := sm.readEnv("CODING_SHARE_DB_USER")
 	if err != nil {
 		return nil, err
