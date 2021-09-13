@@ -3,7 +3,9 @@
 package ent
 
 import (
+	"github.com/google/uuid"
 	"github.com/nanagami1369/CodingShare/ent/schema"
+	"github.com/nanagami1369/CodingShare/ent/session"
 	"github.com/nanagami1369/CodingShare/ent/user"
 )
 
@@ -11,6 +13,12 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	sessionFields := schema.Session{}.Fields()
+	_ = sessionFields
+	// sessionDescID is the schema descriptor for id field.
+	sessionDescID := sessionFields[0].Descriptor()
+	// session.DefaultID holds the default value on creation for the id field.
+	session.DefaultID = sessionDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescUserID is the schema descriptor for user_id field.
