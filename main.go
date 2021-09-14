@@ -108,11 +108,12 @@ func main() {
 	})
 	api.GET("/logout", func(c *gin.Context) {
 		session := sessions.Default(c)
-		err := sem.Logout(session)
+		user, err := sem.Logout(session)
 		if err != nil {
 			log.Println("logout err :", err)
 		}
 		c.String(http.StatusOK, "ログアウトOK")
+		loginLog.Println("logout success request:", user.UserID)
 	})
 
 	router.RunTLS(":8081",

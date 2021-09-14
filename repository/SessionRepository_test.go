@@ -116,7 +116,7 @@ func TestRemove(t *testing.T) {
 	t.Run("セッションを削除できるか", func(t *testing.T) {
 
 		// Setしたセッションが存在するか判定する
-		err := repository.Remove(testUuid)
+		_, err := repository.Remove(testUuid)
 		if err != nil {
 			t.Fatalf("err:%#v", err)
 		}
@@ -125,7 +125,7 @@ func TestRemove(t *testing.T) {
 }
 
 func TestExistFromSession(t *testing.T) {
-		// openDB
+	// openDB
 	opts := []enttest.Option{
 		enttest.WithOptions(ent.Log(t.Log)),
 	}
@@ -146,7 +146,7 @@ func TestExistFromSession(t *testing.T) {
 		Save(context)
 	testUuid := sampleSession.ID
 	repository := NewSessionRepository(context, client)
-t.Run("存在する場合", func(t *testing.T) {
+	t.Run("存在する場合", func(t *testing.T) {
 		result, err := repository.Exists(testUuid)
 		if err != nil {
 			t.Fatalf("err:%#v", err)

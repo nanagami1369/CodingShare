@@ -34,8 +34,16 @@ func (r *SessionRepositoryImpl) Get(uuid uuid.UUID) (*ent.Session, error) {
 	return r.client.Session.Query().Where(session.ID(uuid)).Only(r.context)
 }
 
-func (r *SessionRepositoryImpl) Remove(uuid uuid.UUID) error {
-	return r.client.Session.DeleteOneID(uuid).Exec(r.context)
+func (r *SessionRepositoryImpl) Remove(uuid uuid.UUID) (*ent.User, error) {
+	user, err := r.client.Session.Query().Where(session.ID(uuid)).QueryUser().Only(r.context)
+	if err != nil {
+		return nil, err
+	}
+	err = r.client.Session.DeleteOneID(uuid).Exec(r.context)
+	if err != nil {
+		return nil, err
+	}
+	return user, err
 }
 
 func (r *SessionRepositoryImpl) Exists(uuid uuid.UUID) (bool, error) {

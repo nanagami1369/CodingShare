@@ -18,6 +18,6 @@ type UserAccountRepository interface {
 type SessionRepository interface {
 	Set(user *ent.User, dateOfExpiry time.Time) (*ent.Session, error)
 	Get(uuid uuid.UUID) (*ent.Session, error)
-	Remove(uuid uuid.UUID) error
+	Remove(uuid uuid.UUID) (*ent.User, error)
 	Exists(uuid uuid.UUID) (bool,error)
 }
