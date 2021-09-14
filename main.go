@@ -22,11 +22,11 @@ func main() {
 	// db
 	config, err := sm.ReadConfigFromEnv()
 	if err != nil {
-		log.Panicf("read config err:&#v", err)
+		log.Panicln("read config err:", err)
 	}
 	client, err := sm.ConnentDB(config)
 	if err != nil {
-		log.Panicf("open db err:&#v", err)
+		log.Panicln("open db err:", err)
 	}
 	context := context.Background()
 	uam := sm.GetUserAccountModule(client, context)
@@ -41,7 +41,7 @@ func main() {
 		migrate.WithDropColumn(true),
 	)
 	if err != nil {
-		log.Panicf("open db err:&#v", err)
+		log.Panicln("open db err:", err)
 	}
 
 	// set sample data
