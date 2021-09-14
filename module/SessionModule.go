@@ -45,6 +45,20 @@ func (m *SessionModuleImpl) IsLogin(store sessions.Session) (bool, error) {
 	return m.repository.Exists(uuid)
 }
 
+func (m *SessionModuleImpl) Logout(store sessions.Session) error {
+	uuid, err := m.getSessionIdFromStore(store)
+	if err != nil {
+		return err
+	}
+	// ログアウト処理はログイン済みのユーザーしかアクセスできない仕様なので存在確認はしない
+	err = m.repository.Remove(uuid)
+	if err != nil {
+		return err
+	}
+	store.Delete("session_id")
+	return nil
+}
+
 func (m *SessionModuleImpl) getSessionIdFromStore(store sessions.Session) (uuid.UUID, error) {
 	sessionValue := store.Get("session_id")
 	var token string

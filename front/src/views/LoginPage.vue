@@ -32,6 +32,7 @@
       />
       <button @click="login" type="button">ログイン</button>
       <button @click="isLogin" type="button">ログイン判定</button>
+      <button @click="logout" type="button">ログアウト</button>
     </div>
   </div>
 </template>
@@ -101,6 +102,19 @@ export default Vue.extend({
       // エラーチェックが微妙
       const response = await fetch(
         `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/islogin`,
+        {
+          mode: 'cors',
+          credentials: 'include',
+        }
+      )
+      let message =
+        `message:${await response.text()}\n` +
+        `http status:${response.status} ${response.statusText}`
+      alert(message)
+    },
+    logout: async function () {
+      const response = await fetch(
+        `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/logout`,
         {
           mode: 'cors',
           credentials: 'include',

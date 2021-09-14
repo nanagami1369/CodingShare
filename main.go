@@ -106,6 +106,14 @@ func main() {
 	api.GET("/islogin", func(c *gin.Context) {
 		c.String(http.StatusOK, "ログイン済み")
 	})
+	api.GET("/logout", func(c *gin.Context) {
+		session := sessions.Default(c)
+		err := sem.Logout(session)
+		if err != nil {
+			log.Println("logout err :", err)
+		}
+		c.String(http.StatusOK, "ログアウトOK")
+	})
 
 	router.RunTLS(":8081",
 		config.CertificateFilePath,

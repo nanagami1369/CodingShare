@@ -16,4 +16,5 @@ type UserAccountModule interface {
 type SessionModule interface {
 	Set(store sessions.Session, user *ent.User, dateOfExpiry time.Time) (string, error)
 	IsLogin(store sessions.Session) (bool, error)
+	Logout(store sessions.Session) error
 }
