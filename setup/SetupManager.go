@@ -59,11 +59,6 @@ func (sm *SetupManager) GetRouter(config *model.Config, middleware *middleware.M
 		MaxAge: 60 * 60 * 24 * 3,
 	})
 	router.Use(sessions.Sessions("codingshare", store))
-	api := router.Group("/api")
-	api.Use(middleware.LoginCheckMiddleware())
-	api.GET("/islogin", func(c *gin.Context) {
-		c.String(http.StatusOK, "ログイン済み")
-	})
 	return router, nil
 }
 

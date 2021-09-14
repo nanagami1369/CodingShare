@@ -100,6 +100,13 @@ func main() {
 		})
 		loginLog.Println("login success request:", user.UserID)
 	})
+
+	api := router.Group("/api")
+	api.Use(middleware.LoginCheckMiddleware())
+	api.GET("/islogin", func(c *gin.Context) {
+		c.String(http.StatusOK, "ログイン済み")
+	})
+
 	router.RunTLS(":8081",
 		config.CertificateFilePath,
 		config.KeyFilePath)
