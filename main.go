@@ -96,7 +96,7 @@ func main() {
 		c.JSON(200, gin.H{
 			"message": "Login Ok Hello " + user.UserID + "!",
 		})
-		loginLog.Printf("login success request: %v, user: %v", loginRequest, user.UserID)
+		loginLog.Println("login success request:", user.UserID)
 	})
 	router.RunTLS(":8081",
 		config.CertificateFilePath,
