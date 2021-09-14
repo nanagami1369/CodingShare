@@ -1,6 +1,7 @@
 package module
 
 import (
+	"errors"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -37,15 +38,20 @@ func (m *SessionModuleImpl) Set(store sessions.Session, user *ent.User, dateOfEx
 }
 
 func (m *SessionModuleImpl) IsLogin(store sessions.Session) (bool, error) {
-	sessionValue := store.Get("session_id")
-	var token string
-	if session_id, ok := sessionValue.(string); ok {
-		token = session_id
-	}
-
-	uuid, err := uuid.Parse(token)
+	uuid, err := m.getSessionIdFromStore(store)
 	if err != nil {
 		return false, err
 	}
 	return m.repository.Exists(uuid)
+}
+
+func (m *SessionModuleImpl) getSessionIdFromStore(store sessions.Session) (uuid.UUID, error) {
+	sessionValue := store.Get("session_id")
+	var token string
+	if session_id, ok := sessionValue.(string); ok {
+		token = session_id
+	} else {
+		return uuid.Nil, errors.New("session can not read")
+	}
+	return uuid.Parse(token)
 }
