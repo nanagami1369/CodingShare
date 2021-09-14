@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -29,7 +30,9 @@ func main() {
 	}
 	context := context.Background()
 	uam := sm.GetUserAccountModule(client, context)
+	sem := sm.GetSessionModule(client, context)
 	defer client.Close()
+	middleware := middleware.NewMiddleware(sem)
 
 	// migrate
 	err = client.Schema.Create(
@@ -64,7 +67,6 @@ func main() {
 	loginLog := log.New(os.Stdout, "[LOGIN]", log.LstdFlags|log.LUTC)
 
 	// router
-	middleware := middleware.NewMiddleware()
 	router, _ := sm.GetRouter(config, middleware)
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -91,8 +93,8 @@ func main() {
 		}
 		// ログイン成功
 		session := sessions.Default(c)
-		session.Set("session_id", "Logind")
-		session.Save()
+		dateOfExpiry := time.Now().AddDate(0, 0, 3)
+		sem.Set(session, user, dateOfExpiry)
 		c.JSON(200, gin.H{
 			"message": "Login Ok Hello " + user.UserID + "!",
 		})

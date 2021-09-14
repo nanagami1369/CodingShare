@@ -31,6 +31,11 @@ func (sm *SetupManager) GetUserAccountModule(client *ent.Client, context context
 	return module.NewUserAccountModule(r)
 }
 
+func (sm *SetupManager) GetSessionModule(client *ent.Client, context context.Context) module.SessionModule {
+	r := repository.NewSessionRepository(context, client)
+	return module.NewSessionModule(r)
+}
+
 func (sm *SetupManager) GetRouter(config *model.Config, middleware *middleware.Middleware) (router *gin.Engine, err error) {
 	router = gin.Default()
 	corsConfig := cors.DefaultConfig()
