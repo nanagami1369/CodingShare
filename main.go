@@ -82,19 +82,18 @@ func main() {
 			})
 			return
 		}
-		user, err := uam.Login(loginRequest)
+		user, err := uam.Confirm(loginRequest)
 		if err != nil {
-			// ログインに失敗したら失敗した事だけ伝える
+			// 認証に失敗したら失敗した事だけ伝える
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"message": "Authentication failure",
 			})
 			loginLog.Printf("login err request: %v ,err: %v", loginRequest, err)
 			return
 		}
-		// ログイン成功
-		session := sessions.Default(c)
+		// 認証成功
 		dateOfExpiry := time.Now().AddDate(0, 0, 3)
-		sem.Set(session, user, dateOfExpiry)
+		sem.Login(session, user, dateOfExpiry)
 		c.JSON(200, gin.H{
 			"message": "Login Ok Hello " + user.UserID + "!",
 		})

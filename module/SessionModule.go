@@ -22,7 +22,7 @@ func NewSessionModule(r repository.SessionRepository) SessionModule {
 	}
 }
 
-func (m *SessionModuleImpl) Set(store sessions.Session, user *ent.User, dateOfExpiry time.Time) (string, error) {
+func (m *SessionModuleImpl) Login(store sessions.Session, user *ent.User, dateOfExpiry time.Time) (string, error) {
 	// セッションを作成しサーバーに保存
 	newSession, err := m.repository.Set(user, dateOfExpiry)
 	if err != nil {

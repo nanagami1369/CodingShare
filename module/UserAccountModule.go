@@ -19,7 +19,7 @@ func NewUserAccountModule(r repository.UserAccountRepository) UserAccountModule 
 	return &UserAccountModuleImpl{repository: r}
 }
 
-func (m *UserAccountModuleImpl) Login(request *model.LoginRequest) (*ent.User, error) {
+func (m *UserAccountModuleImpl) Confirm(request *model.LoginRequest) (*ent.User, error) {
 	user, err := m.repository.FindOne(request.Id)
 	if err != nil {
 		return nil, err
