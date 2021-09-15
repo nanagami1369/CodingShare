@@ -92,8 +92,9 @@ func main() {
 			return
 		}
 		// 認証成功
+		store := sessions.Default(c)
 		dateOfExpiry := time.Now().AddDate(0, 0, 3)
-		sem.Login(session, user, dateOfExpiry)
+		sem.Login(store, user, dateOfExpiry)
 		c.JSON(200, gin.H{
 			"message": "Login Ok Hello " + user.UserID + "!",
 		})
@@ -106,8 +107,8 @@ func main() {
 		c.String(http.StatusOK, "ログイン済み")
 	})
 	api.GET("/logout", func(c *gin.Context) {
-		session := sessions.Default(c)
-		user, err := sem.Logout(session)
+		store := sessions.Default(c)
+		user, err := sem.Logout(store)
 		if err != nil {
 			log.Println("logout err :", err)
 		}
