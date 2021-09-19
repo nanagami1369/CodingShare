@@ -98,20 +98,7 @@ export default Vue.extend({
       }
     },
     isLogin: async function () {
-      // ちゃんとしたログイン後画面ができたら削除するので
-      // エラーチェックが微妙
-      const response = await fetch(
-        `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/islogin`,
-        {
-          method: 'POST',
-          mode: 'cors',
-          credentials: 'include',
-        }
-      )
-      let message =
-        `message:${await response.text()}\n` +
-        `http status:${response.status} ${response.statusText}`
-      alert(message)
+      this.$router.push('mypage')
     },
     logout: async function () {
       const response = await fetch(
