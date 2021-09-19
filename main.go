@@ -103,10 +103,10 @@ func main() {
 
 	api := router.Group("/api")
 	api.Use(middleware.LoginCheckMiddleware())
-	api.GET("/islogin", func(c *gin.Context) {
+	api.POST("/islogin", func(c *gin.Context) {
 		c.String(http.StatusOK, "ログイン済み")
 	})
-	api.GET("/logout", func(c *gin.Context) {
+	api.POST("/logout", func(c *gin.Context) {
 		store := sessions.Default(c)
 		user, err := sem.Logout(store)
 		if err != nil {

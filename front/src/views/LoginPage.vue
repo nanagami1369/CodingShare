@@ -103,6 +103,7 @@ export default Vue.extend({
       const response = await fetch(
         `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/islogin`,
         {
+          method: 'POST',
           mode: 'cors',
           credentials: 'include',
         }
@@ -116,6 +117,7 @@ export default Vue.extend({
       const response = await fetch(
         `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/logout`,
         {
+          method: 'POST',
           mode: 'cors',
           credentials: 'include',
         }
