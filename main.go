@@ -77,17 +77,13 @@ func main() {
 		loginRequest := &model.LoginRequest{}
 		if err := c.ShouldBindJSON(&loginRequest); err != nil {
 			// JSONが読み込めなかったらエラーを返す
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": err.Error(),
-			})
+			c.String(http.StatusBadRequest, err.Error())
 			return
 		}
 		user, err := uam.Confirm(loginRequest)
 		if err != nil {
 			// 認証に失敗したら失敗した事だけ伝える
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Authentication failure",
-			})
+			c.JSON(http.StatusUnauthorized, "Authentication failure")
 			loginLog.Printf("login err request: %v ,err: %v", loginRequest, err)
 			return
 		}
