@@ -25,6 +25,7 @@ const routes: Array<RouteConfig> = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/LoginPage.vue'),
+    meta: { notLogged: true },
   },
   {
     path: '/mypage',
@@ -47,11 +48,13 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   const authRequire = to.matched.some((record) => record.meta.authRequire)
-  if (!authRequire) {
-    // ログイン不要なら進む
+  const notLogged = to.matched.some((record) => record.meta.notLogged)
+  if (!authRequire && !notLogged) {
+    // ログイン判定が不要ならばなにもしない
     next()
     return
   }
+  // ログイン判定
   const response = await fetch(
     `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/islogin`,
     {
@@ -60,20 +63,39 @@ router.beforeEach(async (to, from, next) => {
       credentials: 'include',
     }
   )
-  if (response.status == 200) {
-    // 認証成功なら進む
-    next()
-    return
+  if (authRequire) {
+    if (response.status == 200) {
+      // 認証成功なら進む
+      next()
+      return
+    }
+    // 認証エラー
+    console.log(response.status)
+    if (response.status == 403) {
+      // 認証エラーならログインページへ
+      next('login')
+      return
+    }
+    // それ以外の状態なら直接結果を表示
+    alert(response.body)
   }
-  // 認証エラー
-  console.log(response.status)
-  if (response.status == 403) {
-    // 認証エラーならログインページへ
-    next('login')
-    return
+  if (notLogged) {
+    console.log('login')
+    if (response.status == 403) {
+      // // 認証エラーなら進む
+      next()
+      return
+    }
+    console.log(response.status)
+    if (response.status == 200) {
+      // 認証成功ならマイページへ
+      next('mypage')
+      return
+    }
+    // それ以外の状態なら直接結果を表示
+    alert(response.body)
   }
-  // それ以外の状態なら直接結果を表示
-  alert(response.body)
+  // authLogin notLogged 両方とも無い場合はすでに弾いているのでnextは呼ばない
 })
 
 export default router
