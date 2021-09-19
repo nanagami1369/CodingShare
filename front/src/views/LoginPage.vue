@@ -10,7 +10,7 @@
         これに同意できない場合、あなたは本ソフトを使用することができません。
       </p>
     </div>
-    <div class="controll-panel">
+    <div class="control-panel">
       <p class="error-message" v-show="errorMessage != ''">
         {{ errorMessage }}
       </p>
@@ -109,24 +109,24 @@ export default Vue.extend({
   align-items: center;
 }
 
-.controll-panel {
+.control-panel {
   display: flex;
   flex-direction: column;
   width: 60vh;
 }
 
-.controll-panel input {
+.control-panel input {
   font-size: 1.5em;
   border-radius: 10px;
   border: solid 2px black;
 }
 
-.controll-panel p {
+.control-panel p {
   font-size: 1em;
   text-align: left;
 }
 
-.controll-panel .error-message {
+.control-panel .error-message {
   color: #a94442;
   text-decoration: underline;
   background-color: #f2dede;
@@ -135,7 +135,7 @@ export default Vue.extend({
   padding: 5px;
 }
 
-.controll-panel button {
+.control-panel button {
   padding: 5px 10px;
   margin: 5px 0px;
   background-color: #3dcf64;
@@ -143,7 +143,7 @@ export default Vue.extend({
   border-radius: 25px;
   width: 150px;
 }
-.controll-panel button:active {
+.control-panel button:active {
   background-color: #77eb96;
 }
 </style>
