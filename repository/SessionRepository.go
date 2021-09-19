@@ -30,8 +30,16 @@ func (r *SessionRepositoryImpl) Set(user *ent.User, dateOfExpiry time.Time) (*en
 		Save(r.context)
 }
 
-func (r *SessionRepositoryImpl) Get(uuid uuid.UUID) (*ent.Session, error) {
-	return r.client.Session.Query().Where(session.ID(uuid)).Only(r.context)
+func (r *SessionRepositoryImpl) Get(uuid uuid.UUID) (*ent.Session, *ent.User, error) {
+	session, err := r.client.Session.Query().Where(session.ID(uuid)).Only(r.context)
+	if err != nil {
+		return nil, nil, err
+	}
+	user, err := session.QueryUser().Only(r.context)
+	if err != nil {
+		return nil, nil, err
+	}
+	return session, user, err
 }
 
 func (r *SessionRepositoryImpl) Remove(uuid uuid.UUID) (*ent.User, error) {

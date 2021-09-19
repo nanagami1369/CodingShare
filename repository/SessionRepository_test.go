@@ -83,11 +83,11 @@ func TestGet(t *testing.T) {
 	repository := NewSessionRepository(context, client)
 	t.Run("Setしたセッションが取得できるか", func(t *testing.T) {
 		// Setしたセッションが存在するか判定する
-		session, err := repository.Get(testUuid)
+		session, user, err := repository.Get(testUuid)
 		if err != nil {
 			t.Fatalf("err:%#v", err)
 		}
-		t.Logf("searched user :%v", session)
+		t.Logf("searched session :%v user :%v", session, user)
 	})
 }
 
