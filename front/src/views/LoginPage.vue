@@ -76,11 +76,10 @@ export default Vue.extend({
             }),
           }
         )
-        const message = await response.text()
         switch (response.status) {
           case 200:
             // ログイン後の処理を書く
-            alert(JSON.parse(message).message)
+            this.$router.push('mypage')
             break
           case 401:
             this.errorMessage = 'ログインに失敗しました'
