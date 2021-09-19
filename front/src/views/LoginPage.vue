@@ -31,7 +31,6 @@
         v-model="password"
       />
       <button @click="login" type="button">ログイン</button>
-      <button @click="isLogin" type="button">ログイン判定</button>
     </div>
   </div>
 </template>
@@ -95,9 +94,6 @@ export default Vue.extend({
         // fetchの例外はエラーとして処理
         this.errorMessage = (error as Error).message
       }
-    },
-    isLogin: async function () {
-      this.$router.push('mypage')
     },
   },
 })
