@@ -55,14 +55,21 @@ router.beforeEach(async (to, from, next) => {
     return
   }
   // ログイン判定
-  const response = await fetch(
-    `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/islogin`,
-    {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-    }
-  )
+  let response: Response
+  try {
+    response = await fetch(
+      `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/islogin`,
+      {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+      }
+    )
+  } catch (error: unknown) {
+    // 通信エラーの場合はアラートで表示
+    alert((error as Error).message)
+    return
+  }
   if (authRequire) {
     if (response.status == 200) {
       // 認証成功なら進む
