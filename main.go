@@ -122,6 +122,7 @@ func main() {
 		store := sessions.Default(c)
 		user, err := sem.Logout(store)
 		if err != nil {
+			c.Status(http.StatusInternalServerError)
 			log.Println("logout err :", err)
 		}
 		c.String(http.StatusOK, "ログアウトOK")
