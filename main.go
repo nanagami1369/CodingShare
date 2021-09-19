@@ -106,6 +106,18 @@ func main() {
 	api.POST("/islogin", func(c *gin.Context) {
 		c.String(http.StatusOK, "ログイン済み")
 	})
+	api.POST("/auth", func(c *gin.Context) {
+		store := sessions.Default(c)
+		_, user, err := sem.Get(store)
+		if err != nil {
+			log.Println("get user err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"userId": user.UserID,
+		})
+	})
 	api.POST("/logout", func(c *gin.Context) {
 		store := sessions.Default(c)
 		user, err := sem.Logout(store)

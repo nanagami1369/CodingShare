@@ -37,6 +37,14 @@ func (m *SessionModuleImpl) Login(store sessions.Session, user *ent.User, dateOf
 	return token, nil
 }
 
+func (m *SessionModuleImpl) Get(store sessions.Session) (*ent.Session, *ent.User, error) {
+	uuid, err := m.getSessionIdFromStore(store)
+	if err != nil {
+		return nil, nil, err
+	}
+	return m.repository.Get(uuid)
+}
+
 func (m *SessionModuleImpl) IsLogin(store sessions.Session) (bool, error) {
 	uuid, err := m.getSessionIdFromStore(store)
 	if err != nil {

@@ -17,4 +17,5 @@ type SessionModule interface {
 	Login(store sessions.Session, user *ent.User, dateOfExpiry time.Time) (string, error)
 	IsLogin(store sessions.Session) (bool, error)
 	Logout(store sessions.Session) (*ent.User, error)
+	Get(store sessions.Session) (*ent.Session, *ent.User, error)
 }
