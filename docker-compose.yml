@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: coding_share_front
+    networks:
+      - coding_share_net
+
+  proxy_server:
+    build:
+      context: ./proxy_server
+      dockerfile: Dockerfile
+    container_name: 'coding_share_proxy_server'
+    networks:
+      - coding_share_net
+    ports:
+      - 8080:80
+    depends_on:
+      - front
+
+networks:
+  coding_share_net:
+    driver: bridge
