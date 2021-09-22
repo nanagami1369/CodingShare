@@ -16,9 +16,16 @@ services:
     networks:
       - coding_share_net
     ports:
-      - 8080:80
+      - 8080:443
     depends_on:
       - front
+    volumes:
+      - type: bind
+        source: "${CODING_SHARE_CERTIFICATE_FILE_PATH}"
+        target: "/etc/nginx/server.crt"
+      - type: bind
+        source: ${CODING_SHARE_KEY_FILE_PATH}
+        target: "/etc/nginx/server.key"
 
 networks:
   coding_share_net:
