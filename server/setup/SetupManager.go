@@ -113,14 +113,6 @@ func (sm *SetupManager) ReadConfigFromEnv() (*model.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	certificateFilePath, err := sm.readEnv("CODING_SHARE_CERTIFICATE_FILE_PATH")
-	if err != nil {
-		return nil, err
-	}
-	keyFilePath, err := sm.readEnv("CODING_SHARE_KEY_FILE_PATH")
-	if err != nil {
-		return nil, err
-	}
 	config := &model.Config{
 		DBUser:              dbUser,
 		DBPassword:          dbPassword,
@@ -129,8 +121,6 @@ func (sm *SetupManager) ReadConfigFromEnv() (*model.Config, error) {
 		DBName:              dbName,
 		ApiUrl:              apiUrl,
 		WebUrl:              webUrl,
-		CertificateFilePath: certificateFilePath,
-		KeyFilePath:         keyFilePath,
 	}
 	return config, nil
 }

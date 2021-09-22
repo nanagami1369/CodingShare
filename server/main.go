@@ -125,7 +125,5 @@ func main() {
 		loginLog.Println("logout success request:", user.UserID)
 	})
 
-	router.RunTLS(":8081",
-		config.CertificateFilePath,
-		config.KeyFilePath)
+	router.RunTLS(":8080","/server.crt","/server.key")
 }

@@ -8,6 +8,4 @@ type Config struct {
 	DBName              string
 	ApiUrl              string
 	WebUrl              string
-	CertificateFilePath string
-	KeyFilePath         string
 }
