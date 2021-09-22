@@ -12,7 +12,7 @@ services:
     build:
       context: ./proxy_server
       dockerfile: Dockerfile
-    container_name: 'coding_share_proxy_server'
+    container_name: coding_share_proxy_server
     networks:
       - coding_share_net
     ports:
