@@ -64,18 +64,15 @@ export default Vue.extend({
         return
       }
       try {
-        const response = await fetch(
-          `${process.env.VUE_APP_CODING_SHARE_API_URL}/login`,
-          {
-            method: 'POST',
-            mode: 'cors',
-            credentials: 'include',
-            body: JSON.stringify({
-              id: this.id,
-              password: this.password,
-            }),
-          }
-        )
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'include',
+          body: JSON.stringify({
+            id: this.id,
+            password: this.password,
+          }),
+        })
         switch (response.status) {
           case 200:
             // ログイン後の処理を書く
