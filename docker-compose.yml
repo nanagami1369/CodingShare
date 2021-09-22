@@ -7,6 +7,13 @@ services:
     container_name: coding_share_front
     networks:
       - coding_share_net
+    volumes:
+      - type: bind
+        source: "${CODING_SHARE_CERTIFICATE_FILE_PATH}"
+        target: "/etc/nginx/server.crt"
+      - type: bind
+        source: ${CODING_SHARE_KEY_FILE_PATH}
+        target: "/etc/nginx/server.key"
 
   proxy_server:
     build:
