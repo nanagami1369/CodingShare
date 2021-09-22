@@ -97,12 +97,12 @@ func main() {
 		loginLog.Println("login success request:", user.UserID)
 	})
 
-	api := router.Group("/api")
-	api.Use(middleware.LoginCheckMiddleware())
-	api.POST("/islogin", func(c *gin.Context) {
+	private := router.Group("/private")
+	private.Use(middleware.LoginCheckMiddleware())
+	private.POST("/islogin", func(c *gin.Context) {
 		c.String(http.StatusOK, "ログイン済み")
 	})
-	api.POST("/auth", func(c *gin.Context) {
+	private.POST("/auth", func(c *gin.Context) {
 		store := sessions.Default(c)
 		_, user, err := sem.Get(store)
 		if err != nil {
@@ -114,7 +114,7 @@ func main() {
 			"userId": user.UserID,
 		})
 	})
-	api.POST("/logout", func(c *gin.Context) {
+	private.POST("/logout", func(c *gin.Context) {
 		store := sessions.Default(c)
 		user, err := sem.Logout(store)
 		if err != nil {

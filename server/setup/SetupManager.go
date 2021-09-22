@@ -7,7 +7,6 @@ import (
 
 	"os"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -38,15 +37,6 @@ func (sm *SetupManager) GetSessionModule(client *ent.Client, context context.Con
 
 func (sm *SetupManager) GetRouter(config *model.Config, middleware *middleware.Middleware) (router *gin.Engine, err error) {
 	router = gin.Default()
-	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{
-		config.WebUrl,
-	}
-	corsConfig.AllowCredentials = true
-	corsConfig.AllowHeaders = []string{
-		"Access-Control-Allow-Credentials",
-	}
-	router.Use(cors.New(corsConfig))
 	store := cookie.NewStore([]byte("secret"))
 	store.Options(sessions.Options{
 		Secure:   true,
@@ -67,7 +57,7 @@ func (sm *SetupManager) ConnentDB(config *model.Config) (Client *ent.Client, err
 		User:                 config.DBUser,
 		Passwd:               config.DBPassword,
 		Net:                  "tcp",
-		Addr:                 config.DBIp + ":" + config.DBPort,
+		Addr:                 config.DBHost,
 		DBName:               config.DBName,
 		AllowNativePasswords: true,
 		ParseTime:            true,
@@ -85,42 +75,27 @@ func (sm *SetupManager) readEnv(key string) (string, error) {
 }
 
 func (sm *SetupManager) ReadConfigFromEnv() (*model.Config, error) {
-	dbUser, err := sm.readEnv("CODING_SHARE_DB_USER")
+	dbUser, err := sm.readEnv("MYSQL_USER")
 	if err != nil {
 		return nil, err
 	}
-	dbPassword, err := sm.readEnv("CODING_SHARE_DB_PASSWORD")
+	dbPassword, err := sm.readEnv("MYSQL_PASSWORD")
 	if err != nil {
 		return nil, err
 	}
-	dbIp, err := sm.readEnv("CODING_SHARE_DB_IP")
+	dbHost, err := sm.readEnv("MYSQL_HOST")
 	if err != nil {
 		return nil, err
 	}
-	dbPort, err := sm.readEnv("CODING_SHARE_DB_PORT")
-	if err != nil {
-		return nil, err
-	}
-	dbName, err := sm.readEnv("CODING_SHARE_DB_NAME")
-	if err != nil {
-		return nil, err
-	}
-	apiUrl, err := sm.readEnv("CODING_SHARE_API_URL")
-	if err != nil {
-		return nil, err
-	}
-	webUrl, err := sm.readEnv("CODING_SHARE_WEB_URL")
+	dbName, err := sm.readEnv("MYSQL_DATABASE")
 	if err != nil {
 		return nil, err
 	}
 	config := &model.Config{
-		DBUser:              dbUser,
-		DBPassword:          dbPassword,
-		DBIp:                dbIp,
-		DBPort:              dbPort,
-		DBName:              dbName,
-		ApiUrl:              apiUrl,
-		WebUrl:              webUrl,
+		DBUser:     dbUser,
+		DBPassword: dbPassword,
+		DBHost:     dbHost,
+		DBName:     dbName,
 	}
 	return config, nil
 }

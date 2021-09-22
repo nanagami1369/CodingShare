@@ -57,14 +57,11 @@ router.beforeEach(async (to, from, next) => {
   // ログイン判定
   let response: Response
   try {
-    response = await fetch(
-      `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/islogin`,
-      {
-        method: 'POST',
-        mode: 'cors',
-        credentials: 'include',
-      }
-    )
+    response = await fetch('/api/private/islogin', {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+    })
   } catch (error: unknown) {
     // 通信エラーの場合はアラートで表示
     alert((error as Error).message)

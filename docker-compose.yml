@@ -15,6 +15,33 @@ services:
         source: ${CODING_SHARE_KEY_FILE_PATH}
         target: "/etc/nginx/server.key"
 
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: coding_share_server
+    networks:
+      - coding_share_net
+    env_file:
+      - .env
+    volumes:
+      - type: bind
+        source: "${CODING_SHARE_CERTIFICATE_FILE_PATH}"
+        target: "/server.crt"
+      - type: bind
+        source: ${CODING_SHARE_KEY_FILE_PATH}
+        target: "/server.key"
+    depends_on:
+      - db
+  db:
+    image: mariadb:10.5.8
+    container_name: coding_share_db_server
+    networks:
+      - coding_share_net
+    command: mysqld --character-set-server=utf8mb4  --collation-server=utf8mb4_general_ci
+    env_file:
+      - .env
+
   proxy_server:
     build:
       context: ./proxy_server
@@ -26,6 +53,7 @@ services:
       - 8080:443
     depends_on:
       - front
+      - server
     volumes:
       - type: bind
         source: "${CODING_SHARE_CERTIFICATE_FILE_PATH}"

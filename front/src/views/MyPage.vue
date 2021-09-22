@@ -22,14 +22,11 @@ export default Vue.extend({
   methods: {
     logout: async function () {
       try {
-        const response = await fetch(
-          `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/logout`,
-          {
-            method: 'POST',
-            mode: 'cors',
-            credentials: 'include',
-          }
-        )
+        const response = await fetch('/api/private/logout', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'include',
+        })
         if (response.status != 200) {
           // 失敗時はエラーを表示
           let message =
@@ -47,14 +44,11 @@ export default Vue.extend({
   },
   async created(): Promise<void> {
     try {
-      const response = await fetch(
-        `${process.env.VUE_APP_CODING_SHARE_API_URL}/api/auth`,
-        {
-          method: 'POST',
-          mode: 'cors',
-          credentials: 'include',
-        }
-      )
+      const response = await fetch('/api/private//auth', {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+      })
       if (response.status != 200) {
         // 失敗時はエラーを表示
         let message =
