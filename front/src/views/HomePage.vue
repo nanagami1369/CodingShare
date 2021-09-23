@@ -9,6 +9,7 @@
       <p>
         これに同意できない場合、あなたは本ソフトを使用することができません。
       </p>
+      <p>{{ userId }}</p>
     </div>
     <div class="controll-panel">
       <!-- prettier-ignore -->
@@ -31,6 +32,11 @@ export default Vue.extend({
   name: 'HomePage',
   components: {
     FontAwesomeIcon,
+  },
+  computed: {
+    userId() {
+      return this.$store.getters.userId
+    },
   },
 })
 </script>

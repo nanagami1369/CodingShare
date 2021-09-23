@@ -1,3 +1,4 @@
+import { store } from '@/store'
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../views/HomePage.vue'
@@ -49,15 +50,10 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
   const authRequire = to.matched.some((record) => record.meta.authRequire)
   const notLogged = to.matched.some((record) => record.meta.notLogged)
-  if (!authRequire && !notLogged) {
-    // ログイン判定が不要ならばなにもしない
-    next()
-    return
-  }
   // ログイン判定
   let response: Response
   try {
-    response = await fetch('/api/private/islogin', {
+    response = await fetch('/api/private/auth', {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
@@ -67,6 +63,27 @@ router.beforeEach(async (to, from, next) => {
     alert((error as Error).message)
     return
   }
+  // 認証成功なら
+  switch (response.status) {
+    case 200:
+      store.dispatch('setUserIdAction', (await response.json()).userId)
+      break
+    case 403:
+      store.dispatch('resetUserIdAction')
+      break
+    default:
+      if (!authRequire && !notLogged && response.status == 404) {
+        // サーバー無しでフロントエンドのデバッグをするため
+        // 認証情報が不要なページかつ404の場合はページを見せる
+        console.error('通信エラー\n', await response.text())
+        next()
+      } else {
+        // それ以外の状態なら直接結果を表示
+        alert(await response.text())
+      }
+      return
+  }
+
   if (authRequire) {
     if (response.status == 200) {
       // 認証成功なら進む
@@ -80,8 +97,6 @@ router.beforeEach(async (to, from, next) => {
       next('login')
       return
     }
-    // それ以外の状態なら直接結果を表示
-    alert(response.body)
   }
   if (notLogged) {
     console.log('login')
@@ -96,10 +111,9 @@ router.beforeEach(async (to, from, next) => {
       next('mypage')
       return
     }
-    // それ以外の状態なら直接結果を表示
-    alert(response.body)
   }
-  // authLogin notLogged 両方とも無い場合はすでに弾いているのでnextは呼ばない
+  // authLogin notLogged 両方とも無い場合は先に進む
+  next()
 })
 
 export default router
