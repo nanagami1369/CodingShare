@@ -9,11 +9,11 @@ services:
       - coding_share_net
     volumes:
       - type: bind
-        source: "${CERTIFICATE_FILE_PATH}"
-        target: "/etc/nginx/server.crt"
+        source: ${CERTIFICATE_FILE_PATH}
+        target: /etc/nginx/server.crt
       - type: bind
         source: ${KEY_FILE_PATH}
-        target: "/etc/nginx/server.key"
+        target: /etc/nginx/server.key
 
   server:
     build:
@@ -26,11 +26,11 @@ services:
       - .env
     volumes:
       - type: bind
-        source: "${CERTIFICATE_FILE_PATH}"
-        target: "/server.crt"
+        source: ${CERTIFICATE_FILE_PATH}
+        target: /server.crt
       - type: bind
         source: ${KEY_FILE_PATH}
-        target: "/server.key"
+        target: /server.key
     depends_on:
       - db
   db:
@@ -56,11 +56,11 @@ services:
       - server
     volumes:
       - type: bind
-        source: "${CERTIFICATE_FILE_PATH}"
-        target: "/etc/nginx/server.crt"
+        source: ${CERTIFICATE_FILE_PATH}
+        target: /etc/nginx/server.crt
       - type: bind
         source: ${KEY_FILE_PATH}
-        target: "/etc/nginx/server.key"
+        target: /etc/nginx/server.key
 
 networks:
   coding_share_net:
