@@ -48,7 +48,7 @@ const router = new VueRouter({
 })
 
 const isLogin = (): boolean => {
-  return store.getters.userId != ''
+  return store.getters.isLogin
 }
 
 router.beforeEach(async (to, from, next) => {
