@@ -96,13 +96,7 @@ func main() {
 		})
 		loginLog.Println("login success request:", user.UserID)
 	})
-
-	private := router.Group("/private")
-	private.Use(middleware.LoginCheckMiddleware())
-	private.POST("/islogin", func(c *gin.Context) {
-		c.String(http.StatusOK, "ログイン済み")
-	})
-	private.POST("/auth", func(c *gin.Context) {
+	router.POST("/auth", func(c *gin.Context) {
 		store := sessions.Default(c)
 		_, user, err := sem.Get(store)
 		if err != nil {
@@ -110,10 +104,18 @@ func main() {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
+		if user == nil {
+			c.JSON(http.StatusOK, gin.H{
+				"userId": "",
+			})
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{
 			"userId": user.UserID,
 		})
 	})
+	private := router.Group("/private")
+	private.Use(middleware.LoginCheckMiddleware())
 	private.POST("/logout", func(c *gin.Context) {
 		store := sessions.Default(c)
 		user, err := sem.Logout(store)
@@ -125,5 +127,5 @@ func main() {
 		loginLog.Println("logout success request:", user.UserID)
 	})
 
-	router.RunTLS(":8080","/server.crt","/server.key")
+	router.RunTLS(":8080", "/server.crt", "/server.key")
 }
