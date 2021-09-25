@@ -99,9 +99,6 @@ func main() {
 
 	private := router.Group("/private")
 	private.Use(middleware.LoginCheckMiddleware())
-	private.POST("/islogin", func(c *gin.Context) {
-		c.String(http.StatusOK, "ログイン済み")
-	})
 	private.POST("/auth", func(c *gin.Context) {
 		store := sessions.Default(c)
 		_, user, err := sem.Get(store)
