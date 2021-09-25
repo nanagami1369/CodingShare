@@ -8,6 +8,7 @@ export const store = new Vuex.Store({
   },
   getters: {
     userId: (state) => state.userId,
+    isLogin: (state) => state.userId != '',
   },
   mutations: {
     setUserId(state, newUserId) {
