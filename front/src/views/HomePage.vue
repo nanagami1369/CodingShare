@@ -35,7 +35,7 @@ export default Vue.extend({
   },
   computed: {
     userId() {
-      return this.$store.getters.userId != ''
+      return this.$store.getters.isLogin
         ? this.$store.getters.userId
         : 'ログインしていません'
     },
