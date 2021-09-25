@@ -42,6 +42,13 @@ func (m *SessionModuleImpl) Get(store sessions.Session) (*ent.Session, *ent.User
 	if err != nil {
 		return nil, nil, err
 	}
+	isLogin, err := m.repository.Exists(uuid)
+	if err != nil {
+		return nil, nil, err
+	}
+	if !isLogin {
+		return nil, nil, nil
+	}
 	return m.repository.Get(uuid)
 }
 
