@@ -7,7 +7,7 @@ export const store = new Vuex.Store({
     userId: '',
   },
   getters: {
-    userId: (state) => state.userId, // 2
+    userId: (state) => state.userId,
   },
   mutations: {
     setUserId(state, newUserId) {
