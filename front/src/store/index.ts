@@ -4,25 +4,20 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    userId: 'ログインしていません',
+    userId: '',
   },
   getters: {
-    userId: (state) => state.userId, // 2
+    userId: (state) => state.userId,
+    isLogin: (state) => state.userId != '',
   },
   mutations: {
     setUserId(state, newUserId) {
       state.userId = newUserId
     },
-    resetUserId(state) {
-      state.userId = 'ログインしていません'
-    },
   },
   actions: {
     setUserIdAction({ commit }, newUserId) {
       commit('setUserId', newUserId)
-    },
-    resetUserIdAction({ commit }) {
-      commit('resetUserId')
     },
   },
   modules: {},
