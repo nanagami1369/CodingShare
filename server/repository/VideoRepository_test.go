@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"encoding/json"
+
 	"testing"
 
 	"github.com/nanagami1369/CodingShare/ent"
@@ -35,9 +36,9 @@ func TestAdd(t *testing.T) {
 			return
 		}
 		title := request.Header.Title
-		lang := &request.Header.Language
+		lang := request.Header.Language
 		comment := request.Header.Comment
-		video, err := repository.Add(user, title, lang, comment, &request.Value)
+		video, err := repository.Add(user, title, lang, comment, request.Value)
 		if err != nil {
 			t.Fatalf("err:%#v", err)
 		}
@@ -80,10 +81,10 @@ func TestFindOneFromVideo(t *testing.T) {
 	video, _ := client.Video.Create().
 		SetUser(user).
 		SetTitle(request.Header.Title).
-		SetLanguageTag(&request.Header.Language).
-		SetRecordingTime((request.Value)[len(request.Value)-1].Timestamp).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
 		SetComment(request.Header.Comment).
-		SetCodingSequence(&request.Value).
+		SetCodingSequence(request.Value).
 		Save(context)
 	repository := NewVideoRepository(context, client)
 	// 登録したアカウントが存在するか判定する
@@ -131,10 +132,10 @@ func TestExistFromVideo(t *testing.T) {
 	video, _ := client.Video.Create().
 		SetUser(user).
 		SetTitle(request.Header.Title).
-		SetLanguageTag(&request.Header.Language).
-		SetRecordingTime((request.Value)[len(request.Value)-1].Timestamp).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
 		SetComment(request.Header.Comment).
-		SetCodingSequence(&request.Value).
+		SetCodingSequence(request.Value).
 		Save(context)
 	testId := video.ID
 	repository := NewVideoRepository(context, client)
