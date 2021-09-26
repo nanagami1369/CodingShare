@@ -25,4 +25,5 @@ type SessionRepository interface {
 
 type VideoRepository interface {
 	Add(user *ent.User, title string, language *model.Language, comment string, codingSequence *[]model.CodingSequence) (*ent.Video, error)
+	FindOne(id int) (*ent.Video, error)
 }

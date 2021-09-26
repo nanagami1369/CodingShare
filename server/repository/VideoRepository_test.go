@@ -56,6 +56,58 @@ func TestAdd(t *testing.T) {
 	})
 }
 
+func TestFindOneFromVideo(t *testing.T) {
+	// openDB
+	opts := []enttest.Option{
+		enttest.WithOptions(ent.Log(t.Log)),
+	}
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+	context := context.Background()
+	// set sample data
+	user, _ := client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+	request := &model.SaveVideoRequest{}
+	err := json.Unmarshal([]byte(jsonString), request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	video, _ := client.Video.Create().
+		SetUser(user).
+		SetTitle(request.Header.Title).
+		SetLanguageTag(&request.Header.Language).
+		SetRecordingTime((request.Value)[len(request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(&request.Value).
+		Save(context)
+	repository := NewVideoRepository(context, client)
+	// 登録したアカウントが存在するか判定する
+	t.Run("ビデオが取得できるか", func(t *testing.T) {
+		searchId := video.ID
+		video, err := repository.FindOne(searchId)
+		if err != nil {
+			t.Fatalf("err:%#v", err)
+		}
+		user, err := video.QueryUser().First(context)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		t.Log("searched video :",
+			user.UserID,
+			video.Title,
+			video.LanguageTag.Name,
+			video.UploadTime,
+			video.RecordingTime,
+			video.Comment)
+	})
+}
+
 const jsonString = `{
     "header": {
         "title": "test",
