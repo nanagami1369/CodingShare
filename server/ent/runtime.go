@@ -3,10 +3,13 @@
 package ent
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/nanagami1369/CodingShare/ent/schema"
 	"github.com/nanagami1369/CodingShare/ent/session"
 	"github.com/nanagami1369/CodingShare/ent/user"
+	"github.com/nanagami1369/CodingShare/ent/video"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -43,4 +46,18 @@ func init() {
 	userDescPassword := userFields[3].Descriptor()
 	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
+	videoFields := schema.Video{}.Fields()
+	_ = videoFields
+	// videoDescTitle is the schema descriptor for title field.
+	videoDescTitle := videoFields[0].Descriptor()
+	// video.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	video.TitleValidator = videoDescTitle.Validators[0].(func(string) error)
+	// videoDescUploadTime is the schema descriptor for upload_time field.
+	videoDescUploadTime := videoFields[2].Descriptor()
+	// video.DefaultUploadTime holds the default value on creation for the upload_time field.
+	video.DefaultUploadTime = videoDescUploadTime.Default.(func() time.Time)
+	// videoDescRecordingTime is the schema descriptor for recording_time field.
+	videoDescRecordingTime := videoFields[3].Descriptor()
+	// video.RecordingTimeValidator is a validator for the "recording_time" field. It is called by the builders before save.
+	video.RecordingTimeValidator = videoDescRecordingTime.Validators[0].(func(int) error)
 }

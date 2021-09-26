@@ -12,6 +12,8 @@ import (
 	"github.com/nanagami1369/CodingShare/ent/predicate"
 	"github.com/nanagami1369/CodingShare/ent/session"
 	"github.com/nanagami1369/CodingShare/ent/user"
+	"github.com/nanagami1369/CodingShare/ent/video"
+	"github.com/nanagami1369/CodingShare/model"
 
 	"entgo.io/ent"
 )
@@ -27,6 +29,7 @@ const (
 	// Node types.
 	TypeSession = "Session"
 	TypeUser    = "User"
+	TypeVideo   = "Video"
 )
 
 // SessionMutation represents an operation that mutates the Session nodes in the graph.
@@ -1000,4 +1003,671 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
+}
+
+// VideoMutation represents an operation that mutates the Video nodes in the graph.
+type VideoMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int
+	title             *string
+	language_tag      **model.Language
+	upload_time       *time.Time
+	recording_time    *int
+	addrecording_time *int
+	coding_sequence   **[]model.CodingSequence
+	comment           *string
+	clearedFields     map[string]struct{}
+	user              *int
+	cleareduser       bool
+	done              bool
+	oldValue          func(context.Context) (*Video, error)
+	predicates        []predicate.Video
+}
+
+var _ ent.Mutation = (*VideoMutation)(nil)
+
+// videoOption allows management of the mutation configuration using functional options.
+type videoOption func(*VideoMutation)
+
+// newVideoMutation creates new mutation for the Video entity.
+func newVideoMutation(c config, op Op, opts ...videoOption) *VideoMutation {
+	m := &VideoMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeVideo,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withVideoID sets the ID field of the mutation.
+func withVideoID(id int) videoOption {
+	return func(m *VideoMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Video
+		)
+		m.oldValue = func(ctx context.Context) (*Video, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Video.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withVideo sets the old Video of the mutation.
+func withVideo(node *Video) videoOption {
+	return func(m *VideoMutation) {
+		m.oldValue = func(context.Context) (*Video, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m VideoMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m VideoMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *VideoMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetTitle sets the "title" field.
+func (m *VideoMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *VideoMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the Video entity.
+// If the Video object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *VideoMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *VideoMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetLanguageTag sets the "language_tag" field.
+func (m *VideoMutation) SetLanguageTag(value *model.Language) {
+	m.language_tag = &value
+}
+
+// LanguageTag returns the value of the "language_tag" field in the mutation.
+func (m *VideoMutation) LanguageTag() (r *model.Language, exists bool) {
+	v := m.language_tag
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLanguageTag returns the old "language_tag" field's value of the Video entity.
+// If the Video object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *VideoMutation) OldLanguageTag(ctx context.Context) (v *model.Language, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldLanguageTag is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldLanguageTag requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLanguageTag: %w", err)
+	}
+	return oldValue.LanguageTag, nil
+}
+
+// ResetLanguageTag resets all changes to the "language_tag" field.
+func (m *VideoMutation) ResetLanguageTag() {
+	m.language_tag = nil
+}
+
+// SetUploadTime sets the "upload_time" field.
+func (m *VideoMutation) SetUploadTime(t time.Time) {
+	m.upload_time = &t
+}
+
+// UploadTime returns the value of the "upload_time" field in the mutation.
+func (m *VideoMutation) UploadTime() (r time.Time, exists bool) {
+	v := m.upload_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUploadTime returns the old "upload_time" field's value of the Video entity.
+// If the Video object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *VideoMutation) OldUploadTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUploadTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUploadTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUploadTime: %w", err)
+	}
+	return oldValue.UploadTime, nil
+}
+
+// ResetUploadTime resets all changes to the "upload_time" field.
+func (m *VideoMutation) ResetUploadTime() {
+	m.upload_time = nil
+}
+
+// SetRecordingTime sets the "recording_time" field.
+func (m *VideoMutation) SetRecordingTime(i int) {
+	m.recording_time = &i
+	m.addrecording_time = nil
+}
+
+// RecordingTime returns the value of the "recording_time" field in the mutation.
+func (m *VideoMutation) RecordingTime() (r int, exists bool) {
+	v := m.recording_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordingTime returns the old "recording_time" field's value of the Video entity.
+// If the Video object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *VideoMutation) OldRecordingTime(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRecordingTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRecordingTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordingTime: %w", err)
+	}
+	return oldValue.RecordingTime, nil
+}
+
+// AddRecordingTime adds i to the "recording_time" field.
+func (m *VideoMutation) AddRecordingTime(i int) {
+	if m.addrecording_time != nil {
+		*m.addrecording_time += i
+	} else {
+		m.addrecording_time = &i
+	}
+}
+
+// AddedRecordingTime returns the value that was added to the "recording_time" field in this mutation.
+func (m *VideoMutation) AddedRecordingTime() (r int, exists bool) {
+	v := m.addrecording_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRecordingTime resets all changes to the "recording_time" field.
+func (m *VideoMutation) ResetRecordingTime() {
+	m.recording_time = nil
+	m.addrecording_time = nil
+}
+
+// SetCodingSequence sets the "coding_sequence" field.
+func (m *VideoMutation) SetCodingSequence(ms *[]model.CodingSequence) {
+	m.coding_sequence = &ms
+}
+
+// CodingSequence returns the value of the "coding_sequence" field in the mutation.
+func (m *VideoMutation) CodingSequence() (r *[]model.CodingSequence, exists bool) {
+	v := m.coding_sequence
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCodingSequence returns the old "coding_sequence" field's value of the Video entity.
+// If the Video object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *VideoMutation) OldCodingSequence(ctx context.Context) (v *[]model.CodingSequence, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCodingSequence is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCodingSequence requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCodingSequence: %w", err)
+	}
+	return oldValue.CodingSequence, nil
+}
+
+// ResetCodingSequence resets all changes to the "coding_sequence" field.
+func (m *VideoMutation) ResetCodingSequence() {
+	m.coding_sequence = nil
+}
+
+// SetComment sets the "comment" field.
+func (m *VideoMutation) SetComment(s string) {
+	m.comment = &s
+}
+
+// Comment returns the value of the "comment" field in the mutation.
+func (m *VideoMutation) Comment() (r string, exists bool) {
+	v := m.comment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldComment returns the old "comment" field's value of the Video entity.
+// If the Video object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *VideoMutation) OldComment(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldComment is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldComment requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldComment: %w", err)
+	}
+	return oldValue.Comment, nil
+}
+
+// ResetComment resets all changes to the "comment" field.
+func (m *VideoMutation) ResetComment() {
+	m.comment = nil
+}
+
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *VideoMutation) SetUserID(id int) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *VideoMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *VideoMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *VideoMutation) UserID() (id int, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *VideoMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *VideoMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// Where appends a list predicates to the VideoMutation builder.
+func (m *VideoMutation) Where(ps ...predicate.Video) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *VideoMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Video).
+func (m *VideoMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *VideoMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.title != nil {
+		fields = append(fields, video.FieldTitle)
+	}
+	if m.language_tag != nil {
+		fields = append(fields, video.FieldLanguageTag)
+	}
+	if m.upload_time != nil {
+		fields = append(fields, video.FieldUploadTime)
+	}
+	if m.recording_time != nil {
+		fields = append(fields, video.FieldRecordingTime)
+	}
+	if m.coding_sequence != nil {
+		fields = append(fields, video.FieldCodingSequence)
+	}
+	if m.comment != nil {
+		fields = append(fields, video.FieldComment)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *VideoMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case video.FieldTitle:
+		return m.Title()
+	case video.FieldLanguageTag:
+		return m.LanguageTag()
+	case video.FieldUploadTime:
+		return m.UploadTime()
+	case video.FieldRecordingTime:
+		return m.RecordingTime()
+	case video.FieldCodingSequence:
+		return m.CodingSequence()
+	case video.FieldComment:
+		return m.Comment()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *VideoMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case video.FieldTitle:
+		return m.OldTitle(ctx)
+	case video.FieldLanguageTag:
+		return m.OldLanguageTag(ctx)
+	case video.FieldUploadTime:
+		return m.OldUploadTime(ctx)
+	case video.FieldRecordingTime:
+		return m.OldRecordingTime(ctx)
+	case video.FieldCodingSequence:
+		return m.OldCodingSequence(ctx)
+	case video.FieldComment:
+		return m.OldComment(ctx)
+	}
+	return nil, fmt.Errorf("unknown Video field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *VideoMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case video.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case video.FieldLanguageTag:
+		v, ok := value.(*model.Language)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLanguageTag(v)
+		return nil
+	case video.FieldUploadTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUploadTime(v)
+		return nil
+	case video.FieldRecordingTime:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordingTime(v)
+		return nil
+	case video.FieldCodingSequence:
+		v, ok := value.(*[]model.CodingSequence)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCodingSequence(v)
+		return nil
+	case video.FieldComment:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetComment(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Video field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *VideoMutation) AddedFields() []string {
+	var fields []string
+	if m.addrecording_time != nil {
+		fields = append(fields, video.FieldRecordingTime)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *VideoMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case video.FieldRecordingTime:
+		return m.AddedRecordingTime()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *VideoMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case video.FieldRecordingTime:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRecordingTime(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Video numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *VideoMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *VideoMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *VideoMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Video nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *VideoMutation) ResetField(name string) error {
+	switch name {
+	case video.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case video.FieldLanguageTag:
+		m.ResetLanguageTag()
+		return nil
+	case video.FieldUploadTime:
+		m.ResetUploadTime()
+		return nil
+	case video.FieldRecordingTime:
+		m.ResetRecordingTime()
+		return nil
+	case video.FieldCodingSequence:
+		m.ResetCodingSequence()
+		return nil
+	case video.FieldComment:
+		m.ResetComment()
+		return nil
+	}
+	return fmt.Errorf("unknown Video field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *VideoMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.user != nil {
+		edges = append(edges, video.EdgeUser)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *VideoMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case video.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *VideoMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *VideoMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *VideoMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareduser {
+		edges = append(edges, video.EdgeUser)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *VideoMutation) EdgeCleared(name string) bool {
+	switch name {
+	case video.EdgeUser:
+		return m.cleareduser
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *VideoMutation) ClearEdge(name string) error {
+	switch name {
+	case video.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
+	return fmt.Errorf("unknown Video unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *VideoMutation) ResetEdge(name string) error {
+	switch name {
+	case video.EdgeUser:
+		m.ResetUser()
+		return nil
+	}
+	return fmt.Errorf("unknown Video edge %s", name)
 }

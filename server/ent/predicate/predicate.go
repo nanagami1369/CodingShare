@@ -11,3 +11,6 @@ type Session func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
+
+// Video is the predicate function for video builders.
+type Video func(*sql.Selector)

@@ -26,6 +26,7 @@ type config struct {
 type hooks struct {
 	Session []ent.Hook
 	User    []ent.Hook
+	Video   []ent.Hook
 }
 
 // Options applies the options on the config object.
