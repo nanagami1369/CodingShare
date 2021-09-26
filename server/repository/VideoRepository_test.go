@@ -108,6 +108,60 @@ func TestFindOneFromVideo(t *testing.T) {
 	})
 }
 
+func TestExistFromVideo(t *testing.T) {
+	// openDB
+	opts := []enttest.Option{
+		enttest.WithOptions(ent.Log(t.Log)),
+	}
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+	context := context.Background()
+	user, _ := client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+	request := &model.SaveVideoRequest{}
+	err := json.Unmarshal([]byte(jsonString), request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	video, _ := client.Video.Create().
+		SetUser(user).
+		SetTitle(request.Header.Title).
+		SetLanguageTag(&request.Header.Language).
+		SetRecordingTime((request.Value)[len(request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(&request.Value).
+		Save(context)
+	testId := video.ID
+	repository := NewVideoRepository(context, client)
+	t.Run("存在する場合", func(t *testing.T) {
+		result, err := repository.Exists(testId)
+		if err != nil {
+			t.Fatalf("err:%#v", err)
+		}
+		if result != true {
+			t.Errorf("チェックに失敗しました \n"+
+				"expected:%v\n"+
+				"actual  :%v", true, false)
+		}
+	})
+	t.Run("存在しない場合", func(t *testing.T) {
+		result, err := repository.Exists(1000000)
+		if err != nil {
+			t.Fatalf("err:%#v", err)
+		}
+		if result != false {
+			t.Errorf("チェックに失敗しました \n"+
+				"expected:%v\n"+
+				"actual  :%v", false, true)
+		}
+	})
+}
+
 const jsonString = `{
     "header": {
         "title": "test",

@@ -34,3 +34,7 @@ func (r *VideoRepositoryImpl) Add(user *ent.User, title string, language *model.
 func (r *VideoRepositoryImpl) FindOne(id int) (*ent.Video, error) {
 	return r.client.Video.Query().Where(video.ID(id)).Only(r.context)
 }
+
+func (r *VideoRepositoryImpl) Exists(id int) (bool, error) {
+	return r.client.Video.Query().Where(video.ID(id)).Exist(r.context)
+}
