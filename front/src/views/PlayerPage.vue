@@ -3,11 +3,14 @@
     <div id="side-panel">
       <h1>Player</h1>
       <input
+        v-show="isFileMode"
+        class="video_label"
         type="file"
         @change="loadData"
         value="読み込み"
         :disabled="player.isLoading || player.isPlay"
       />
+      <div v-show="!isFileMode" class="video_label"></div>
       <div class="player-control">
         <button
           @click="backToTheBeginning"
@@ -163,6 +166,9 @@ export default Vue.extend({
         this.player.info.speed = parseInt(stringNumber, 10)
       },
     },
+    isFileMode: function (): boolean {
+      return this.$route.params.id == 'file'
+    },
   },
   methods: {
     loadData: async function (event: Event): Promise<void> {
@@ -251,7 +257,8 @@ h1 {
   border: solid 2px #222222;
 }
 
-input[type='file'] {
-  padding: 20px 0px;
+.video_label {
+  height: 70px;
+  line-height: 70px;
 }
 </style>
