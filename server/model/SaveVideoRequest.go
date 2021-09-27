@@ -6,5 +6,5 @@ type SaveVideoRequest struct {
 		Language *Language `json:"language"`
 		Comment  string    `json:"comment"`
 	} `json:"header"`
-	Value *[]CodingSequence
+	Value *[]CodingSequence `json:"value"`
 }
