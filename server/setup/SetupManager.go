@@ -35,6 +35,11 @@ func (sm *SetupManager) GetSessionModule(client *ent.Client, context context.Con
 	return module.NewSessionModule(r)
 }
 
+func (sm *SetupManager) GetVideoModule(client *ent.Client, context context.Context) module.VideoModule {
+	r := repository.NewVideoRepository(context, client)
+	return module.NewVideoModule(r)
+}
+
 func (sm *SetupManager) GetRouter(config *model.Config, middleware *middleware.Middleware) (router *gin.Engine, err error) {
 	router = gin.Default()
 	store := cookie.NewStore([]byte("secret"))
