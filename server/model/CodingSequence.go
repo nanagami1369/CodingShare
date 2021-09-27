@@ -2,7 +2,7 @@ package model
 
 type CodingSequence struct {
 	Timestamp  int `json:"timestamp"`
-	ChangeData struct {
+	ChangeData *struct {
 		From struct {
 			Line int `json:"line"`
 			Ch   int `json:"ch"`
@@ -14,10 +14,10 @@ type CodingSequence struct {
 		Text    []string `json:"text"`
 		Removed []string `json:"removed"`
 		Origin  string   `json:"origin"`
-	} `json:"changeData,omitempty"`
-	Cursor struct {
+	} `json:"changeData"`
+	Cursor *struct {
 		Line   int         `json:"line"`
 		Ch     int         `json:"ch"`
 		Sticky interface{} `json:"sticky"`
-	} `json:"cursor,omitempty"`
+	} `json:"cursor"`
 }
