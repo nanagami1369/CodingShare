@@ -90,11 +90,10 @@ func TestFindOneFromVideo(t *testing.T) {
 	// 登録したアカウントが存在するか判定する
 	t.Run("ビデオが取得できるか", func(t *testing.T) {
 		searchId := video.ID
-		video, err := repository.FindOne(searchId)
+		video, user, err := repository.FindOne(searchId)
 		if err != nil {
 			t.Fatalf("err:%#v", err)
 		}
-		user, err := video.QueryUser().First(context)
 		if err != nil {
 			t.Error(err)
 			return

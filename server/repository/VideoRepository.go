@@ -31,8 +31,16 @@ func (r *VideoRepositoryImpl) Add(user *ent.User, title string, language *model.
 		Save(r.context)
 }
 
-func (r *VideoRepositoryImpl) FindOne(id int) (*ent.Video, error) {
-	return r.client.Video.Query().Where(video.ID(id)).Only(r.context)
+func (r *VideoRepositoryImpl) FindOne(id int) (*ent.Video, *ent.User, error) {
+	video, err := r.client.Video.Query().Where(video.ID(id)).Only(r.context)
+	if err != nil {
+		return nil, nil, err
+	}
+	user, err := video.QueryUser().First(r.context)
+	if err != nil {
+		return nil, nil, err
+	}
+	return video, user, nil
 }
 
 func (r *VideoRepositoryImpl) Exists(id int) (bool, error) {
