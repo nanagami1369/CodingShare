@@ -146,6 +146,7 @@ func main() {
 		if err != nil {
 			c.Status(http.StatusInternalServerError)
 			log.Println("logout err :", err)
+			return
 		}
 		c.String(http.StatusOK, "ログアウトOK")
 		loginLog.Println("logout success request:", user.UserID)
