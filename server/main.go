@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -31,6 +32,7 @@ func main() {
 	context := context.Background()
 	uam := sm.GetUserAccountModule(client, context)
 	sem := sm.GetSessionModule(client, context)
+	vim := sm.GetVideoModule(client, context)
 	defer client.Close()
 	middleware := middleware.NewMiddleware(sem)
 
@@ -72,6 +74,28 @@ func main() {
 		c.JSON(200, gin.H{
 			"message": "Hello World",
 		})
+	})
+	router.GET("/loadvideo/:id", func(c *gin.Context) {
+		stringId := c.Param("id")
+		id, err := strconv.Atoi(stringId)
+		if err != nil {
+			// 数値以外は404
+			c.Status(http.StatusNotFound)
+			return
+		}
+
+		video, err := vim.Load(id)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			log.Println("video load err :", err)
+			return
+		}
+		if video == nil {
+			// 存在しなければ404
+			c.Status(http.StatusNotFound)
+			return
+		}
+		c.JSON(http.StatusOK, video)
 	})
 	router.POST("/login", func(c *gin.Context) {
 		loginRequest := &model.LoginRequest{}
@@ -125,6 +149,28 @@ func main() {
 		}
 		c.String(http.StatusOK, "ログアウトOK")
 		loginLog.Println("logout success request:", user.UserID)
+	})
+	private.POST("/savevideo", func(c *gin.Context) {
+		saveVideoRequest := &model.SaveVideoRequest{}
+		if err := c.ShouldBindJSON(saveVideoRequest); err != nil {
+			// JSONが読み込めなかったらエラーを返す
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+		store := sessions.Default(c)
+		_, user, err := sem.Get(store)
+		if err != nil {
+			log.Println("session get err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		_, err = vim.Save(saveVideoRequest, user)
+		if err != nil {
+			log.Println("save video err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.Status(http.StatusOK)
 	})
 
 	router.RunTLS(":8080", "/server.crt", "/server.key")

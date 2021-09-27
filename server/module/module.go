@@ -19,3 +19,8 @@ type SessionModule interface {
 	Logout(store sessions.Session) (*ent.User, error)
 	Get(store sessions.Session) (*ent.Session, *ent.User, error)
 }
+
+type VideoModule interface {
+	Save(request *model.SaveVideoRequest, user *ent.User) (*ent.Video, error)
+	Load(id int) (*model.Video, error)
+}

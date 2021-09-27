@@ -42,13 +42,40 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// VideosColumns holds the columns for the "videos" table.
+	VideosColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "title", Type: field.TypeString},
+		{Name: "language_tag", Type: field.TypeJSON},
+		{Name: "upload_time", Type: field.TypeTime},
+		{Name: "recording_time", Type: field.TypeInt},
+		{Name: "coding_sequence", Type: field.TypeJSON},
+		{Name: "comment", Type: field.TypeString},
+		{Name: "video_user", Type: field.TypeInt, Nullable: true},
+	}
+	// VideosTable holds the schema information for the "videos" table.
+	VideosTable = &schema.Table{
+		Name:       "videos",
+		Columns:    VideosColumns,
+		PrimaryKey: []*schema.Column{VideosColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "videos_users_user",
+				Columns:    []*schema.Column{VideosColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		SessionsTable,
 		UsersTable,
+		VideosTable,
 	}
 )
 
 func init() {
 	SessionsTable.ForeignKeys[0].RefTable = UsersTable
+	VideosTable.ForeignKeys[0].RefTable = UsersTable
 }
