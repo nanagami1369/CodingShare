@@ -51,6 +51,16 @@ export class CodingPlayer {
     this._info.elapsedTime = stream.current.timestamp
   }
 
+  public clear(): void {
+    this._info = {
+      elapsedTime: 0,
+      totalTime: 0,
+      speed: 100,
+    }
+    this._stream = undefined
+    this._snapshot = []
+  }
+
   public load(
     video: Video,
     editor?: CodeMirror.Editor,
