@@ -182,6 +182,17 @@ export default Vue.extend({
       const video: Video = JSON.parse(videoJson)
       this.player.load(video, this.editor, this.backgroundEditor)
     },
+    fetchVideo: async function (id: string): Promise<void> {
+      const response = await fetch('/api/loadvideo/' + id, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+      })
+      if (response.ok) {
+        const video = (await response.json()) as Video
+        this.player.load(video, this.editor, this.backgroundEditor)
+      }
+    },
     start: function (): void {
       this.player.start(this.editor)
     },
@@ -201,7 +212,19 @@ export default Vue.extend({
       this.player.move(time, this.editor)
     },
   },
-  mounted() {
+  watch: {
+    async $route(): Promise<void> {
+      this.player.clear()
+      if (this.isFileMode) {
+        // サーバーからデータを取得しないなら終了
+        return
+      }
+      // サーバーからデータを取得
+      const id = this.$route.params.id
+      await this.fetchVideo(id)
+    },
+  },
+  async mounted(): Promise<void> {
     // 裏で動かす用のエディタ
     const backgroundEditorArea: HTMLTextAreaElement | null =
       document.querySelector('#background-editor-aria')
@@ -219,6 +242,13 @@ export default Vue.extend({
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
     this.editor?.setSize('100%', '70vh')
+    if (this.isFileMode) {
+      // サーバーからデータを取得しないなら終了
+      return
+    }
+    // サーバーからデータを取得
+    const id = this.$route.params.id
+    await this.fetchVideo(id)
   },
 })
 </script>
