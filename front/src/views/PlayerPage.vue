@@ -183,14 +183,26 @@ export default Vue.extend({
       this.player.load(video, this.editor, this.backgroundEditor)
     },
     fetchVideo: async function (id: string): Promise<void> {
-      const response = await fetch('/api/loadvideo/' + id, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'include',
-      })
-      if (response.ok) {
-        const video = (await response.json()) as Video
-        this.player.load(video, this.editor, this.backgroundEditor)
+      try {
+        const response = await fetch('/api/loadvideo/' + id, {
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'include',
+        })
+        if (response.ok) {
+          const video = (await response.json()) as Video
+          this.player.load(video, this.editor, this.backgroundEditor)
+        } else if (response.status != 404) {
+          // それ以外の場合はエラーを表示
+          const message =
+            `message:${await response.text()}\n` +
+            `http status:${response.status} ${response.statusText}`
+          alert(message)
+        }
+      } catch (error: unknown) {
+        // 通信エラーの場合はアラートで表示
+        alert((error as Error).message)
+        return
       }
     },
     start: function (): void {
