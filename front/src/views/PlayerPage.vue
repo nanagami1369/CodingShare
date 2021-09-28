@@ -226,7 +226,7 @@ export default Vue.extend({
   },
   watch: {
     async $route(): Promise<void> {
-      this.player.clear()
+      this.player.clear(this.editor)
       if (this.isFileMode) {
         // サーバーからデータを取得しないなら終了
         return

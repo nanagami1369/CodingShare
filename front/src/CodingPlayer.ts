@@ -51,7 +51,11 @@ export class CodingPlayer {
     this._info.elapsedTime = stream.current.timestamp
   }
 
-  public clear(): void {
+  public clear(editor?: CodeMirror.Editor): void {
+    if (editor == null) {
+      throw new Error('editor is undefined')
+    }
+    editor.setValue('')
     this._info = {
       elapsedTime: 0,
       totalTime: 0,
