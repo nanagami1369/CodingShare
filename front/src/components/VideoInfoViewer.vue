@@ -26,7 +26,7 @@ export default Vue.extend({
     videoInfo: {
       type: Object as PropType<VideoInfo>,
       default: (): VideoInfo => ({
-        userId: -1,
+        userId: '',
         title: '',
         name: '',
         language: undefined,

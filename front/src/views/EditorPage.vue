@@ -115,7 +115,7 @@ export default Vue.extend({
     },
     recordSave: function (data: SaveVideoUserEditData): void {
       const video = this.recorder.outputVideo(
-        -1,
+        data.name,
         data.name,
         data.title,
         this.selectedLanguage,
