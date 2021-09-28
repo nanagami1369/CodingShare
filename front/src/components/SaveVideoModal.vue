@@ -9,8 +9,8 @@
     <ValidationObserver :immediate="true" v-slot="{ invalid }">
       <div class="save-video-modal">
         <h4>録画データの保存</h4>
-        <label
-          >作者
+        <label v-if="!isLogin">
+          <span class="label">作者</span>
           <ValidationProvider
             :immediate="true"
             rules="required"
@@ -20,8 +20,12 @@
             <span class="error-message">{{ errors[0] }}</span>
           </ValidationProvider>
         </label>
-        <label
-          >タイトル
+        <div v-else>
+          <span class="label">作者</span>
+          <span>{{ userId }}</span>
+        </div>
+        <label>
+          <span class="label">タイトル</span>
           <ValidationProvider
             :immediate="true"
             rules="required"
@@ -81,8 +85,20 @@ export default Vue.extend({
       },
     }
   },
+  computed: {
+    isLogin: function (): boolean {
+      return this.$store.getters.isLogin
+    },
+    userId: function (): string {
+      return this.$store.getters.userId
+    },
+  },
   methods: {
     submit: function (): void {
+      if (this.isLogin) {
+        // ログイン中なら名前にユーザIDを挿入
+        this.data.name = this.userId
+      }
       this.$emit('submit', this.data)
       this.$modal.hide('save-video-modal')
       this.data = {
@@ -110,6 +126,12 @@ export default Vue.extend({
   flex-direction: column;
   margin: 10px;
 }
+
+.label {
+  display: inline-block;
+  width: 5em;
+}
+
 .submit-button {
   font-size: 1em;
   margin: 0.5rem 5rem;
