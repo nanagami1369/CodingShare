@@ -1,13 +1,26 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <Header />
+    <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/editor">Editor</router-link> |
       <router-link to="/player">Player</router-link>
-    </div>
+    </div> -->
     <router-view />
   </div>
 </template>
+
+<script>
+import Header from '@/components/Hader.vue'
+import Vue from 'vue'
+
+export default Vue.extend({
+  name: 'App',
+  components: {
+    Header,
+  },
+})
+</script>
 
 <style>
 * {
@@ -26,7 +39,7 @@
   grid-template-rows: 80px 1fr;
 }
 
-#nav {
+/* #nav {
   padding: 30px;
   grid-row: 1;
 }
@@ -38,7 +51,7 @@
 
 #nav a.router-link-exact-active {
   color: #42b983;
-}
+} */
 
 html {
   height: 100%;
