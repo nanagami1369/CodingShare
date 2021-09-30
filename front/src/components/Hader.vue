@@ -4,6 +4,9 @@
       <FontAwesomeIcon icon="home" />
     </button>
     <span class="header-free-space"></span>
+    <button class="header-button" @click="changeEditorPage">
+      <FontAwesomeIcon icon="edit" />
+    </button>
     <button
       v-if="isLogin"
       class="header-button"
@@ -31,9 +34,9 @@
 import Vue from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faHome, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faUserCircle, faEdit } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faHome, faUserCircle)
+library.add(faHome, faUserCircle, faEdit)
 
 type DataType = {
   isHeaderContextMenu: boolean
@@ -66,6 +69,9 @@ export default Vue.extend({
     },
     changeLogin: function (): void {
       this.$router.push({ path: '/login' })
+    },
+    changeEditorPage: function (): void {
+      this.$router.push({ path: '/editor' })
     },
   },
 })
