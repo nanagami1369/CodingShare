@@ -183,6 +183,7 @@ export default Vue.extend({
   },
   methods: {
     loadData: async function (event: Event): Promise<void> {
+      this.player.pause()
       this.player.clear(this.editor)
       const target = event.target as HTMLInputElement
       const file = target.files?.item(0)
@@ -195,6 +196,7 @@ export default Vue.extend({
       this.player.load(video, this.editor, this.backgroundEditor)
     },
     observerUrlDo: async function (): Promise<void> {
+      this.player.pause()
       this.player.clear(this.editor)
       if (this.isFileMode) {
         this.isNotFound = false
