@@ -147,15 +147,17 @@ export default Vue.extend({
           alert('サーバーへの保存に失敗しました:' + (error as Error).message)
           return
         }
+        return
+      } else {
+        var url = (window.URL || window.webkitURL).createObjectURL(
+          new Blob([JSON.stringify(video)], { type: 'application/json' })
+        )
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${data.name}_${data.title}_video.json`
+        a.click()
+        return
       }
-
-      var url = (window.URL || window.webkitURL).createObjectURL(
-        new Blob([JSON.stringify(video)], { type: 'application/json' })
-      )
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${data.name}_${data.title}_video.json`
-      a.click()
     },
     recordCancel: function (): void {
       this.recorder.clearVideo()
