@@ -5,8 +5,8 @@
     </button>
     <span class="header-free-space"></span>
     <div class="header-search-box">
-      <input type="search" />
-      <button class="search-button">
+      <input type="search" v-model="searchWord" @keydown.enter="search" />
+      <button class="search-button" @click="search">
         <div class="search-button-style">
           <FontAwesomeIcon icon="search" />
         </div>
@@ -54,6 +54,7 @@ library.add(faHome, faUserCircle, faEdit, faSearch)
 
 type DataType = {
   isHeaderContextMenu: boolean
+  searchWord: string
 }
 
 export default Vue.extend({
@@ -64,6 +65,7 @@ export default Vue.extend({
   data(): DataType {
     return {
       isHeaderContextMenu: false,
+      searchWord: '',
     }
   },
   computed: {
@@ -86,6 +88,13 @@ export default Vue.extend({
     },
     changeEditorPage: function (): void {
       this.$router.push({ path: '/editor' })
+    },
+    search: function (): void {
+      if (!this.searchWord) {
+        return
+      }
+      this.$router.push({ path: '/search', query: { q: this.searchWord } })
+      this.searchWord = ''
     },
   },
 })
