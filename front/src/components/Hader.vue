@@ -4,6 +4,15 @@
       <FontAwesomeIcon icon="home" />
     </button>
     <span class="header-free-space"></span>
+    <div class="header-search-box">
+      <input type="search" />
+      <button class="search-button">
+        <div class="search-button-style">
+          <FontAwesomeIcon icon="search" />
+        </div>
+      </button>
+    </div>
+    <span class="header-free-space"></span>
     <button class="header-button" @click="changeEditorPage">
       <FontAwesomeIcon icon="edit" />
     </button>
@@ -34,9 +43,14 @@
 import Vue from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faHome, faUserCircle, faEdit } from '@fortawesome/free-solid-svg-icons'
+import {
+  faHome,
+  faUserCircle,
+  faEdit,
+  faSearch,
+} from '@fortawesome/free-solid-svg-icons'
 
-library.add(faHome, faUserCircle, faEdit)
+library.add(faHome, faUserCircle, faEdit, faSearch)
 
 type DataType = {
   isHeaderContextMenu: boolean
@@ -97,7 +111,41 @@ export default Vue.extend({
 .header-free-space {
   flex: 1 1 auto;
 }
+.header-search-box {
+  background-color: white;
+  border-radius: 10px;
+  border: solid 2px transparent;
+  outline: solid 2px transparent;
+  outline-offset: 1px;
+  display: flex;
+  flex: 3 3 auto;
+  margin: 7px 5px;
+}
+.header-search-box:focus-within {
+  border: solid 2px #0060df;
+  outline: solid 2px #b2ddf9;
+}
+.header-search-box input[type='search'] {
+  flex: 1 1 auto;
+  padding: 0px 10px;
+  font-size: 1em;
+  border: none;
+  border-top-left-radius: 11px;
+  border-bottom-left-radius: 11px;
+}
+.header-search-box input[type='search']:focus {
+  outline: none;
+}
 
+.search-button {
+  cursor: pointer;
+  background-color: transparent;
+  border: solid 1px transparent;
+}
+.search-button-style {
+  padding: 0px 10px;
+  border-radius: 45px;
+}
 .header-context-menu-wrapper {
   position: absolute;
   height: 100%;
