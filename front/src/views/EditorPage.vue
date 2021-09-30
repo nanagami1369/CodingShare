@@ -105,6 +105,14 @@ export default Vue.extend({
       },
     }
   },
+  computed: {
+    isLogin: function (): boolean {
+      return this.$store.getters.isLogin
+    },
+    userId: function (): string {
+      return this.$store.getters.userId
+    },
+  },
   methods: {
     recordStart: function () {
       this.recorder.start(this.editor)
@@ -113,21 +121,43 @@ export default Vue.extend({
       this.recorder.stop()
       this.$modal.show('save-video-modal')
     },
-    recordSave: function (data: SaveVideoUserEditData): void {
+    recordSave: async function (data: SaveVideoUserEditData): Promise<void> {
       const video = this.recorder.outputVideo(
-        -1,
-        data.name,
+        this.isLogin ? this.userId : 'file',
+        this.isLogin ? this.userId : data.name,
         data.title,
         this.selectedLanguage,
         data.comment
       )
-      var url = (window.URL || window.webkitURL).createObjectURL(
-        new Blob([JSON.stringify(video)], { type: 'application/json' })
-      )
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${data.name}_${data.title}_video.json`
-      a.click()
+      if (this.isLogin) {
+        try {
+          const response = await fetch('/api/private/savevideo', {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            body: JSON.stringify(video),
+          })
+          if (response.ok) {
+            alert('サーバーに保存しました')
+          } else {
+            alert('サーバーへの保存に失敗しました')
+          }
+        } catch (error: unknown) {
+          // 通信エラーの場合はアラートで表示
+          alert('サーバーへの保存に失敗しました:' + (error as Error).message)
+          return
+        }
+        return
+      } else {
+        var url = (window.URL || window.webkitURL).createObjectURL(
+          new Blob([JSON.stringify(video)], { type: 'application/json' })
+        )
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${data.name}_${data.title}_video.json`
+        a.click()
+        return
+      }
     },
     recordCancel: function (): void {
       this.recorder.clearVideo()

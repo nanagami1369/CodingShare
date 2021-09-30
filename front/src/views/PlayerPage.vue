@@ -1,79 +1,89 @@
 <template>
-  <div id="player-page" :class="{ 'is-play': player.isPlay }">
-    <div id="side-panel">
-      <h1>Player</h1>
-      <input
-        type="file"
-        @change="loadData"
-        value="読み込み"
-        :disabled="player.isLoading || player.isPlay"
-      />
-      <div class="player-control">
-        <button
-          @click="backToTheBeginning"
-          class="player-control-button"
-          :disabled="!player.isLoaded"
-        >
-          <FontAwesomeIcon icon="undo" />
-        </button>
-        <button
-          v-if="player.isPlay"
-          @click="pouse"
-          class="player-control-button"
-          :disabled="!player.isLoaded"
-        >
-          <FontAwesomeIcon icon="pause" />
-        </button>
-        <button
-          v-else
-          @click="start"
-          class="player-control-button"
-          :disabled="!player.isLoaded"
-        >
-          <FontAwesomeIcon icon="play" />
-        </button>
-        <button
-          class="player-control-button"
-          @click="stepForward"
-          :disabled="!player.isLoaded"
-        >
-          <FontAwesomeIcon icon="step-forward" />
-        </button>
-        <button
-          class="player-control-button"
-          @click="fastForward"
-          :disabled="!player.isLoaded"
-        >
-          <FontAwesomeIcon icon="fast-forward" />
-        </button>
-        <p>速度</p>
-        <VueSlider
-          :style="{ padding: '1em 2em' }"
-          :process-style="{ backgroundColor: '#28e270' }"
-          :tooltip-style="{
-            backgroundColor: '#116230',
-            borderColor: '#116230',
-          }"
-          :data="speedSliderIndex"
-          v-model="speed"
-          :marks="true"
-          :adsorb="true"
-          :lazy="true"
-          :contained="true"
+  <div>
+    <NotFoundPage v-show="isNotFound" :style="{ height: '100%' }" />
+    <div
+      v-show="!isNotFound"
+      id="player-page"
+      :class="{ 'is-play': player.isPlay }"
+    >
+      <div id="side-panel">
+        <h1>Player</h1>
+        <input
+          v-show="isFileMode"
+          class="video_label"
+          type="file"
+          @change="loadData"
+          value="読み込み"
+          :disabled="player.isLoading || player.isPlay"
+        />
+        <div v-show="!isFileMode" class="video_label"></div>
+        <div class="player-control">
+          <button
+            @click="backToTheBeginning"
+            class="player-control-button"
+            :disabled="!player.isLoaded"
+          >
+            <FontAwesomeIcon icon="undo" />
+          </button>
+          <button
+            v-if="player.isPlay"
+            @click="pouse"
+            class="player-control-button"
+            :disabled="!player.isLoaded"
+          >
+            <FontAwesomeIcon icon="pause" />
+          </button>
+          <button
+            v-else
+            @click="start"
+            class="player-control-button"
+            :disabled="!player.isLoaded"
+          >
+            <FontAwesomeIcon icon="play" />
+          </button>
+          <button
+            class="player-control-button"
+            @click="stepForward"
+            :disabled="!player.isLoaded"
+          >
+            <FontAwesomeIcon icon="step-forward" />
+          </button>
+          <button
+            class="player-control-button"
+            @click="fastForward"
+            :disabled="!player.isLoaded"
+          >
+            <FontAwesomeIcon icon="fast-forward" />
+          </button>
+          <p>速度</p>
+          <VueSlider
+            :style="{ padding: '1em 2em' }"
+            :process-style="{ backgroundColor: '#28e270' }"
+            :tooltip-style="{
+              backgroundColor: '#116230',
+              borderColor: '#116230',
+            }"
+            :data="speedSliderIndex"
+            v-model="speed"
+            :marks="true"
+            :adsorb="true"
+            :lazy="true"
+            :contained="true"
+          />
+        </div>
+        <VideoInfoViewer :videoInfo="player.videoInfo" />
+        <textarea id="background-editor-aria"></textarea>
+        <LoadingViwer v-show="player.isLoading" />
+      </div>
+      <div id="player-panel">
+        <textarea id="editor-aria"></textarea>
+        <VideoSliderBar
+          :elapsedTime="player.info.elapsedTime"
+          :totalTime="player.info.totalTime"
+          :disabled="!player.isLoaded || player.isPlay"
+          @change="move"
         />
       </div>
-      <VideoInfoViewer :videoInfo="player.videoInfo" />
-      <textarea id="background-editor-aria"></textarea>
-      <LoadingViwer v-show="player.isLoading" />
-    </div>
-    <div id="player-panel">
-      <textarea id="editor-aria"></textarea>
-      <VideoSliderBar
-        :elapsedTime="player.info.elapsedTime"
-        :totalTime="player.info.totalTime"
-        :disabled="!player.isLoaded || player.isPlay"
-        @change="move"
-      />
     </div>
   </div>
 </template>
@@ -91,6 +101,7 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import { Video } from '@/models/Video'
+import NotFoundPage from '@/views/NotFoundPage.vue'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import LoadingViwer from '@/components/LoadingViewer.vue'
@@ -114,6 +125,7 @@ type DataType = {
   backgroundEditor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
+  isNotFound: boolean
   speedSliderIndex: string[]
 }
 
@@ -136,6 +148,7 @@ export default Vue.extend({
     FontAwesomeIcon,
     VueSlider,
     LoadingViwer,
+    NotFoundPage,
   },
   data(): DataType {
     const snapShotTimeSpan = 30000
@@ -149,6 +162,7 @@ export default Vue.extend({
         readOnly: true,
       },
       player: new CodingPlayer(snapShotTimeSpan),
+      isNotFound: false,
       speedSliderIndex: ['50%', '100%', '200%'],
     }
   },
@@ -163,9 +177,14 @@ export default Vue.extend({
         this.player.info.speed = parseInt(stringNumber, 10)
       },
     },
+    isFileMode: function (): boolean {
+      return this.$route.params.id == 'file'
+    },
   },
   methods: {
     loadData: async function (event: Event): Promise<void> {
+      this.player.pause()
+      this.player.clear(this.editor)
       const target = event.target as HTMLInputElement
       const file = target.files?.item(0)
       if (file == null) {
@@ -175,6 +194,43 @@ export default Vue.extend({
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
       this.player.load(video, this.editor, this.backgroundEditor)
+    },
+    observerUrlDo: async function (): Promise<void> {
+      this.player.pause()
+      this.player.clear(this.editor)
+      if (this.isFileMode) {
+        this.isNotFound = false
+        return
+      }
+      // サーバーからデータを取得
+      const id = this.$route.params.id
+      try {
+        const response = await fetch('/api/loadvideo/' + id, {
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'include',
+        })
+        if (response.ok) {
+          this.isNotFound = false
+          const video = (await response.json()) as Video
+          this.player.load(video, this.editor, this.backgroundEditor)
+          return
+        } else if (response.status == 404) {
+          this.isNotFound = true
+          return
+        } else {
+          // それ以外の場合はエラーを表示
+          const message =
+            `message:${await response.text()}\n` +
+            `http status:${response.status} ${response.statusText}`
+          alert(message)
+          return
+        }
+      } catch (error: unknown) {
+        // 通信エラーの場合はアラートで表示
+        alert((error as Error).message)
+        return
+      }
     },
     start: function (): void {
       this.player.start(this.editor)
@@ -195,7 +251,13 @@ export default Vue.extend({
       this.player.move(time, this.editor)
     },
   },
-  mounted() {
+  watch: {
+    async $route(): Promise<void> {
+      // 2回目呼び出し
+      await this.observerUrlDo()
+    },
+  },
+  async mounted(): Promise<void> {
     // 裏で動かす用のエディタ
     const backgroundEditorArea: HTMLTextAreaElement | null =
       document.querySelector('#background-editor-aria')
@@ -213,6 +275,8 @@ export default Vue.extend({
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
     this.editor?.setSize('100%', '70vh')
+    // 1回目呼び出し
+    await this.observerUrlDo()
   },
 })
 </script>
@@ -251,7 +315,8 @@ h1 {
   border: solid 2px #222222;
 }
 
-input[type='file'] {
-  padding: 20px 0px;
+.video_label {
+  height: 70px;
+  line-height: 70px;
 }
 </style>

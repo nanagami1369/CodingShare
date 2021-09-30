@@ -19,6 +19,10 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/player',
+    redirect: '/player/file',
+  },
+  {
+    path: '/player/:id',
     name: 'Player',
     component: () => import('../views/PlayerPage.vue'),
   },

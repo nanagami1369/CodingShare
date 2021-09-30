@@ -97,7 +97,7 @@ export class CodingRecorder {
   }
 
   public outputVideo(
-    userId: number,
+    userId: string,
     name: string,
     title: string,
     language: Language,
