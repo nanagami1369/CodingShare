@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"time"
 
 	"github.com/nanagami1369/CodingShare/ent"
 	"github.com/nanagami1369/CodingShare/ent/video"
@@ -39,7 +38,7 @@ func (r *VideoRepositoryImpl) Add(user *ent.User, title string, language *model.
 			Name:          user.UserID,
 			Title:         video.Title,
 			Language:      video.LanguageTag,
-			UploadTime:    time.Now().UTC().UnixNano() / 1e6,
+			UploadTime:    video.UploadTime.UTC().UnixNano() / 1e6,
 			RecordingTime: video.RecordingTime,
 			Comment:       video.Comment,
 		},
@@ -62,7 +61,7 @@ func (r *VideoRepositoryImpl) FindOne(id int) (*model.Video, error) {
 			Name:          user.UserID,
 			Title:         video.Title,
 			Language:      video.LanguageTag,
-			UploadTime:    time.Now().UTC().UnixNano() / 1e6,
+			UploadTime:    video.UploadTime.UTC().UnixNano() / 1e6,
 			RecordingTime: video.RecordingTime,
 			Comment:       video.Comment,
 		},
@@ -89,7 +88,7 @@ func (r *VideoRepositoryImpl) FindFromTitle(title string) ([]*model.Video, error
 				Name:          user.UserID,
 				Title:         video.Title,
 				Language:      video.LanguageTag,
-				UploadTime:    time.Now().UTC().UnixNano() / 1e6,
+				UploadTime:    video.UploadTime.UTC().UnixNano() / 1e6,
 				RecordingTime: video.RecordingTime,
 				Comment:       video.Comment,
 			},
