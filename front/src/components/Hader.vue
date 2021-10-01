@@ -75,18 +75,30 @@ export default Vue.extend({
   },
   methods: {
     changeHomePage: function (): void {
+      if (this.$route.path == '/') {
+        return
+      }
       this.$router.push({ path: '/' })
     },
     changeMyPage: function (): void {
+      if (this.$route.path == '/mypage') {
+        return
+      }
       this.$router.push({ path: '/mypage' })
     },
     toggleHeaderContextMenu: function (): void {
       this.isHeaderContextMenu = !this.isHeaderContextMenu
     },
     changeLogin: function (): void {
+      if (this.$route.path == '/login') {
+        return
+      }
       this.$router.push({ path: '/login' })
     },
     changeEditorPage: function (): void {
+      if (this.$route.path == '/editor') {
+        return
+      }
       this.$router.push({ path: '/editor' })
     },
     search: function (): void {
