@@ -93,7 +93,9 @@ export default Vue.extend({
       if (!this.searchWord) {
         return
       }
-      this.$router.push({ path: '/search', query: { q: this.searchWord } })
+      if (this.searchWord != this.$route.query.q) {
+        this.$router.push({ path: '/search', query: { q: this.searchWord } })
+      }
       this.searchWord = ''
     },
   },
