@@ -76,7 +76,7 @@ func (r *VideoRepositoryImpl) FindFromTitle(title string) ([]*model.Video, error
 	if err != nil {
 		return nil, err
 	}
-	videos := make([]*model.Video, len(searchedVideos))
+	videos := make([]*model.Video, 0)
 	for _, video := range searchedVideos {
 		user, err := video.QueryUser().First(r.context)
 		if err != nil {
