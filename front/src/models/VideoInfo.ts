@@ -1,6 +1,7 @@
 import { Language } from '@/models/language'
 
 export type VideoInfo = {
+  videoId: number
   userId: string
   title: string
   name: string

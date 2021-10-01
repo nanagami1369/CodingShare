@@ -34,6 +34,7 @@ func (r *VideoRepositoryImpl) Add(user *ent.User, title string, language *model.
 	}
 	return &model.Video{
 		Header: model.Header{
+			VideoID:       video.ID,
 			UserID:        user.UserID,
 			Name:          user.UserID,
 			Title:         video.Title,
@@ -57,6 +58,7 @@ func (r *VideoRepositoryImpl) FindOne(id int) (*model.Video, error) {
 	}
 	return &model.Video{
 		Header: model.Header{
+			VideoID:       video.ID,
 			UserID:        user.UserID,
 			Name:          user.UserID,
 			Title:         video.Title,
@@ -84,6 +86,7 @@ func (r *VideoRepositoryImpl) FindFromTitle(title string) ([]*model.Video, error
 		}
 		videos = append(videos, &model.Video{
 			Header: model.Header{
+				VideoID:       video.ID,
 				UserID:        user.UserID,
 				Name:          user.UserID,
 				Title:         video.Title,
