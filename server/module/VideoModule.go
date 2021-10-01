@@ -41,3 +41,7 @@ func (m *VideoModuleImpl) Load(id int) (*model.Video, error) {
 	}
 	return m.repository.FindOne(id)
 }
+
+func (m *VideoModuleImpl) Search(keyWord string) ([]*model.Video, error) {
+	return m.repository.FindFromTitle(keyWord)
+}
