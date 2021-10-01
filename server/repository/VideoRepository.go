@@ -20,8 +20,8 @@ type VideoRepositoryImpl struct {
 	client  *ent.Client
 }
 
-func (r *VideoRepositoryImpl) Add(user *ent.User, title string, language *model.Language, comment string, codingSequence *[]model.CodingSequence) (*ent.Video, error) {
-	return r.client.Video.Create().
+func (r *VideoRepositoryImpl) Add(user *ent.User, title string, language *model.Language, comment string, codingSequence *[]model.CodingSequence) (*model.Video, error) {
+	video, err := r.client.Video.Create().
 		SetUser(user).
 		SetTitle(title).
 		SetLanguageTag(language).
@@ -29,20 +29,76 @@ func (r *VideoRepositoryImpl) Add(user *ent.User, title string, language *model.
 		SetComment(comment).
 		SetCodingSequence(codingSequence).
 		Save(r.context)
+	if err != nil {
+		return nil, err
+	}
+	return &model.Video{
+		Header: model.Header{
+			VideoID:       video.ID,
+			UserID:        user.UserID,
+			Name:          user.UserID,
+			Title:         video.Title,
+			Language:      video.LanguageTag,
+			UploadTime:    video.UploadTime.UTC().UnixNano() / 1e6,
+			RecordingTime: video.RecordingTime,
+			Comment:       video.Comment,
+		},
+		Value: video.CodingSequence,
+	}, err
 }
 
-func (r *VideoRepositoryImpl) FindOne(id int) (*ent.Video, *ent.User, error) {
+func (r *VideoRepositoryImpl) FindOne(id int) (*model.Video, error) {
 	video, err := r.client.Video.Query().Where(video.ID(id)).Only(r.context)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	user, err := video.QueryUser().First(r.context)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return video, user, nil
+	return &model.Video{
+		Header: model.Header{
+			VideoID:       video.ID,
+			UserID:        user.UserID,
+			Name:          user.UserID,
+			Title:         video.Title,
+			Language:      video.LanguageTag,
+			UploadTime:    video.UploadTime.UTC().UnixNano() / 1e6,
+			RecordingTime: video.RecordingTime,
+			Comment:       video.Comment,
+		},
+		Value: video.CodingSequence,
+	}, err
 }
 
+func (r *VideoRepositoryImpl) FindFromTitle(title string) ([]*model.Video, error) {
+	searchedVideos, err := r.client.Video.Query().
+		Where(video.TitleContains(title)).
+		All(r.context)
+	if err != nil {
+		return nil, err
+	}
+	videos := make([]*model.Video, 0)
+	for _, video := range searchedVideos {
+		user, err := video.QueryUser().First(r.context)
+		if err != nil {
+			return nil, err
+		}
+		videos = append(videos, &model.Video{
+			Header: model.Header{
+				VideoID:       video.ID,
+				UserID:        user.UserID,
+				Name:          user.UserID,
+				Title:         video.Title,
+				Language:      video.LanguageTag,
+				UploadTime:    video.UploadTime.UTC().UnixNano() / 1e6,
+				RecordingTime: video.RecordingTime,
+				Comment:       video.Comment,
+			},
+			Value: video.CodingSequence})
+	}
+	return videos, nil
+}
 func (r *VideoRepositoryImpl) Exists(id int) (bool, error) {
 	return r.client.Video.Query().Where(video.ID(id)).Exist(r.context)
 }

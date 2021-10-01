@@ -113,6 +113,7 @@ export class CodingRecorder {
     this._video = []
     return {
       header: {
+        videoId: -1,
         userId: userId,
         name: name,
         title: title,

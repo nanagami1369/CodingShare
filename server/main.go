@@ -97,6 +97,19 @@ func main() {
 		}
 		c.JSON(http.StatusOK, video)
 	})
+	router.GET("/searchvideo", func(c *gin.Context) {
+		query, isSet := c.GetQuery("q")
+		if !isSet {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		videos, err := vim.Search(query)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.JSON(http.StatusOK, videos)
+	})
 	router.POST("/login", func(c *gin.Context) {
 		loginRequest := &model.LoginRequest{}
 		if err := c.ShouldBindJSON(&loginRequest); err != nil {

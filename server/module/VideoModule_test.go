@@ -41,13 +41,8 @@ func TestSave(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		t.Log("saved video:",
-			video.Title,
-			video.LanguageTag.Name,
-			video.UploadTime,
-			video.RecordingTime,
-			video.Comment)
-	})
+		t.Log("saved video:",video.Header)
+    })
 	t.Run("title無しの場合", func(t *testing.T) {
 		request := &model.SaveVideoRequest{
 			Header: struct {
