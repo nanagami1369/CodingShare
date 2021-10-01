@@ -42,18 +42,13 @@ func TestAdd(t *testing.T) {
 		if err != nil {
 			t.Fatalf("err:%#v", err)
 		}
-		user, err := video.QueryUser().First(context)
-		if err != nil {
-			t.Error(err)
-			return
-		}
 		t.Log("set video header:",
-			user.UserID,
-			video.Title,
-			video.LanguageTag.Name,
-			video.UploadTime,
-			video.RecordingTime,
-			video.Comment)
+			video.Header.UserID,
+			video.Header.Title,
+			video.Header.Language.Name,
+			video.Header.UploadTime,
+			video.Header.RecordingTime,
+			video.Header.Comment)
 	})
 }
 
@@ -90,7 +85,7 @@ func TestFindOneFromVideo(t *testing.T) {
 	// 登録したアカウントが存在するか判定する
 	t.Run("ビデオが取得できるか", func(t *testing.T) {
 		searchId := video.ID
-		video, user, err := repository.FindOne(searchId)
+		video, err := repository.FindOne(searchId)
 		if err != nil {
 			t.Fatalf("err:%#v", err)
 		}
@@ -100,11 +95,63 @@ func TestFindOneFromVideo(t *testing.T) {
 		}
 		t.Log("searched video :",
 			user.UserID,
-			video.Title,
-			video.LanguageTag.Name,
-			video.UploadTime,
-			video.RecordingTime,
-			video.Comment)
+			video.Header.Title,
+			video.Header.Language.Name,
+			video.Header.UploadTime,
+			video.Header.RecordingTime,
+			video.Header.Comment)
+	})
+}
+
+func TestFindFromTitle(t *testing.T) {
+	// openDB
+	opts := []enttest.Option{
+		enttest.WithOptions(ent.Log(t.Log)),
+	}
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+	context := context.Background()
+	// set sample data
+	user, _ := client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+	request := &model.SaveVideoRequest{}
+	err := json.Unmarshal([]byte(jsonString), request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	client.Video.Create().
+		SetUser(user).
+		SetTitle(request.Header.Title).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(request.Value).
+		Save(context)
+	repository := NewVideoRepository(context, client)
+	t.Run("存在するビデオを検索する", func(t *testing.T) {
+		videos, err := repository.FindFromTitle("te")
+		if err != nil {
+			t.Error(err)
+		}
+		t.Log("searchd videos", len(videos))
+		for _, video := range videos {
+			t.Log(video.Header.Title)
+		}
+	})
+	t.Run("存在しないビデオを検索する", func(t *testing.T) {
+		videos, err := repository.FindFromTitle("testaaa")
+		if err != nil {
+			t.Error(err)
+		}
+		t.Log("searchd videos:", len(videos))
+		for _, video := range videos {
+			t.Log(video.Header.Title)
+		}
 	})
 }
 
