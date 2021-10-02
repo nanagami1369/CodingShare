@@ -166,6 +166,7 @@ export default Vue.extend({
   },
   methods: {
     loadData: async function (event: Event): Promise<void> {
+      this.player.pause()
       const target = event.target as HTMLInputElement
       const file = target.files?.item(0)
       if (file == null) {
