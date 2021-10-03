@@ -196,8 +196,42 @@ export default Vue.extend({
     move: function (time: number): void {
       this.player.move(time, this.editor)
     },
+    observerUrlDo: async function (): Promise<void> {
+      this.player.pause()
+      this.player.clear(this.editor)
+      if (this.$route.query.src == null) {
+        return
+      }
+      try {
+        const response = await fetch(
+          '/video/' + this.$route.query.src.toString()
+        )
+        if (response.ok) {
+          const video = (await response.json()) as Video
+          this.player.load(video, this.editor, this.backgroundEditor)
+          return
+        } else {
+          // それ以外の場合はエラーを表示
+          const message =
+            `message:${await response.text()}\n` +
+            `http status:${response.status} ${response.statusText}`
+          alert(message)
+          return
+        }
+      } catch (error: unknown) {
+        // 通信エラーの場合はアラートで表示
+        alert((error as Error).message)
+        return
+      }
+    },
   },
-  mounted() {
+  watch: {
+    async $route(): Promise<void> {
+      // 2回目呼び出し
+      await this.observerUrlDo()
+    },
+  },
+  async mounted(): Promise<void> {
     // 裏で動かす用のエディタ
     const backgroundEditorArea: HTMLTextAreaElement | null =
       document.querySelector('#background-editor-aria')
@@ -215,6 +249,7 @@ export default Vue.extend({
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
     this.editor?.setSize('100%', '70vh')
+    await this.observerUrlDo()
   },
 })
 </script>
