@@ -15,17 +15,19 @@
       <router-link to="/editor"><FontAwesomeIcon icon="video" />録画画面へ</router-link>
       <!-- prettier-ignore -->
       <router-link to="/player"><FontAwesomeIcon icon="file-video" />再生画面へ</router-link>
+      <!-- prettier-ignore -->
+      <router-link :to="{ name: 'Player', query: { src: 'sample.json' }}"  ><FontAwesomeIcon icon="film" />サンプル動画</router-link>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faFileVideo, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faFileVideo, faVideo, faFilm } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Vue from 'vue'
 
-library.add(faFileVideo, faVideo)
+library.add(faFileVideo, faVideo, faFilm)
 
 export default Vue.extend({
   name: 'HomePage',
