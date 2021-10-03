@@ -204,7 +204,7 @@ export default Vue.extend({
       }
       try {
         const response = await fetch(
-          '/video/' + this.$route.query.src.toString()
+          process.env.BASE_URL + '/video/' + this.$route.query.src.toString()
         )
         if (response.ok) {
           const video = (await response.json()) as Video
