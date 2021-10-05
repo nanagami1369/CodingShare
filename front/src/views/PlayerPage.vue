@@ -17,6 +17,35 @@
           :disabled="player.isLoading || player.isPlay"
         />
         <div v-show="!isFileMode" class="video_label"></div>
+        <div>
+          <p>速度</p>
+          <VueSlider
+            :style="{ padding: '1em 2em' }"
+            :process-style="{ backgroundColor: '#28e270' }"
+            :tooltip-style="{
+              backgroundColor: '#116230',
+              borderColor: '#116230',
+            }"
+            :data="speedSliderIndex"
+            v-model="speed"
+            :marks="true"
+            :adsorb="true"
+            :lazy="true"
+            :contained="true"
+          />
+        </div>
+        <VideoInfoViewer :videoInfo="player.videoInfo" />
+        <textarea id="background-editor-aria"></textarea>
+        <LoadingViwer v-show="player.isLoading" />
+      </div>
+      <div id="player-panel">
+        <textarea id="editor-aria"></textarea>
+        <VideoSliderBar
+          :elapsedTime="player.info.elapsedTime"
+          :totalTime="player.info.totalTime"
+          :disabled="!player.isLoaded || player.isPlay"
+          @change="move"
+        />
         <div class="player-control">
           <button
             @click="backToTheBeginning"
@@ -55,34 +84,7 @@
           >
             <FontAwesomeIcon icon="fast-forward" />
           </button>
-          <p>速度</p>
-          <VueSlider
-            :style="{ padding: '1em 2em' }"
-            :process-style="{ backgroundColor: '#28e270' }"
-            :tooltip-style="{
-              backgroundColor: '#116230',
-              borderColor: '#116230',
-            }"
-            :data="speedSliderIndex"
-            v-model="speed"
-            :marks="true"
-            :adsorb="true"
-            :lazy="true"
-            :contained="true"
-          />
         </div>
-        <VideoInfoViewer :videoInfo="player.videoInfo" />
-        <textarea id="background-editor-aria"></textarea>
-        <LoadingViwer v-show="player.isLoading" />
-      </div>
-      <div id="player-panel">
-        <textarea id="editor-aria"></textarea>
-        <VideoSliderBar
-          :elapsedTime="player.info.elapsedTime"
-          :totalTime="player.info.totalTime"
-          :disabled="!player.isLoaded || player.isPlay"
-          @change="move"
-        />
       </div>
     </div>
   </div>
@@ -300,19 +302,23 @@ h1 {
   grid-column: 2;
 }
 
+.player-control {
+  height: 35px;
+  display: flex;
+  background-color: #222222;
+}
+
 .player-control-button {
   font-size: 1.2em;
-  padding: 5px 20px;
-  border-radius: 25px;
-  border: solid 2px #9f9f9f;
+  padding: 0px 10px;
+  border: none;
+  background-color: transparent;
+  color: #eeeeee;
+  cursor: pointer;
 }
 
 .player-control-button:disabled {
-  border: solid 2px #dddddd;
-}
-
-.player-control-button:active {
-  border: solid 2px #222222;
+  color: #333333;
 }
 
 .video_label {
