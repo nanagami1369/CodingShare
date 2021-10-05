@@ -77,10 +77,13 @@ func (m *SessionModuleImpl) Logout(store sessions.Session) (*ent.User, error) {
 func (m *SessionModuleImpl) getSessionIdFromStore(store sessions.Session) (uuid.UUID, error) {
 	sessionValue := store.Get("session_id")
 	var token string
-	if session_id, ok := sessionValue.(string); ok {
-		token = session_id
-	} else {
+	switch session := sessionValue.(type) {
+	case string:
+		token = session
+		return uuid.Parse(token)
+	case nil:
+		return uuid.Nil, nil
+	default:
 		return uuid.Nil, errors.New("session can not read")
 	}
-	return uuid.Parse(token)
 }
