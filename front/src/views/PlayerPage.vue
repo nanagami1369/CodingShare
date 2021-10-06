@@ -325,7 +325,8 @@ h1 {
 }
 
 .player-control-button:disabled {
-  color: #333333;
+  color: #555;
+  cursor: no-drop;
 }
 
 .elapsed-time {
