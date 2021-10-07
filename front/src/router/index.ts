@@ -22,6 +22,11 @@ const routes: Array<RouteConfig> = [
     component: () => import('../views/PlayerPage.vue'),
   },
   {
+    path: '/list',
+    name: 'list',
+    component: () => import('../views/VideoListPage.vue'),
+  },
+  {
     path: '*',
     name: 'NotFound',
     component: NotFoundPage,
