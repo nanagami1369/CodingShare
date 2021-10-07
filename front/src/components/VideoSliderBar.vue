@@ -7,7 +7,7 @@
       :disabled="disabled"
       :tooltip-formatter="tooltipFormatter"
       :style="{
-        width: 'calc(100% - 6em)',
+        width: '100%',
         padding: '0px',
       }"
       :process-style="{
@@ -25,7 +25,6 @@
       }"
       @change="change"
     />
-    <span class="elapsedTime">{{ playbackPosition }}</span>
   </div>
 </template>
 <script lang="ts">
@@ -81,6 +80,7 @@ export default Vue.extend({
 
 <style scoped>
 .slider-component {
+  height: 1em;
   display: flex;
   justify-content: space-between;
 }
