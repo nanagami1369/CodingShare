@@ -16,7 +16,7 @@
       <!-- prettier-ignore -->
       <router-link to="/player"><FontAwesomeIcon icon="file-video" />再生画面へ</router-link>
       <!-- prettier-ignore -->
-      <router-link :to="{ name: 'Player', query: { src: 'sample.json' }}"  ><FontAwesomeIcon icon="film" />サンプル動画</router-link>
+      <router-link to="/list"  ><FontAwesomeIcon icon="film" />動画一覧へ</router-link>
     </div>
   </div>
 </template>
