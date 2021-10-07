@@ -73,6 +73,7 @@
         >
           <FontAwesomeIcon icon="fast-forward" />
         </button>
+        <span class="elapsed-time">{{ playbackPosition }}</span>
       </div>
     </div>
   </div>
@@ -106,6 +107,7 @@ import {
   faStepForward,
   faFastForward,
 } from '@fortawesome/free-solid-svg-icons'
+import { formatRecordingTime } from '@/util'
 
 library.add(faPlay, faPause, faUndo, faStepForward, faFastForward)
 
@@ -162,6 +164,10 @@ export default Vue.extend({
         const stringNumber = value.slice(0, -1)
         this.player.info.speed = parseInt(stringNumber, 10)
       },
+    },
+    playbackPosition: function (): string {
+      // prettier-ignore
+      return `${formatRecordingTime(this.player.info.elapsedTime)} / ${formatRecordingTime(this.player.info.totalTime)}`
     },
   },
   methods: {
@@ -275,6 +281,7 @@ h1 {
 
 .player-control {
   height: 35px;
+  line-height: 35px;
   display: flex;
   background-color: #222222;
 }
@@ -290,6 +297,13 @@ h1 {
 
 .player-control-button:disabled {
   color: #333333;
+}
+
+.elapsed-time {
+  padding: 0px 15px;
+  vertical-align: middle;
+  display: inline-block;
+  color: white;
 }
 
 input[type='file'] {
