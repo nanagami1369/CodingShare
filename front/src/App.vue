@@ -23,11 +23,11 @@
   color: #2c3e50;
   height: 100%;
   display: grid;
-  grid-template-rows: 80px 1fr;
+  grid-template-rows: 50px 1fr;
 }
 
 #nav {
-  padding: 30px;
+  padding: 15px;
   grid-row: 1;
 }
 

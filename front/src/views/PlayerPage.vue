@@ -8,6 +8,18 @@
         value="読み込み"
         :disabled="player.isLoading || player.isPlay"
       />
+      <VideoInfoViewer :videoInfo="player.videoInfo" />
+      <textarea id="background-editor-aria"></textarea>
+      <LoadingViwer v-show="player.isLoading" />
+    </div>
+    <div id="player-panel">
+      <textarea id="editor-aria"></textarea>
+      <VideoSliderBar
+        :elapsedTime="player.info.elapsedTime"
+        :totalTime="player.info.totalTime"
+        :disabled="!player.isLoaded || player.isPlay"
+        @change="move"
+      />
       <div class="player-control">
         <button
           @click="backToTheBeginning"
@@ -46,34 +58,38 @@
         >
           <FontAwesomeIcon icon="fast-forward" />
         </button>
-        <p>速度</p>
-        <VueSlider
-          :style="{ padding: '1em 2em' }"
-          :process-style="{ backgroundColor: '#28e270' }"
-          :tooltip-style="{
-            backgroundColor: '#116230',
-            borderColor: '#116230',
-          }"
-          :data="speedSliderIndex"
-          v-model="speed"
-          :marks="true"
-          :adsorb="true"
-          :lazy="true"
-          :contained="true"
-        />
+        <span class="elapsed-time">{{ playbackPosition }}</span>
+        <div class="speed-control">
+          <button
+            class="player-control-button speed-control-button"
+            @click="toggleSpeedMenu"
+          >
+            速度 {{ speed }}
+          </button>
+          <div
+            v-show="isSpeedMenuOpen"
+            class="spped-control-wrapper"
+            @click="toggleSpeedMenu"
+          ></div>
+          <div class="speed-context-menu">
+            <div
+              v-show="isSpeedMenuOpen"
+              v-for="speedIndex in speedSliderIndex"
+              :key="speedIndex"
+              class="speed-context-menu-item"
+              @click="
+                speed = speedIndex
+                toggleSpeedMenu()
+              "
+            >
+              <span class="speed-context-menu-check-space">{{
+                speed == speedIndex ? '✓' : ''
+              }}</span>
+              <span>{{ speedIndex }}</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <VideoInfoViewer :videoInfo="player.videoInfo" />
-      <textarea id="background-editor-aria"></textarea>
-      <LoadingViwer v-show="player.isLoading" />
-    </div>
-    <div id="player-panel">
-      <textarea id="editor-aria"></textarea>
-      <VideoSliderBar
-        :elapsedTime="player.info.elapsedTime"
-        :totalTime="player.info.totalTime"
-        :disabled="!player.isLoaded || player.isPlay"
-        @change="move"
-      />
     </div>
   </div>
 </template>
@@ -94,7 +110,6 @@ import { Video } from '@/models/Video'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import LoadingViwer from '@/components/LoadingViewer.vue'
-import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
 import { CodingPlayer } from '@/CodingPlayer'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -106,6 +121,7 @@ import {
   faStepForward,
   faFastForward,
 } from '@fortawesome/free-solid-svg-icons'
+import { formatRecordingTime } from '@/util'
 
 library.add(faPlay, faPause, faUndo, faStepForward, faFastForward)
 
@@ -115,6 +131,7 @@ type DataType = {
   defualtConfig: EditorConfiguration
   player: CodingPlayer
   speedSliderIndex: string[]
+  isSpeedMenuOpen: boolean
 }
 
 function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
@@ -134,7 +151,6 @@ export default Vue.extend({
     VideoInfoViewer,
     VideoSliderBar,
     FontAwesomeIcon,
-    VueSlider,
     LoadingViwer,
   },
   data(): DataType {
@@ -150,6 +166,7 @@ export default Vue.extend({
       },
       player: new CodingPlayer(snapShotTimeSpan),
       speedSliderIndex: ['50%', '100%', '200%'],
+      isSpeedMenuOpen: false,
     }
   },
   computed: {
@@ -163,8 +180,15 @@ export default Vue.extend({
         this.player.info.speed = parseInt(stringNumber, 10)
       },
     },
+    playbackPosition: function (): string {
+      // prettier-ignore
+      return `${formatRecordingTime(this.player.info.elapsedTime)} / ${formatRecordingTime(this.player.info.totalTime)}`
+    },
   },
   methods: {
+    toggleSpeedMenu: function (): void {
+      this.isSpeedMenuOpen = !this.isSpeedMenuOpen
+    },
     loadData: async function (event: Event): Promise<void> {
       this.player.pause()
       this.player.clear(this.editor)
@@ -248,7 +272,7 @@ export default Vue.extend({
     }
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
-    this.editor?.setSize('100%', '70vh')
+    this.editor?.setSize('100%', '60vh')
     await this.observerUrlDo()
   },
 })
@@ -273,19 +297,73 @@ h1 {
   grid-column: 2;
 }
 
+.player-control {
+  height: 35px;
+  line-height: 35px;
+  display: flex;
+  background-color: #222222;
+}
+
 .player-control-button {
   font-size: 1.2em;
-  padding: 5px 20px;
-  border-radius: 25px;
-  border: solid 2px #9f9f9f;
+  padding: 0px 10px;
+  border: none;
+  background-color: transparent;
+  color: #eeeeee;
+  cursor: pointer;
 }
 
 .player-control-button:disabled {
-  border: solid 2px #dddddd;
+  color: #555;
+  cursor: no-drop;
 }
 
-.player-control-button:active {
-  border: solid 2px #222222;
+.player-control-button:hover {
+  background-color: #777777;
+}
+
+.elapsed-time {
+  padding: 0px 15px;
+  vertical-align: middle;
+  display: inline-block;
+  color: white;
+}
+
+.spped-control-wrapper {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  right: 0px;
+  z-index: 10;
+}
+
+.speed-control-button {
+  width: 6em;
+  background-color: #333333;
+}
+
+.speed-context-menu {
+  background-color: #111111;
+  position: relative;
+  color: #eeeeee;
+  top: -160px;
+  z-index: 11;
+}
+
+.speed-context-menu-item {
+  padding: 0px 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.speed-context-menu-item:hover {
+  background-color: #777777;
+}
+
+.speed-context-menu-check-space {
+  width: 0.8em;
+  display: inline-block;
 }
 
 input[type='file'] {
