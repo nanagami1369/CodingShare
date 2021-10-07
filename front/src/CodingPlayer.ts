@@ -257,6 +257,7 @@ export class CodingPlayer {
     }
     while (this._stream.to != null && this._stream.current.timestamp <= time) {
       readAndExecCodingSequence(editor, this._stream.current)
+      this.setElapsedTime(this._stream)
       this._stream.next()
     }
   }
