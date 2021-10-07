@@ -345,6 +345,10 @@ h1 {
   cursor: no-drop;
 }
 
+.player-control-button:hover {
+  background-color: #777777;
+}
+
 .elapsed-time {
   padding: 0px 15px;
   vertical-align: middle;
