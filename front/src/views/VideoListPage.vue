@@ -2,10 +2,10 @@
   <div>
     <h1>動画一覧</h1>
     <ul>
-      <li>
-        <router-link :to="{ name: 'Player', query: { src: 'sample.json' } }"
-          >サンプル動画</router-link
-        >
+      <li v-for="videoName in listValue" :key="videoName">
+        <router-link :to="{ name: 'Player', query: { src: videoName } }">{{
+          videoName
+        }}</router-link>
       </li>
     </ul>
   </div>
@@ -13,7 +13,17 @@
 
 <script lang="ts">
 import Vue from 'vue'
+
+type DataType = {
+  listValue: string[]
+}
+
 export default Vue.extend({
   name: 'VideoListPage',
+  data(): DataType {
+    return {
+      listValue: ['sample.json'],
+    }
+  },
 })
 </script>
