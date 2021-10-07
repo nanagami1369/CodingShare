@@ -340,6 +340,7 @@ h1 {
 
 .speed-control-button {
   width: 6em;
+  background-color: #333333;
 }
 
 .speed-context-menu {
