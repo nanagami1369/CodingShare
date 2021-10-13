@@ -203,6 +203,16 @@ export default Vue.extend({
     },
   },
   methods: {
+    setEditorSize: function () {
+      const sidePanelWidth = 300
+      const bottomPanelHeight = 200
+      let width = document.body.clientWidth - sidePanelWidth
+      let height = document.body.clientHeight - bottomPanelHeight
+      width = width >= 0 ? width : 0
+      height = height >= 0 ? height : 0
+      console.log('resize w :' + width + 'h:' + height)
+      this.editor?.setSize(width, height)
+    },
     toggleSpeedMenu: function (): void {
       this.isSpeedMenuOpen = !this.isSpeedMenuOpen
     },
@@ -298,9 +308,13 @@ export default Vue.extend({
     }
     const config = this.defualtConfig
     this.editor = CodeMirror.fromTextArea(editorAria, config)
-    this.editor?.setSize('100%', '65vh')
+    this.setEditorSize()
+    window.onresize = this.setEditorSize
     // 1回目呼び出し
     await this.observerUrlDo()
+  },
+  beforeDestroy(): void {
+    window.onresize = null
   },
 })
 </script>
