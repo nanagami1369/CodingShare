@@ -43,8 +43,13 @@ export class CodingPlayer {
 
   private _asyncLoop = new AsyncLoop()
 
-  public constructor(snapShotTimeSpan: number) {
+  public constructor(snapShotTimeSpan: number, speed: number) {
     this._snapShotTimeSpan = snapShotTimeSpan
+    this.setSpeed(speed)
+  }
+
+  public setSpeed(speed: number): void {
+    this._info.speed = speed
   }
 
   private setElapsedTime(stream: CodingStream): void {
@@ -56,11 +61,8 @@ export class CodingPlayer {
       throw new Error('editor is undefined')
     }
     editor.setValue('')
-    this._info = {
-      elapsedTime: 0,
-      totalTime: 0,
-      speed: 100,
-    }
+    this._info.elapsedTime = 0
+    this._info.totalTime = 0
     this._stream = undefined
     this._snapshot = []
   }
@@ -266,7 +268,7 @@ export class CodingPlayer {
     return this._stream?.videoInfo
   }
 
-  public get info(): PlayerInfo {
+  public get info(): Readonly<PlayerInfo> {
     return this._info
   }
 
