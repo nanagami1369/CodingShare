@@ -64,7 +64,7 @@
             class="player-control-button speed-control-button"
             @click="toggleSpeedMenu"
           >
-            速度 {{ speed }}
+            速度 {{ speed }}%
           </button>
           <div
             v-show="isSpeedMenuOpen"
@@ -85,7 +85,7 @@
               <span class="speed-context-menu-check-space">{{
                 speed == speedIndex ? '✓' : ''
               }}</span>
-              <span>{{ speedIndex }}</span>
+              <span>{{ speedIndex }}%</span>
             </div>
           </div>
         </div>
@@ -130,7 +130,7 @@ type DataType = {
   backgroundEditor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
-  speedSliderIndex: string[]
+  speedSliderIndex: number[]
   isSpeedMenuOpen: boolean
 }
 
@@ -165,18 +165,17 @@ export default Vue.extend({
         readOnly: true,
       },
       player: new CodingPlayer(snapShotTimeSpan, this.$store.getters.speed),
+      speedSliderIndex: [50, 100, 200],
       isSpeedMenuOpen: false,
     }
   },
   computed: {
     speed: {
-      get: function (): string {
-        return `${this.player.info.speed}%`
+      get: function (): number {
+        return this.player.info.speed
       },
-      set: function (value: string) {
-        // valueから「％」を取る
-        const stringNumber = value.slice(0, -1)
-        this.player.setSpeed(parseInt(stringNumber, 10))
+      set: function (value: number) {
+        this.player.setSpeed(value)
       },
     },
     playbackPosition: function (): string {
