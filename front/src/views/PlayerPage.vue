@@ -175,6 +175,7 @@ export default Vue.extend({
         return this.player.info.speed
       },
       set: function (value: number) {
+        this.$store.dispatch('setSpeedAction', value)
         this.player.setSpeed(value)
       },
     },
@@ -229,6 +230,7 @@ export default Vue.extend({
       this.player.move(time, this.editor)
     },
     observerUrlDo: async function (): Promise<void> {
+      this.speed = this.$store.getters.speed
       this.player.pause()
       this.player.clear(this.editor)
       if (this.$route.query.src == null) {
