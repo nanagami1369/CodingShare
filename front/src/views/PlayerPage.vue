@@ -177,7 +177,7 @@ export default Vue.extend({
         showHint: true,
         readOnly: true,
       },
-      player: new CodingPlayer(snapShotTimeSpan),
+      player: new CodingPlayer(snapShotTimeSpan, 100),
       isNotFound: false,
       speedSliderIndex: ['50%', '100%', '200%'],
       isSpeedMenuOpen: false,
@@ -191,7 +191,7 @@ export default Vue.extend({
       set: function (value: string) {
         // valueから「％」を取る
         const stringNumber = value.slice(0, -1)
-        this.player.info.speed = parseInt(stringNumber, 10)
+        this.player.setSpeed(parseInt(stringNumber, 10))
       },
     },
     playbackPosition: function (): string {
