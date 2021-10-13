@@ -8,6 +8,7 @@ type Store = {
 
 const vuexLocal = new VuexPersist<Store>({
   storage: window.localStorage,
+  key: 'coding_share_vuex_key',
   reducer: (state) => ({ speed: state.speed }),
   filter: (mutation) => mutation.type === 'setSpeed',
 })
