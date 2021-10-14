@@ -177,7 +177,7 @@ export default Vue.extend({
         showHint: true,
         readOnly: true,
       },
-      player: new CodingPlayer(snapShotTimeSpan, 100),
+      player: new CodingPlayer(snapShotTimeSpan, this.$store.getters.speed),
       isNotFound: false,
       speedSliderIndex: [50, 100, 200],
       isSpeedMenuOpen: false,
@@ -189,6 +189,7 @@ export default Vue.extend({
         return this.player.info.speed
       },
       set: function (value: number) {
+        this.$store.dispatch('setSpeedAction', value)
         this.player.setSpeed(value)
       },
     },
@@ -228,6 +229,7 @@ export default Vue.extend({
       this.player.load(video, this.editor, this.backgroundEditor)
     },
     observerUrlDo: async function (): Promise<void> {
+      this.speed = this.$store.getters.speed
       this.player.pause()
       this.player.clear(this.editor)
       if (this.isFileMode) {
