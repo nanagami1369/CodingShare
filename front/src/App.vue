@@ -25,6 +25,9 @@
   height: 100%;
   display: grid;
   grid-template-rows: 50px 1fr;
+  /* 画面がスクロールしないようにする */
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 #nav {
