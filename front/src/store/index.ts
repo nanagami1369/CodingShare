@@ -17,7 +17,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store<Store>({
   state: {
-    speed: 200,
+    speed: 100,
   },
   getters: {
     speed: (state) => state.speed,
