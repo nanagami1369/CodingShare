@@ -226,6 +226,8 @@ export default Vue.extend({
       }
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
+      // usreIdがファイルから書き換わっていたとしてもファイルとして処理できるようにした
+      video.header.userId = 'file'
       this.player.load(video, this.editor, this.backgroundEditor)
     },
     observerUrlDo: async function (): Promise<void> {

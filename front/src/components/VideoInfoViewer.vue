@@ -4,7 +4,15 @@
       タイトル:<cite>{{ videoInfo.title }}</cite>
     </p>
     <p>
-      作者:<cite>{{ videoInfo.name }}</cite>
+      <span>作者:</span>
+      <span v-if="videoInfo.userId != 'file'" @click.stop>
+        <router-link :to="{ name: 'UserPage', params: { id: videoInfo.name } }">
+          <cite>{{ videoInfo.name }}</cite>
+        </router-link>
+      </span>
+      <span v-else>
+        <cite>{{ videoInfo.name }}</cite>
+      </span>
     </p>
     <p>言語:{{ language }}</p>
     <p>投稿日:{{ uploadTime }}</p>
