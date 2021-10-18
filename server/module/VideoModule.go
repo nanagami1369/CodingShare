@@ -45,3 +45,7 @@ func (m *VideoModuleImpl) Load(id int) (*model.Video, error) {
 func (m *VideoModuleImpl) Search(keyWord string) ([]*model.Video, error) {
 	return m.repository.FindFromTitle(keyWord)
 }
+
+func (m *VideoModuleImpl) GetUserVideos(id string) ([]*model.Video, error) {
+	return m.repository.FindFromUserId(id)
+}

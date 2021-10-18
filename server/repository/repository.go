@@ -27,5 +27,6 @@ type VideoRepository interface {
 	Add(user *ent.User, title string, language *model.Language, comment string, codingSequence *[]model.CodingSequence) (*model.Video, error)
 	FindOne(id int) (*model.Video, error)
 	FindFromTitle(title string) ([]*model.Video, error)
+	FindFromUserId(id string) ([]*model.Video, error)
 	Exists(id int) (bool, error)
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/nanagami1369/CodingShare/ent/predicate"
 	"github.com/nanagami1369/CodingShare/ent/session"
 	"github.com/nanagami1369/CodingShare/ent/user"
+	"github.com/nanagami1369/CodingShare/ent/video"
 )
 
 // UserQuery is the builder for querying User entities.
@@ -28,6 +29,7 @@ type UserQuery struct {
 	predicates []predicate.User
 	// eager-loading edges.
 	withSessions *SessionQuery
+	withVideos   *VideoQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +81,28 @@ func (uq *UserQuery) QuerySessions() *SessionQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(session.Table, session.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, true, user.SessionsTable, user.SessionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryVideos chains the current query on the "videos" edge.
+func (uq *UserQuery) QueryVideos() *VideoQuery {
+	query := &VideoQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(video.Table, video.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.VideosTable, user.VideosColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -268,6 +292,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		order:        append([]OrderFunc{}, uq.order...),
 		predicates:   append([]predicate.User{}, uq.predicates...),
 		withSessions: uq.withSessions.Clone(),
+		withVideos:   uq.withVideos.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -282,6 +307,17 @@ func (uq *UserQuery) WithSessions(opts ...func(*SessionQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withSessions = query
+	return uq
+}
+
+// WithVideos tells the query-builder to eager-load the nodes that are connected to
+// the "videos" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithVideos(opts ...func(*VideoQuery)) *UserQuery {
+	query := &VideoQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withVideos = query
 	return uq
 }
 
@@ -350,8 +386,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			uq.withSessions != nil,
+			uq.withVideos != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -400,6 +437,35 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "session_user" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Sessions = append(node.Edges.Sessions, n)
+		}
+	}
+
+	if query := uq.withVideos; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*User)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Videos = []*Video{}
+		}
+		query.withFKs = true
+		query.Where(predicate.Video(func(s *sql.Selector) {
+			s.Where(sql.InValues(user.VideosColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.video_user
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "video_user" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "video_user" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Videos = append(node.Edges.Videos, n)
 		}
 	}
 

@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nanagami1369/CodingShare/ent/session"
 	"github.com/nanagami1369/CodingShare/ent/user"
+	"github.com/nanagami1369/CodingShare/ent/video"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -74,6 +75,21 @@ func (uc *UserCreate) AddSessions(s ...*Session) *UserCreate {
 		ids[i] = s[i].ID
 	}
 	return uc.AddSessionIDs(ids...)
+}
+
+// AddVideoIDs adds the "videos" edge to the Video entity by IDs.
+func (uc *UserCreate) AddVideoIDs(ids ...int) *UserCreate {
+	uc.mutation.AddVideoIDs(ids...)
+	return uc
+}
+
+// AddVideos adds the "videos" edges to the Video entity.
+func (uc *UserCreate) AddVideos(v ...*Video) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return uc.AddVideoIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -249,6 +265,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: session.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.VideosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.VideosTable,
+			Columns: []string{user.VideosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: video.FieldID,
 				},
 			},
 		}
