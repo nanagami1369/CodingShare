@@ -186,6 +186,22 @@ func main() {
 		}
 		c.Status(http.StatusOK)
 	})
-
+	private.GET("/myvideo", func(c *gin.Context) {
+		store := sessions.Default(c)
+		_, user, err := sem.Get(store)
+		if err != nil {
+			log.Println("get user err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		videos, err := vim.GetUserVideos(user.UserID)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+		}
+		if err != nil {
+			return
+		}
+		c.JSON(http.StatusOK, videos)
+	})
 	router.RunTLS(":8080", "/server.crt", "/server.key")
 }
