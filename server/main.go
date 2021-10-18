@@ -151,6 +151,16 @@ func main() {
 			"userId": user.UserID,
 		})
 	})
+	router.GET("uservideo/:userid", func(c *gin.Context) {
+		userid := c.Param("userid")
+		videos, err := vim.GetUserVideos(userid)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.JSON(http.StatusOK, videos)
+
+	})
 	private := router.Group("/private")
 	private.Use(middleware.LoginCheckMiddleware())
 	private.POST("/logout", func(c *gin.Context) {
