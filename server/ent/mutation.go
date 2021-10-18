@@ -414,6 +414,9 @@ type UserMutation struct {
 	sessions          map[uuid.UUID]struct{}
 	removedsessions   map[uuid.UUID]struct{}
 	clearedsessions   bool
+	videos            map[int]struct{}
+	removedvideos     map[int]struct{}
+	clearedvideos     bool
 	done              bool
 	oldValue          func(context.Context) (*User, error)
 	predicates        []predicate.User
@@ -730,6 +733,60 @@ func (m *UserMutation) ResetSessions() {
 	m.removedsessions = nil
 }
 
+// AddVideoIDs adds the "videos" edge to the Video entity by ids.
+func (m *UserMutation) AddVideoIDs(ids ...int) {
+	if m.videos == nil {
+		m.videos = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.videos[ids[i]] = struct{}{}
+	}
+}
+
+// ClearVideos clears the "videos" edge to the Video entity.
+func (m *UserMutation) ClearVideos() {
+	m.clearedvideos = true
+}
+
+// VideosCleared reports if the "videos" edge to the Video entity was cleared.
+func (m *UserMutation) VideosCleared() bool {
+	return m.clearedvideos
+}
+
+// RemoveVideoIDs removes the "videos" edge to the Video entity by IDs.
+func (m *UserMutation) RemoveVideoIDs(ids ...int) {
+	if m.removedvideos == nil {
+		m.removedvideos = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.videos, ids[i])
+		m.removedvideos[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedVideos returns the removed IDs of the "videos" edge to the Video entity.
+func (m *UserMutation) RemovedVideosIDs() (ids []int) {
+	for id := range m.removedvideos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// VideosIDs returns the "videos" edge IDs in the mutation.
+func (m *UserMutation) VideosIDs() (ids []int) {
+	for id := range m.videos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetVideos resets all changes to the "videos" edge.
+func (m *UserMutation) ResetVideos() {
+	m.videos = nil
+	m.clearedvideos = false
+	m.removedvideos = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -923,9 +980,12 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.sessions != nil {
 		edges = append(edges, user.EdgeSessions)
+	}
+	if m.videos != nil {
+		edges = append(edges, user.EdgeVideos)
 	}
 	return edges
 }
@@ -940,15 +1000,24 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeVideos:
+		ids := make([]ent.Value, 0, len(m.videos))
+		for id := range m.videos {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedsessions != nil {
 		edges = append(edges, user.EdgeSessions)
+	}
+	if m.removedvideos != nil {
+		edges = append(edges, user.EdgeVideos)
 	}
 	return edges
 }
@@ -963,15 +1032,24 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeVideos:
+		ids := make([]ent.Value, 0, len(m.removedvideos))
+		for id := range m.removedvideos {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedsessions {
 		edges = append(edges, user.EdgeSessions)
+	}
+	if m.clearedvideos {
+		edges = append(edges, user.EdgeVideos)
 	}
 	return edges
 }
@@ -982,6 +1060,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
 	case user.EdgeSessions:
 		return m.clearedsessions
+	case user.EdgeVideos:
+		return m.clearedvideos
 	}
 	return false
 }
@@ -1000,6 +1080,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
 	case user.EdgeSessions:
 		m.ResetSessions()
+		return nil
+	case user.EdgeVideos:
+		m.ResetVideos()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

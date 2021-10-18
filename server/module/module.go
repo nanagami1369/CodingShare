@@ -24,4 +24,5 @@ type VideoModule interface {
 	Save(request *model.SaveVideoRequest, user *ent.User) (*model.Video, error)
 	Load(id int) (*model.Video, error)
 	Search(keyWord string) ([]*model.Video, error)
+	GetUserVideos(id string) ([]*model.Video, error)
 }

@@ -344,6 +344,22 @@ func (c *UserClient) QuerySessions(u *User) *SessionQuery {
 	return query
 }
 
+// QueryVideos queries the videos edge of a User.
+func (c *UserClient) QueryVideos(u *User) *VideoQuery {
+	query := &VideoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(video.Table, video.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.VideosTable, user.VideosColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User

@@ -500,6 +500,34 @@ func HasSessionsWith(preds ...predicate.Session) predicate.User {
 	})
 }
 
+// HasVideos applies the HasEdge predicate on the "videos" edge.
+func HasVideos() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(VideosTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, VideosTable, VideosColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasVideosWith applies the HasEdge predicate on the "videos" edge with a given conditions (other predicates).
+func HasVideosWith(preds ...predicate.Video) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(VideosInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, VideosTable, VideosColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

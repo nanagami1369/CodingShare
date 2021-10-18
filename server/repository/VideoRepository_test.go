@@ -155,6 +155,58 @@ func TestFindFromTitle(t *testing.T) {
 	})
 }
 
+func TestFindFromUser(t *testing.T) {
+	// openDB
+	opts := []enttest.Option{
+		enttest.WithOptions(ent.Log(t.Log)),
+	}
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+	context := context.Background()
+	// set sample data
+	user, _ := client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+	request := &model.SaveVideoRequest{}
+	err := json.Unmarshal([]byte(jsonString), request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	client.Video.Create().
+		SetUser(user).
+		SetTitle(request.Header.Title).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(request.Value).
+		Save(context)
+	repository := NewVideoRepository(context, client)
+	t.Run("存在するビデオを検索する", func(t *testing.T) {
+		videos, err := repository.FindFromUserId("1821141")
+		if err != nil {
+			t.Error(err)
+		}
+		t.Log("searchd videos", len(videos))
+		for _, video := range videos {
+			t.Log(video.Header.Title)
+		}
+	})
+	t.Run("存在しないビデオを検索する", func(t *testing.T) {
+		videos, err := repository.FindFromUserId("testaaa")
+		if err != nil {
+			t.Error(err)
+		}
+		t.Log("searchd videos:", len(videos))
+		for _, video := range videos {
+			t.Log(video.Header.Title)
+		}
+	})
+}
+
 func TestExistFromVideo(t *testing.T) {
 	// openDB
 	opts := []enttest.Option{

@@ -36,6 +36,8 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("sessions", Session.Type).
-		Ref("user"),
+			Ref("user"),
+		edge.From("videos", Video.Type).
+			Ref("user"),
 	}
 }

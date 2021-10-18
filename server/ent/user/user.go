@@ -21,6 +21,8 @@ const (
 	FieldPassword = "password"
 	// EdgeSessions holds the string denoting the sessions edge name in mutations.
 	EdgeSessions = "sessions"
+	// EdgeVideos holds the string denoting the videos edge name in mutations.
+	EdgeVideos = "videos"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// SessionsTable is the table that holds the sessions relation/edge.
@@ -30,6 +32,13 @@ const (
 	SessionsInverseTable = "sessions"
 	// SessionsColumn is the table column denoting the sessions relation/edge.
 	SessionsColumn = "session_user"
+	// VideosTable is the table that holds the videos relation/edge.
+	VideosTable = "videos"
+	// VideosInverseTable is the table name for the Video entity.
+	// It exists in this package in order to avoid circular dependency with the "video" package.
+	VideosInverseTable = "videos"
+	// VideosColumn is the table column denoting the videos relation/edge.
+	VideosColumn = "video_user"
 )
 
 // Columns holds all SQL columns for user fields.
