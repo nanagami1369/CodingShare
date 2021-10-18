@@ -39,6 +39,11 @@ const routes: Array<RouteConfig> = [
     meta: { authRequire: true },
   },
   {
+    path: '/userpage/:id',
+    name: 'UserPage',
+    component: () => import('../views/UserPage.vue'),
+  },
+  {
     path: '/search',
     name: 'Search',
     component: () => import('../views/SearchPage.vue'),

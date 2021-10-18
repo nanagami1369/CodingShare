@@ -11,9 +11,15 @@
       </div>
       <div>
         <span class="thumbnail-video-info-label">作者</span>
-        <cite class="thumbnail-video-info-value">
-          {{ video.header.name }}
-        </cite>
+        <span @click.stop>
+          <router-link
+            :to="{ name: 'UserPage', params: { id: video.header.name } }"
+          >
+            <cite class="thumbnail-video-info-value">
+              {{ video.header.name }}
+            </cite>
+          </router-link>
+        </span>
       </div>
       <div>
         <span class="thumbnail-video-info-label">言語</span>
