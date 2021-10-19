@@ -1,6 +1,14 @@
 <template>
   <div class="my-page">
-    <h1 class="welcome-title">ようこそ {{ userId }} 様</h1>
+    <div class="my-page-header">
+      <h1 class="welcome-title">ようこそ {{ userId }} 様</h1>
+      <div class="my-page-control">
+        <label>
+          <span>jsonファイルからimport</span>
+          <input type="file" @change="importFromJson" />
+        </label>
+      </div>
+    </div>
     <h2>あなたの動画一覧</h2>
     <article class="my-video-list">
       <Thumbnail
@@ -17,6 +25,17 @@
 import Thumbnail from '@/components/Thumbnail.vue'
 import { Video } from '@/models/Video'
 import Vue from 'vue'
+
+function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
+  return new Promise((resolve, reject) => {
+    var fr = new FileReader()
+    fr.onload = () => {
+      resolve(fr.result)
+    }
+    fr.onerror = reject
+    fr.readAsText(file)
+  })
+}
 
 type DataType = {
   videos: Video[]
@@ -39,6 +58,57 @@ export default Vue.extend({
     },
   },
   methods: {
+    loadMyVideo: async function (): Promise<void> {
+      try {
+        var response = await fetch(`/api/private/myvideo`)
+        if (response.ok) {
+          this.videos = (await response.json()) as Video[]
+        } else {
+          const message =
+            'サーバーへのimportに失敗しました\n' +
+            `message:${await response.text()}\n` +
+            `http status:${response.status} ${response.statusText}`
+          alert(message)
+        }
+      } catch (error: unknown) {
+        // 通信エラーの場合はアラートで表示
+        alert((error as Error).message)
+        return
+      }
+    },
+    importFromJson: async function (event: Event) {
+      const target = event.target as HTMLInputElement
+      const file = target.files?.item(0)
+      if (file == null) {
+        // ファイルがなければ何もしない
+        return
+      }
+
+      try {
+        const videoJson = (await readTextFile(file)) as string
+        const video: Video = JSON.parse(videoJson)
+        const response = await fetch('/api/private/savevideo', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'include',
+          body: JSON.stringify(video),
+        })
+        if (response.ok) {
+          alert('サーバーにimportしました')
+          await this.loadMyVideo()
+        } else {
+          const message =
+            'サーバーへのimportに失敗しました\n' +
+            `message:${await response.text()}\n` +
+            `http status:${response.status} ${response.statusText}`
+          alert(message)
+        }
+      } catch (error: unknown) {
+        alert('サーバーへのimportに失敗しました\n' + (error as Error).message)
+        return
+      }
+      return
+    },
     logout: async function () {
       try {
         const response = await fetch('/api/private/logout', {
@@ -62,26 +132,46 @@ export default Vue.extend({
     },
   },
   async created(): Promise<void> {
-    try {
-      var response = await fetch(`/api/private/myvideo`)
-      if (response.ok) {
-        this.videos = (await response.json()) as Video[]
-      } else {
-        alert(`通信エラー\n${await response.text()}`)
-      }
-    } catch (error: unknown) {
-      // 通信エラーの場合はアラートで表示
-      alert((error as Error).message)
-      return
-    }
+    await this.loadMyVideo()
   },
 })
 </script>
 
 <style scoped>
 .welcome-title {
-  margin: 30px;
   text-align: start;
+}
+
+.my-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px;
+}
+
+.my-page-control {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.my-page-control input[type='file'] {
+  display: none;
+}
+
+.my-page-control label {
+  border: solid 2px #202020;
+  background: #ffffff;
+  padding: 10px 20px;
+}
+
+.my-page-control label:hover {
+  background: #cccccc;
+}
+
+.my-page-control label:active {
+  background: #aaaaaa;
 }
 
 .my-video-list {
