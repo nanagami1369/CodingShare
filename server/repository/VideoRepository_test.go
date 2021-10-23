@@ -330,6 +330,47 @@ func TestExistFromVideo(t *testing.T) {
 	})
 }
 
+func TestRemoveFromVideo(t *testing.T) {
+	// openDB
+	opts := []enttest.Option{
+		enttest.WithOptions(ent.Log(t.Log)),
+	}
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+	context := context.Background()
+	user, _ := client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+	request := &model.SaveVideoRequest{}
+	err := json.Unmarshal([]byte(jsonString), request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	removed_video, _ := client.Video.Create().
+		SetUser(user).
+		SetTitle(request.Header.Title).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(request.Value).
+		Save(context)
+	repository := NewVideoRepository(context, client)
+	t.Run("削除できるか", func(t *testing.T) {
+		err := repository.Remove(removed_video.ID)
+		if err != nil {
+			t.Error(err)
+		}
+		remove_video, _ := client.Video.Query().Where(video.IsRemoved(true)).First(context)
+		if !(removed_video.ID == remove_video.ID && remove_video.IsRemoved) {
+			t.Error("削除したのにis removedがfalseです")
+		}
+	})
+}
+
 const jsonString = `{
     "header": {
         "title": "test",

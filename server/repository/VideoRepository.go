@@ -147,3 +147,18 @@ func (r *VideoRepositoryImpl) FindFromUserId(id string) ([]*model.Video, error) 
 func (r *VideoRepositoryImpl) Exists(id int) (bool, error) {
 	return r.client.Video.Query().Where(video.And(video.ID(id), video.IsRemoved(false))).Exist(r.context)
 }
+
+func (r *VideoRepositoryImpl) Remove(id int) error {
+	video, err := r.client.Video.Query().
+		Where(
+			video.And(video.ID(id),
+				video.IsRemoved(false),
+			),
+		).
+		First(r.context)
+	if err != nil {
+		return err
+	}
+	video.Update().SetIsRemoved(true).Save(r.context)
+	return nil
+}

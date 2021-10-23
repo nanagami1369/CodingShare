@@ -49,3 +49,21 @@ func (m *VideoModuleImpl) Search(keyWord string) ([]*model.Video, error) {
 func (m *VideoModuleImpl) GetUserVideos(id string) ([]*model.Video, error) {
 	return m.repository.FindFromUserId(id)
 }
+
+func (m *VideoModuleImpl) Remove(id int, loginUser *ent.User) error {
+	isExist, err := m.repository.Exists(id)
+	if err != nil {
+		return err
+	}
+	if !isExist {
+		return errors.New("not is video")
+	}
+	video, err := m.repository.FindOne(id)
+	if err != nil {
+		return err
+	}
+	if loginUser.UserID != video.Header.UserID {
+		return errors.New("this video is not for the loggin user")
+	}
+	return m.repository.Remove(id)
+}
