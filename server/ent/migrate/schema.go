@@ -51,6 +51,7 @@ var (
 		{Name: "recording_time", Type: field.TypeInt},
 		{Name: "coding_sequence", Type: field.TypeJSON},
 		{Name: "comment", Type: field.TypeString},
+		{Name: "is_removed", Type: field.TypeBool, Default: false},
 		{Name: "video_user", Type: field.TypeInt, Nullable: true},
 	}
 	// VideosTable holds the schema information for the "videos" table.
@@ -61,7 +62,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "videos_users_user",
-				Columns:    []*schema.Column{VideosColumns[7]},
+				Columns:    []*schema.Column{VideosColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

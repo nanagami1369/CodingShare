@@ -60,4 +60,8 @@ func init() {
 	videoDescRecordingTime := videoFields[3].Descriptor()
 	// video.RecordingTimeValidator is a validator for the "recording_time" field. It is called by the builders before save.
 	video.RecordingTimeValidator = videoDescRecordingTime.Validators[0].(func(int) error)
+	// videoDescIsRemoved is the schema descriptor for is_removed field.
+	videoDescIsRemoved := videoFields[6].Descriptor()
+	// video.DefaultIsRemoved holds the default value on creation for the is_removed field.
+	video.DefaultIsRemoved = videoDescIsRemoved.Default.(bool)
 }

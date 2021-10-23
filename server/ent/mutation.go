@@ -1101,6 +1101,7 @@ type VideoMutation struct {
 	addrecording_time *int
 	coding_sequence   **[]model.CodingSequence
 	comment           *string
+	is_removed        *bool
 	clearedFields     map[string]struct{}
 	user              *int
 	cleareduser       bool
@@ -1424,6 +1425,42 @@ func (m *VideoMutation) ResetComment() {
 	m.comment = nil
 }
 
+// SetIsRemoved sets the "is_removed" field.
+func (m *VideoMutation) SetIsRemoved(b bool) {
+	m.is_removed = &b
+}
+
+// IsRemoved returns the value of the "is_removed" field in the mutation.
+func (m *VideoMutation) IsRemoved() (r bool, exists bool) {
+	v := m.is_removed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsRemoved returns the old "is_removed" field's value of the Video entity.
+// If the Video object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *VideoMutation) OldIsRemoved(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsRemoved is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsRemoved requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsRemoved: %w", err)
+	}
+	return oldValue.IsRemoved, nil
+}
+
+// ResetIsRemoved resets all changes to the "is_removed" field.
+func (m *VideoMutation) ResetIsRemoved() {
+	m.is_removed = nil
+}
+
 // SetUserID sets the "user" edge to the User entity by id.
 func (m *VideoMutation) SetUserID(id int) {
 	m.user = &id
@@ -1482,7 +1519,7 @@ func (m *VideoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *VideoMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.title != nil {
 		fields = append(fields, video.FieldTitle)
 	}
@@ -1500,6 +1537,9 @@ func (m *VideoMutation) Fields() []string {
 	}
 	if m.comment != nil {
 		fields = append(fields, video.FieldComment)
+	}
+	if m.is_removed != nil {
+		fields = append(fields, video.FieldIsRemoved)
 	}
 	return fields
 }
@@ -1521,6 +1561,8 @@ func (m *VideoMutation) Field(name string) (ent.Value, bool) {
 		return m.CodingSequence()
 	case video.FieldComment:
 		return m.Comment()
+	case video.FieldIsRemoved:
+		return m.IsRemoved()
 	}
 	return nil, false
 }
@@ -1542,6 +1584,8 @@ func (m *VideoMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCodingSequence(ctx)
 	case video.FieldComment:
 		return m.OldComment(ctx)
+	case video.FieldIsRemoved:
+		return m.OldIsRemoved(ctx)
 	}
 	return nil, fmt.Errorf("unknown Video field %s", name)
 }
@@ -1592,6 +1636,13 @@ func (m *VideoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetComment(v)
+		return nil
+	case video.FieldIsRemoved:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsRemoved(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Video field %s", name)
@@ -1674,6 +1725,9 @@ func (m *VideoMutation) ResetField(name string) error {
 		return nil
 	case video.FieldComment:
 		m.ResetComment()
+		return nil
+	case video.FieldIsRemoved:
+		m.ResetIsRemoved()
 		return nil
 	}
 	return fmt.Errorf("unknown Video field %s", name)

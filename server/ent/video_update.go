@@ -66,6 +66,20 @@ func (vu *VideoUpdate) SetComment(s string) *VideoUpdate {
 	return vu
 }
 
+// SetIsRemoved sets the "is_removed" field.
+func (vu *VideoUpdate) SetIsRemoved(b bool) *VideoUpdate {
+	vu.mutation.SetIsRemoved(b)
+	return vu
+}
+
+// SetNillableIsRemoved sets the "is_removed" field if the given value is not nil.
+func (vu *VideoUpdate) SetNillableIsRemoved(b *bool) *VideoUpdate {
+	if b != nil {
+		vu.SetIsRemoved(*b)
+	}
+	return vu
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (vu *VideoUpdate) SetUserID(id int) *VideoUpdate {
 	vu.mutation.SetUserID(id)
@@ -226,6 +240,13 @@ func (vu *VideoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: video.FieldComment,
 		})
 	}
+	if value, ok := vu.mutation.IsRemoved(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: video.FieldIsRemoved,
+		})
+	}
 	if vu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -314,6 +335,20 @@ func (vuo *VideoUpdateOne) SetCodingSequence(ms *[]model.CodingSequence) *VideoU
 // SetComment sets the "comment" field.
 func (vuo *VideoUpdateOne) SetComment(s string) *VideoUpdateOne {
 	vuo.mutation.SetComment(s)
+	return vuo
+}
+
+// SetIsRemoved sets the "is_removed" field.
+func (vuo *VideoUpdateOne) SetIsRemoved(b bool) *VideoUpdateOne {
+	vuo.mutation.SetIsRemoved(b)
+	return vuo
+}
+
+// SetNillableIsRemoved sets the "is_removed" field if the given value is not nil.
+func (vuo *VideoUpdateOne) SetNillableIsRemoved(b *bool) *VideoUpdateOne {
+	if b != nil {
+		vuo.SetIsRemoved(*b)
+	}
 	return vuo
 }
 
@@ -499,6 +534,13 @@ func (vuo *VideoUpdateOne) sqlSave(ctx context.Context) (_node *Video, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: video.FieldComment,
+		})
+	}
+	if value, ok := vuo.mutation.IsRemoved(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: video.FieldIsRemoved,
 		})
 	}
 	if vuo.mutation.UserCleared() {

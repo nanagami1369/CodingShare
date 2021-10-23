@@ -121,6 +121,13 @@ func Comment(v string) predicate.Video {
 	})
 }
 
+// IsRemoved applies equality check predicate on the "is_removed" field. It's identical to IsRemovedEQ.
+func IsRemoved(v bool) predicate.Video {
+	return predicate.Video(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsRemoved), v))
+	})
+}
+
 // TitleEQ applies the EQ predicate on the "title" field.
 func TitleEQ(v string) predicate.Video {
 	return predicate.Video(func(s *sql.Selector) {
@@ -492,6 +499,20 @@ func CommentEqualFold(v string) predicate.Video {
 func CommentContainsFold(v string) predicate.Video {
 	return predicate.Video(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldComment), v))
+	})
+}
+
+// IsRemovedEQ applies the EQ predicate on the "is_removed" field.
+func IsRemovedEQ(v bool) predicate.Video {
+	return predicate.Video(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsRemoved), v))
+	})
+}
+
+// IsRemovedNEQ applies the NEQ predicate on the "is_removed" field.
+func IsRemovedNEQ(v bool) predicate.Video {
+	return predicate.Video(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsRemoved), v))
 	})
 }
 
