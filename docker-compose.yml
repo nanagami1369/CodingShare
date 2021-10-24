@@ -50,7 +50,8 @@ services:
     networks:
       - coding_share_net
     ports:
-      - 8080:443
+      - 80:80
+      - 443:443
     depends_on:
       - front
       - server
