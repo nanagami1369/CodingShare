@@ -263,6 +263,11 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.my-page {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .welcome-title {
   text-align: start;
   flex: 1 0 auto;
