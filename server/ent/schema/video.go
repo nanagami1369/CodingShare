@@ -27,6 +27,8 @@ func (Video) Fields() []ent.Field {
 			NonNegative(),
 		field.JSON("coding_sequence", &[]model.CodingSequence{}),
 		field.String("comment"),
+		field.Bool("is_removed").
+			Default(false),
 	}
 }
 

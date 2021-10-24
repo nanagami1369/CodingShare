@@ -213,5 +213,29 @@ func main() {
 		}
 		c.JSON(http.StatusOK, videos)
 	})
+	private.DELETE("/removevideo/:videoId", func(c *gin.Context) {
+		videoId := c.Param("videoId")
+		log.Println(videoId)
+		id, err := strconv.Atoi(videoId)
+		if err != nil {
+			// 数値以外は404
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		store := sessions.Default(c)
+		_, user, err := sem.Get(store)
+		if err != nil {
+			log.Println("get user err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		err = vim.Remove(id, user)
+		if err != nil {
+			log.Println("video removed err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.Status(http.StatusOK)
+	})
 	router.RunTLS(":8080", "/server.crt", "/server.key")
 }

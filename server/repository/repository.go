@@ -29,4 +29,5 @@ type VideoRepository interface {
 	FindFromTitle(title string) ([]*model.Video, error)
 	FindFromUserId(id string) ([]*model.Video, error)
 	Exists(id int) (bool, error)
+	Remove(id int) error
 }

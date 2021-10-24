@@ -66,6 +66,20 @@ func (vc *VideoCreate) SetComment(s string) *VideoCreate {
 	return vc
 }
 
+// SetIsRemoved sets the "is_removed" field.
+func (vc *VideoCreate) SetIsRemoved(b bool) *VideoCreate {
+	vc.mutation.SetIsRemoved(b)
+	return vc
+}
+
+// SetNillableIsRemoved sets the "is_removed" field if the given value is not nil.
+func (vc *VideoCreate) SetNillableIsRemoved(b *bool) *VideoCreate {
+	if b != nil {
+		vc.SetIsRemoved(*b)
+	}
+	return vc
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (vc *VideoCreate) SetUserID(id int) *VideoCreate {
 	vc.mutation.SetUserID(id)
@@ -152,6 +166,10 @@ func (vc *VideoCreate) defaults() {
 		v := video.DefaultUploadTime()
 		vc.mutation.SetUploadTime(v)
 	}
+	if _, ok := vc.mutation.IsRemoved(); !ok {
+		v := video.DefaultIsRemoved
+		vc.mutation.SetIsRemoved(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -183,6 +201,9 @@ func (vc *VideoCreate) check() error {
 	}
 	if _, ok := vc.mutation.Comment(); !ok {
 		return &ValidationError{Name: "comment", err: errors.New(`ent: missing required field "comment"`)}
+	}
+	if _, ok := vc.mutation.IsRemoved(); !ok {
+		return &ValidationError{Name: "is_removed", err: errors.New(`ent: missing required field "is_removed"`)}
 	}
 	if _, ok := vc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user", err: errors.New("ent: missing required edge \"user\"")}
@@ -261,6 +282,14 @@ func (vc *VideoCreate) createSpec() (*Video, *sqlgraph.CreateSpec) {
 			Column: video.FieldComment,
 		})
 		_node.Comment = value
+	}
+	if value, ok := vc.mutation.IsRemoved(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: video.FieldIsRemoved,
+		})
+		_node.IsRemoved = value
 	}
 	if nodes := vc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

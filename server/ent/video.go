@@ -31,6 +31,8 @@ type Video struct {
 	CodingSequence *[]model.CodingSequence `json:"coding_sequence,omitempty"`
 	// Comment holds the value of the "comment" field.
 	Comment string `json:"comment,omitempty"`
+	// IsRemoved holds the value of the "is_removed" field.
+	IsRemoved bool `json:"is_removed,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the VideoQuery when eager-loading is set.
 	Edges      VideoEdges `json:"edges"`
@@ -67,6 +69,8 @@ func (*Video) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case video.FieldLanguageTag, video.FieldCodingSequence:
 			values[i] = new([]byte)
+		case video.FieldIsRemoved:
+			values[i] = new(sql.NullBool)
 		case video.FieldID, video.FieldRecordingTime:
 			values[i] = new(sql.NullInt64)
 		case video.FieldTitle, video.FieldComment:
@@ -136,6 +140,12 @@ func (v *Video) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				v.Comment = value.String
 			}
+		case video.FieldIsRemoved:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_removed", values[i])
+			} else if value.Valid {
+				v.IsRemoved = value.Bool
+			}
 		case video.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field video_user", value)
@@ -188,6 +198,8 @@ func (v *Video) String() string {
 	builder.WriteString(fmt.Sprintf("%v", v.CodingSequence))
 	builder.WriteString(", comment=")
 	builder.WriteString(v.Comment)
+	builder.WriteString(", is_removed=")
+	builder.WriteString(fmt.Sprintf("%v", v.IsRemoved))
 	builder.WriteByte(')')
 	return builder.String()
 }

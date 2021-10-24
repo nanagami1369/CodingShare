@@ -82,6 +82,14 @@ body {
   animation: flash 1s linear infinite;
 }
 
+/* ConfirmSelectedVideoModal に スクロールバーを追加する css */
+/* :scrollable="true" が効かないので暫定措置 */
+div[data-modal='confirm-selected-video-modal']
+  .v--modal-background-click
+  .v--modal-box {
+  overflow-y: auto !important;
+}
+
 @keyframes flash {
   0%,
   50% {

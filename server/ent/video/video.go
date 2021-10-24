@@ -23,6 +23,8 @@ const (
 	FieldCodingSequence = "coding_sequence"
 	// FieldComment holds the string denoting the comment field in the database.
 	FieldComment = "comment"
+	// FieldIsRemoved holds the string denoting the is_removed field in the database.
+	FieldIsRemoved = "is_removed"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the video in the database.
@@ -45,6 +47,7 @@ var Columns = []string{
 	FieldRecordingTime,
 	FieldCodingSequence,
 	FieldComment,
+	FieldIsRemoved,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "videos"
@@ -75,4 +78,6 @@ var (
 	DefaultUploadTime func() time.Time
 	// RecordingTimeValidator is a validator for the "recording_time" field. It is called by the builders before save.
 	RecordingTimeValidator func(int) error
+	// DefaultIsRemoved holds the default value on creation for the "is_removed" field.
+	DefaultIsRemoved bool
 )

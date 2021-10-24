@@ -49,7 +49,7 @@ func (r *VideoRepositoryImpl) Add(user *ent.User, title string, language *model.
 }
 
 func (r *VideoRepositoryImpl) FindOne(id int) (*model.Video, error) {
-	video, err := r.client.Video.Query().Where(video.ID(id)).Only(r.context)
+	video, err := r.client.Video.Query().Where(video.And(video.ID(id), video.IsRemoved(false))).Only(r.context)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,12 @@ func (r *VideoRepositoryImpl) FindOne(id int) (*model.Video, error) {
 
 func (r *VideoRepositoryImpl) FindFromTitle(title string) ([]*model.Video, error) {
 	searchedVideos, err := r.client.Video.Query().
-		Where(video.TitleContains(title)).
+		Where(
+			video.And(
+				video.TitleContains(title),
+				video.IsRemoved(false),
+			),
+		).
 		All(r.context)
 	if err != nil {
 		return nil, err
@@ -113,7 +118,7 @@ func (r *VideoRepositoryImpl) FindFromUserId(id string) ([]*model.Video, error) 
 	if err != nil {
 		return nil, err
 	}
-	searchedVideos, err := r.client.User.QueryVideos(user).All(r.context)
+	searchedVideos, err := r.client.User.QueryVideos(user).Where(video.IsRemoved(false)).All(r.context)
 	if err != nil {
 		return nil, err
 	}
@@ -140,5 +145,20 @@ func (r *VideoRepositoryImpl) FindFromUserId(id string) ([]*model.Video, error) 
 }
 
 func (r *VideoRepositoryImpl) Exists(id int) (bool, error) {
-	return r.client.Video.Query().Where(video.ID(id)).Exist(r.context)
+	return r.client.Video.Query().Where(video.And(video.ID(id), video.IsRemoved(false))).Exist(r.context)
+}
+
+func (r *VideoRepositoryImpl) Remove(id int) error {
+	video, err := r.client.Video.Query().
+		Where(
+			video.And(video.ID(id),
+				video.IsRemoved(false),
+			),
+		).
+		First(r.context)
+	if err != nil {
+		return err
+	}
+	video.Update().SetIsRemoved(true).Save(r.context)
+	return nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/nanagami1369/CodingShare/ent"
 	"github.com/nanagami1369/CodingShare/ent/enttest"
 	"github.com/nanagami1369/CodingShare/ent/user"
+	"github.com/nanagami1369/CodingShare/ent/video"
 	"github.com/nanagami1369/CodingShare/model"
 )
 
@@ -81,6 +82,16 @@ func TestFindOneFromVideo(t *testing.T) {
 		SetComment(request.Header.Comment).
 		SetCodingSequence(request.Value).
 		Save(context)
+	removed_video, _ := client.Video.Create().
+		SetUser(user).
+		SetTitle("removed" + request.Header.Title).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(request.Value).
+		SetIsRemoved(true).
+		Save(context)
+
 	repository := NewVideoRepository(context, client)
 	// 登録したアカウントが存在するか判定する
 	t.Run("ビデオが取得できるか", func(t *testing.T) {
@@ -100,6 +111,12 @@ func TestFindOneFromVideo(t *testing.T) {
 			video.Header.UploadTime,
 			video.Header.RecordingTime,
 			video.Header.Comment)
+	})
+	t.Run("削除済みのビデオが見つからないこと", func(t *testing.T) {
+		videos, _ := repository.FindOne(removed_video.ID)
+		if videos != nil {
+			t.Error("削除済みのビデオが見つかりました")
+		}
 	})
 }
 
@@ -132,6 +149,15 @@ func TestFindFromTitle(t *testing.T) {
 		SetComment(request.Header.Comment).
 		SetCodingSequence(request.Value).
 		Save(context)
+	client.Video.Create().
+		SetUser(user).
+		SetTitle("removed" + request.Header.Title).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(request.Value).
+		SetIsRemoved(true).
+		Save(context)
 	repository := NewVideoRepository(context, client)
 	t.Run("存在するビデオを検索する", func(t *testing.T) {
 		videos, err := repository.FindFromTitle("te")
@@ -139,6 +165,9 @@ func TestFindFromTitle(t *testing.T) {
 			t.Error(err)
 		}
 		t.Log("searchd videos", len(videos))
+		if len(videos) != 1 {
+			t.Error("削除済みのビデオが見つかりました")
+		}
 		for _, video := range videos {
 			t.Log(video.Header.Title)
 		}
@@ -184,6 +213,15 @@ func TestFindFromUser(t *testing.T) {
 		SetComment(request.Header.Comment).
 		SetCodingSequence(request.Value).
 		Save(context)
+	client.Video.Create().
+		SetUser(user).
+		SetTitle("removed" + request.Header.Title).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(request.Value).
+		SetIsRemoved(true).
+		Save(context)
 	repository := NewVideoRepository(context, client)
 	t.Run("存在するビデオを検索する", func(t *testing.T) {
 		videos, err := repository.FindFromUserId("1821141")
@@ -197,6 +235,16 @@ func TestFindFromUser(t *testing.T) {
 	})
 	t.Run("存在しないビデオを検索する", func(t *testing.T) {
 		videos, err := repository.FindFromUserId("testaaa")
+		if err != nil {
+			t.Error(err)
+		}
+		t.Log("searchd videos:", len(videos))
+		for _, video := range videos {
+			t.Log(video.Header.Title)
+		}
+	})
+	t.Run("存在しない(削除済みの)ビデオを検索する", func(t *testing.T) {
+		videos, err := repository.FindFromUserId("removed")
 		if err != nil {
 			t.Error(err)
 		}
@@ -236,6 +284,16 @@ func TestExistFromVideo(t *testing.T) {
 		SetCodingSequence(request.Value).
 		Save(context)
 	testId := video.ID
+	removed_video, _ := client.Video.Create().
+		SetUser(user).
+		SetTitle("removed" + request.Header.Title).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(request.Value).
+		SetIsRemoved(true).
+		Save(context)
+	removed_video_id := removed_video.ID
 	repository := NewVideoRepository(context, client)
 	t.Run("存在する場合", func(t *testing.T) {
 		result, err := repository.Exists(testId)
@@ -257,6 +315,58 @@ func TestExistFromVideo(t *testing.T) {
 			t.Errorf("チェックに失敗しました \n"+
 				"expected:%v\n"+
 				"actual  :%v", false, true)
+		}
+	})
+	t.Run("存在しない(削除済みの)場合", func(t *testing.T) {
+		result, err := repository.Exists(removed_video_id)
+		if err != nil {
+			t.Fatalf("err:%#v", err)
+		}
+		if result != false {
+			t.Errorf("チェックに失敗しました \n"+
+				"expected:%v\n"+
+				"actual  :%v", false, true)
+		}
+	})
+}
+
+func TestRemoveFromVideo(t *testing.T) {
+	// openDB
+	opts := []enttest.Option{
+		enttest.WithOptions(ent.Log(t.Log)),
+	}
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+	context := context.Background()
+	user, _ := client.User.Create().
+		SetUserID("1821141").
+		SetPassword("sample").
+		SetAccountType(user.AccountTypeStudent).
+		SetStudentNumber(1821141).
+		Save(context)
+	request := &model.SaveVideoRequest{}
+	err := json.Unmarshal([]byte(jsonString), request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	removed_video, _ := client.Video.Create().
+		SetUser(user).
+		SetTitle(request.Header.Title).
+		SetLanguageTag(request.Header.Language).
+		SetRecordingTime((*request.Value)[len(*request.Value)-1].Timestamp).
+		SetComment(request.Header.Comment).
+		SetCodingSequence(request.Value).
+		Save(context)
+	repository := NewVideoRepository(context, client)
+	t.Run("削除できるか", func(t *testing.T) {
+		err := repository.Remove(removed_video.ID)
+		if err != nil {
+			t.Error(err)
+		}
+		remove_video, _ := client.Video.Query().Where(video.IsRemoved(true)).First(context)
+		if !(removed_video.ID == remove_video.ID && remove_video.IsRemoved) {
+			t.Error("削除したのにis removedがfalseです")
 		}
 	})
 }
