@@ -65,6 +65,11 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.user-page {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .user-page-title {
   margin: 30px;
   text-align: start;
