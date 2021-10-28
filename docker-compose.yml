@@ -39,6 +39,8 @@ services:
       context: ./proxy_server
       dockerfile: Dockerfile
     container_name: coding_share_proxy_server
+    env_file:
+      - .env
     networks:
       - coding_share_net
     ports:
