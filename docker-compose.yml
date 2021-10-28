@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   front:
+    restart: always
     build:
       context: ./front
       dockerfile: Dockerfile
@@ -12,6 +13,7 @@ services:
       - server.key
 
   server:
+    restart: always
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -26,6 +28,7 @@ services:
     depends_on:
       - db
   db:
+    restart: always
     image: mariadb:10.5.8
     container_name: coding_share_db_server
     networks:
@@ -35,6 +38,7 @@ services:
       - .env
 
   proxy_server:
+    restart: always
     build:
       context: ./proxy_server
       dockerfile: Dockerfile
