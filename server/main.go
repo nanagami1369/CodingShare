@@ -237,5 +237,5 @@ func main() {
 		}
 		c.Status(http.StatusOK)
 	})
-	router.RunTLS(":8080", "/server.crt", "/server.key")
+	router.RunTLS(":8080", "/run/secrets/server.crt", "/run/secrets/server.key")
 }
