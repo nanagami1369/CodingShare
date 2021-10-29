@@ -8,9 +8,6 @@ services:
     container_name: coding_share_front
     networks:
       - coding_share_net
-    secrets:
-      - server.crt
-      - server.key
 
   server:
     restart: always
@@ -22,9 +19,6 @@ services:
       - coding_share_net
     env_file:
       - .env
-    secrets:
-      - server.crt
-      - server.key
     depends_on:
       - db
   db:

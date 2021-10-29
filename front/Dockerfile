@@ -9,4 +9,3 @@ RUN npm run build
 # 本番環境
 FROM nginx:stable-alpine as production-stage
 COPY --from=build-stage /docs /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/nginx.conf
