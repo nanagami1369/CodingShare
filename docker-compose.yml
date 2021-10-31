@@ -47,16 +47,7 @@ services:
     depends_on:
       - front
       - server
-    secrets:
-      - server.crt
-      - server.key
 
 networks:
   coding_share_net:
     driver: bridge
-
-secrets:
-  server.crt:
-    file: ${CERTIFICATE_FILE_PATH}
-  server.key:
-    file: ${KEY_FILE_PATH}
