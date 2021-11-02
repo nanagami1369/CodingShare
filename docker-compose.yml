@@ -43,6 +43,8 @@ services:
       - coding_share_net
     ports:
       - 80:80
+    expose:
+      - '80'
     depends_on:
       - front
       - server
