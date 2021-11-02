@@ -2,18 +2,14 @@ version: "3.8"
 services:
   front:
     restart: always
-    build:
-      context: ./front
-      dockerfile: Dockerfile
+    image: codingshareregistry.azurecr.io/coding_share_front:v1
     container_name: coding_share_front
     networks:
       - coding_share_net
 
   server:
     restart: always
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: codingshareregistry.azurecr.io/coding_share_server:v6
     container_name: coding_share_server
     networks:
       - coding_share_net
@@ -22,9 +18,7 @@ services:
 
   proxy_server:
     restart: always
-    build:
-      context: ./proxy_server
-      dockerfile: Dockerfile
+    image: codingshareregistry.azurecr.io/coding_share_proxy_server:v1
     container_name: coding_share_proxy_server
     networks:
       - coding_share_net

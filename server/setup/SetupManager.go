@@ -10,7 +10,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/nanagami1369/CodingShare/ent"
 	"github.com/nanagami1369/CodingShare/middleware"
 	"github.com/nanagami1369/CodingShare/model"
@@ -40,7 +40,7 @@ func (sm *SetupManager) GetVideoModule(client *ent.Client, context context.Conte
 	return module.NewVideoModule(r)
 }
 
-func (sm *SetupManager) GetRouter(config *model.Config, middleware *middleware.Middleware) (router *gin.Engine, err error) {
+func (sm *SetupManager) GetRouter(middleware *middleware.Middleware) (router *gin.Engine, err error) {
 	router = gin.Default()
 	store := cookie.NewStore([]byte("secret"))
 	store.Options(sessions.Options{
@@ -57,17 +57,8 @@ func (sm *SetupManager) GetRouter(config *model.Config, middleware *middleware.M
 	return router, nil
 }
 
-func (sm *SetupManager) ConnentDB(config *model.Config) (Client *ent.Client, err error) {
-	dbConfig := &mysql.Config{
-		User:                 config.DBUser,
-		Passwd:               config.DBPassword,
-		Net:                  "tcp",
-		Addr:                 config.DBHost,
-		DBName:               config.DBName,
-		AllowNativePasswords: true,
-		ParseTime:            true,
-	}
-	return ent.Open("mysql", dbConfig.FormatDSN())
+func (sm *SetupManager) ConnentDB() (Client *ent.Client, err error) {
+	return ent.Open("sqlite3", "file:/CodingShare/main.sqlite3?_fk=1")
 }
 
 func (sm *SetupManager) readEnv(key string) (string, error) {

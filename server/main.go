@@ -21,11 +21,7 @@ import (
 func main() {
 	sm := setup.NewSetupManager()
 	// db
-	config, err := sm.ReadConfigFromEnv()
-	if err != nil {
-		log.Panicln("read config err:", err)
-	}
-	client, err := sm.ConnentDB(config)
+	client, err := sm.ConnentDB()
 	if err != nil {
 		log.Panicln("open db err:", err)
 	}
@@ -69,7 +65,7 @@ func main() {
 	loginLog := log.New(os.Stdout, "[LOGIN]", log.LstdFlags|log.LUTC)
 
 	// router
-	router, _ := sm.GetRouter(config, middleware)
+	router, _ := sm.GetRouter(middleware)
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Hello World",
@@ -237,5 +233,5 @@ func main() {
 		}
 		c.Status(http.StatusOK)
 	})
-	router.RunTLS(":8080", "/server.crt", "/server.key")
+	router.Run(":8080")
 }
