@@ -21,11 +21,7 @@ import (
 func main() {
 	sm := setup.NewSetupManager()
 	// db
-	config, err := sm.ReadConfigFromEnv()
-	if err != nil {
-		log.Panicln("read config err:", err)
-	}
-	client, err := sm.ConnentDB(config)
+	client, err := sm.ConnentDB()
 	if err != nil {
 		log.Panicln("open db err:", err)
 	}

@@ -17,19 +17,6 @@ services:
     container_name: coding_share_server
     networks:
       - coding_share_net
-    env_file:
-      - .env
-    depends_on:
-      - db
-  db:
-    restart: always
-    image: mariadb:10.5.8
-    container_name: coding_share_db_server
-    networks:
-      - coding_share_net
-    command: mysqld --character-set-server=utf8mb4  --collation-server=utf8mb4_general_ci
-    env_file:
-      - .env
 
   proxy_server:
     restart: always
@@ -37,8 +24,6 @@ services:
       context: ./proxy_server
       dockerfile: Dockerfile
     container_name: coding_share_proxy_server
-    env_file:
-      - .env
     networks:
       - coding_share_net
     ports:
