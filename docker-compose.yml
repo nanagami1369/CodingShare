@@ -17,6 +17,8 @@ services:
     container_name: coding_share_server
     networks:
       - coding_share_net
+    volumes:
+      - coding_share_volume:/CodingShare
 
   proxy_server:
     restart: always
@@ -37,3 +39,7 @@ services:
 networks:
   coding_share_net:
     driver: bridge
+
+volumes:
+  coding_share_volume:
+    driver: local
