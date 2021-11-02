@@ -69,7 +69,7 @@ func main() {
 	loginLog := log.New(os.Stdout, "[LOGIN]", log.LstdFlags|log.LUTC)
 
 	// router
-	router, _ := sm.GetRouter(config, middleware)
+	router, _ := sm.GetRouter(middleware)
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Hello World",

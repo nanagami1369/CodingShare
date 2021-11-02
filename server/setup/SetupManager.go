@@ -40,7 +40,7 @@ func (sm *SetupManager) GetVideoModule(client *ent.Client, context context.Conte
 	return module.NewVideoModule(r)
 }
 
-func (sm *SetupManager) GetRouter(config *model.Config, middleware *middleware.Middleware) (router *gin.Engine, err error) {
+func (sm *SetupManager) GetRouter(middleware *middleware.Middleware) (router *gin.Engine, err error) {
 	router = gin.Default()
 	store := cookie.NewStore([]byte("secret"))
 	store.Options(sessions.Options{
