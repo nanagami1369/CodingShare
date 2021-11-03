@@ -28,6 +28,13 @@ func TestCheckSignInRequestvalidation(t *testing.T) {
 			AccountType: user.AccountTypeGeneral,
 		}, errors.New("sign in request error id is empty"))
 	})
+	t.Run("ユーザーIDがファイル", func(t *testing.T) {
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:          "file",
+			RowPassword: "00000000",
+			AccountType: user.AccountTypeGeneral,
+		}, errors.New("sign in request error file cannot be used for request id"))
+	})
 	t.Run("パスワード値無し", func(t *testing.T) {
 		testCheckSignInRequestvalidation(t, &model.SignInRequest{
 			Id:          "nanagami1369outlockexsample",
