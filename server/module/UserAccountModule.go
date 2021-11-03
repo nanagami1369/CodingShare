@@ -67,6 +67,10 @@ func checkSignInRequestValidation(request *model.SignInRequest) error {
 	if request.Id == "" {
 		return errors.New("sign in request error id is empty")
 	}
+	if request.Id == "file" {
+		// fileはjsonファイルのuserIdにするのでuserIdに使わせない
+		return errors.New("sign in request error file cannot be used for request id")
+	}
 	if len(request.RowPassword) < 8 {
 		return errors.New("sign in request error password is 8 characters or more")
 	}
