@@ -113,11 +113,18 @@ func main() {
 			c.String(http.StatusBadRequest, err.Error())
 			return
 		}
+		AccountTypeStudent := user.AccountTypeStudent
 		user, err := uam.Confirm(loginRequest)
 		if err != nil {
 			// 認証に失敗したら失敗した事だけ伝える
 			c.JSON(http.StatusUnauthorized, "Authentication failure")
 			loginLog.Printf("login err request: %v ,err: %v", loginRequest, err)
+			return
+		}
+		// 学生は/loginからログインさせない
+		if user.AccountType == AccountTypeStudent {
+			loginLog.Printf("login err request: %v ,err:  student login stop from /login", loginRequest)
+			c.String(http.StatusBadRequest, "400 Bad Request")
 			return
 		}
 		// 認証成功

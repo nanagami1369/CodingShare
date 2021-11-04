@@ -63,33 +63,39 @@ export default Vue.extend({
         this.errorMessage = 'パスワードが空です'
         return
       }
-      try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          mode: 'cors',
-          credentials: 'include',
-          body: JSON.stringify({
-            id: this.id,
-            password: this.password,
-          }),
-        })
-        switch (response.status) {
-          case 200:
-            // ログイン後の処理を書く
-            this.$router.push('mypage')
-            break
-          case 401:
-            this.errorMessage = 'ログインに失敗しました'
-            break
-          default:
-            // それ以外はHTTP STATUSを返却するようにする
-            this.errorMessage = `Error:${response.status} ${response.statusText}`
-            break
-        }
-      } catch (error: unknown) {
-        // fetchの例外はエラーとして処理
-        this.errorMessage = (error as Error).message
+      const isStudentNumber = /^[0-9]{7}$/
+      if (isStudentNumber.test(this.id)) {
+        this.errorMessage = '学生はKBookからログインしてください'
+        return
       }
+      if (this.id)
+        try {
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            body: JSON.stringify({
+              id: this.id,
+              password: this.password,
+            }),
+          })
+          switch (response.status) {
+            case 200:
+              // ログイン後の処理を書く
+              this.$router.push('mypage')
+              break
+            case 401:
+              this.errorMessage = 'ログインに失敗しました'
+              break
+            default:
+              // それ以外はHTTP STATUSを返却するようにする
+              this.errorMessage = `Error:${response.status} ${response.statusText}`
+              break
+          }
+        } catch (error: unknown) {
+          // fetchの例外はエラーとして処理
+          this.errorMessage = (error as Error).message
+        }
     },
   },
 })
