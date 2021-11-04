@@ -24,17 +24,23 @@
           <span class="label">作者</span>
           <span>{{ userId }}</span>
         </div>
-        <label>
+        <div v-if="$route.query.title">
           <span class="label">タイトル</span>
-          <ValidationProvider
-            :immediate="true"
-            rules="required"
-            v-slot="{ errors }"
-          >
-            <input type="text" name="タイトル" v-model="data.title" />
-            <span class="error-message">{{ errors[0] }}</span>
-          </ValidationProvider>
-        </label>
+          <span>{{ $route.query.title }}</span>
+        </div>
+        <div v-else>
+          <label>
+            <span class="label">タイトル</span>
+            <ValidationProvider
+              :immediate="true"
+              rules="required"
+              v-slot="{ errors }"
+            >
+              <input type="text" name="タイトル" v-model="data.title" />
+              <span class="error-message">{{ errors[0] }}</span>
+            </ValidationProvider>
+          </label>
+        </div>
         <label>コメント</label>
         <textarea rows="5" resize="none" v-model="data.comment"></textarea>
         <button
@@ -98,6 +104,10 @@ export default Vue.extend({
       if (this.isLogin) {
         // ログイン中なら名前にユーザIDを挿入
         this.data.name = this.userId
+      }
+      if (this.$route.query.title) {
+        // クエリにtitleがあるならtitleを挿入
+        this.data.title = this.$route.query.title as string
       }
       this.$emit('submit', this.data)
       this.$modal.hide('save-video-modal')
