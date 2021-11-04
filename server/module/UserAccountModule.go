@@ -80,6 +80,13 @@ func checkSignInRequestValidation(request *model.SignInRequest) error {
 	if request.AccountType == user.AccountTypeStudent && request.StudentNumber == nil {
 		return errors.New("sign in request error request is student ,but request have not a student Number")
 	}
+	isStudentNumber := regexp.MustCompile(`^[0-9]{7}$`)
+	if request.AccountType == user.AccountTypeStudent && !isStudentNumber.MatchString(request.Id) {
+		return errors.New("sign in request error request is student ,but request user id have not a student Number")
+	}
+	if request.AccountType != user.AccountTypeStudent && isStudentNumber.MatchString(request.Id) {
+		return errors.New("sign in request error request user id have a student Number but request is not student")
+	}
 	r := regexp.MustCompile(`^[0-9a-zA-Z]*$`)
 	if !r.MatchString(request.Id) {
 		return errors.New("sign in request error only half-width alphanumeric characters can be used in the user id")

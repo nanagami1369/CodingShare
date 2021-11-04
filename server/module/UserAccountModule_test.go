@@ -62,6 +62,26 @@ func TestCheckSignInRequestvalidation(t *testing.T) {
 			AccountType: user.AccountTypeStudent,
 		}, errors.New("sign in request error request is student ,but request have not a student Number"))
 	})
+	t.Run("学生なのにUserIdが学籍番号じゃない", func(t *testing.T) {
+		studentNumber := 1821141
+
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:            "1821",
+			RowPassword:   "00000000",
+			AccountType:   user.AccountTypeStudent,
+			StudentNumber: &studentNumber,
+		}, errors.New("sign in request error request is student ,but request user id have not a student Number"))
+	})
+	t.Run("UserIdが学生番号なのに学生じゃない", func(t *testing.T) {
+		studentNumber := 1821149
+
+		testCheckSignInRequestvalidation(t, &model.SignInRequest{
+			Id:            "1821149",
+			RowPassword:   "00000000",
+			AccountType:   user.AccountTypeTeacher,
+			StudentNumber: &studentNumber,
+		}, errors.New("sign in request error request user id have a student Number but request is not student"))
+	})
 	t.Run("user idに半角英数以外を割り当てる", func(t *testing.T) {
 		testCheckSignInRequestvalidation(t, &model.SignInRequest{
 			Id:          "日本語",
