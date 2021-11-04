@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -164,6 +166,68 @@ func main() {
 		c.JSON(http.StatusOK, videos)
 
 	})
+	// Kbook
+	kbook := router.Group("/kbook")
+	kbook.Use(middleware.CheckConnectFromKbookMiddleware())
+	kbook.GET("/home", func(c *gin.Context) {
+		c.String(http.StatusOK, "welcome Kbook!")
+	})
+	kbook.POST("/home", func(c *gin.Context) {
+		// フォームの取得
+		c.Request.ParseForm()
+		uid := c.Request.PostForm.Get("uid")
+		// 学籍番号の取得
+		userId := GetStudentNumber(uid)
+		studentNumber, err := strconv.Atoi(userId)
+		if err != nil {
+			// 学籍番号で無かった(数字に変換できない値だった)場合
+			c.String(http.StatusBadRequest, "400 Bad Request")
+			loginLog.Printf("login err request: %v ,err: %v", uid, err)
+			return
+		}
+		// アカウントの存在確認
+		isExists, err := uam.Exists(userId)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "500 InternalServerError")
+			loginLog.Printf("login err request: %v ,err: %v", userId, err)
+			return
+		}
+		if !isExists {
+			// アカウントがなければ作ってからログイン
+			signInRequest := &model.SignInRequest{
+				Id:            userId,
+				RowPassword:   "gabagaba password",
+				AccountType:   user.AccountTypeStudent,
+				StudentNumber: &studentNumber,
+			}
+			_, err := uam.SignIn(signInRequest)
+			if err != nil {
+				c.String(http.StatusInternalServerError, "500 InternalServerError")
+				loginLog.Printf("singin err request: %v ,err: %v", userId, err)
+				return
+			}
+		}
+		// 認証
+		loginRequest := &model.LoginRequest{
+			Id:          userId,
+			RowPassword: "gabagaba password",
+		}
+		user, err := uam.Confirm(loginRequest)
+		if err != nil {
+			// 認証に失敗したら失敗した事だけ伝える
+			c.String(http.StatusForbidden, "403 Forbidden")
+			loginLog.Printf("login err request: %v ,err: %v", userId, err)
+			return
+		}
+		// 認証成功
+		store := sessions.Default(c)
+		dateOfExpiry := time.Now().AddDate(0, 0, 3)
+		sem.Login(store, user, dateOfExpiry)
+		c.HTML(http.StatusOK, "welcome_kbook.html", gin.H{
+			"name": user.UserID,
+		})
+		loginLog.Println("login success request:", user.UserID)
+	})
 	private := router.Group("/private")
 	private.Use(middleware.LoginCheckMiddleware())
 	private.POST("/logout", func(c *gin.Context) {
@@ -241,4 +305,11 @@ func main() {
 		c.Status(http.StatusOK)
 	})
 	router.Run(":8080")
+}
+
+func GetStudentNumber(userId string) string {
+	if utf8.RuneCountInString(userId) == 0 {
+		return ""
+	}
+	return strings.TrimLeft(userId, "s")
 }

@@ -54,6 +54,7 @@ func (sm *SetupManager) GetRouter(middleware *middleware.Middleware) (router *gi
 		MaxAge: 60 * 60 * 24 * 3,
 	})
 	router.Use(sessions.Sessions("codingshare", store))
+	router.LoadHTMLGlob("/app/html/*.html")
 	return router, nil
 }
 

@@ -33,3 +33,17 @@ func (m *Middleware) LoginCheckMiddleware() gin.HandlerFunc {
 		}
 	}
 }
+
+func (m *Middleware) CheckConnectFromKbookMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		if c.Request.Referer() == "https://kbook.sakura.ne.jp/" {
+			c.Next()
+		} else {
+			c.String(http.StatusBadRequest, "400 Bad Request")
+			log.Println("connections from unauthorized destinations :", c.Request.Referer())
+			c.Abort()
+		}
+	}
+
+}

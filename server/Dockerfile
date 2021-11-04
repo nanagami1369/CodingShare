@@ -12,4 +12,5 @@ FROM alpine:3.14.2 as production-stage
 WORKDIR /CodingShare
 WORKDIR /app
 COPY --from=build-stage /app/CodingShare ./CodingShare
+COPY ./html ./html
 ENTRYPOINT [ "/app/CodingShare" ]
