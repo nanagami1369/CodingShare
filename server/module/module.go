@@ -11,6 +11,7 @@ import (
 type UserAccountModule interface {
 	Confirm(request *model.LoginRequest) (*ent.User, error)
 	SignIn(request *model.SignInRequest) (*ent.User, error)
+	Exists(userId string) (bool, error)
 }
 
 type SessionModule interface {

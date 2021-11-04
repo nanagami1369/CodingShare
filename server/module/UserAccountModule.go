@@ -62,6 +62,10 @@ func (m *UserAccountModuleImpl) SignIn(request *model.SignInRequest) (*ent.User,
 	return m.repository.Create(request.Id, password, request.AccountType, request.StudentNumber)
 }
 
+func (m *UserAccountModuleImpl) Exists(userId string) (bool, error) {
+	return m.repository.Exists(userId)
+}
+
 // サインイン用のバリデーション
 func checkSignInRequestValidation(request *model.SignInRequest) error {
 	if request.Id == "" {
