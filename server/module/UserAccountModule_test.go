@@ -154,10 +154,12 @@ func TestSignIn(t *testing.T) {
 		}
 	})
 	t.Run("異常値テスト(存在するアカウントを登録しようとする場合)", func(t *testing.T) {
+		studentNumber := 1821141
 		request := &model.SignInRequest{
-			Id:          "1821141",
-			RowPassword: "00000000",
-			AccountType: user.AccountTypeGeneral,
+			Id:            "1821141",
+			RowPassword:   "00000000",
+			AccountType:   user.AccountTypeStudent,
+			StudentNumber: &studentNumber,
 		}
 		expected := "sign in request error request id is Exists"
 		_, err := uam.SignIn(request)
@@ -186,7 +188,7 @@ func TestSignIn(t *testing.T) {
 	t.Run("異常値テスト(学籍番号があるのに、学生では無い場合)", func(t *testing.T) {
 		studentNumber := 1821141
 		request := &model.SignInRequest{
-			Id:            "1821142",
+			Id:            "takamatu",
 			RowPassword:   "00000000",
 			AccountType:   user.AccountTypeTeacher,
 			StudentNumber: &studentNumber,
