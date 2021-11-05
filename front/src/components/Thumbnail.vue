@@ -3,11 +3,9 @@
     <div class="thumbnail-video-info">
       <div>
         <span class="thumbnail-video-info-label">タイトル</span>
-        <a
-          ><cite class="thumbnail-video-info-value">
-            {{ video.header.title }}
-          </cite>
-        </a>
+        <cite class="thumbnail-video-info-value">
+          {{ video.header.title }}
+        </cite>
       </div>
       <div>
         <span class="thumbnail-video-info-label">作者</span>
