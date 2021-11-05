@@ -184,13 +184,16 @@ func main() {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-		_, err = vim.Save(saveVideoRequest, user)
+		video, err := vim.Save(saveVideoRequest, user)
 		if err != nil {
 			log.Println("save video err:", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-		c.Status(http.StatusOK)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "video saved!",
+			"videoId": video.Header.VideoID,
+		})
 	})
 	private.GET("/myvideo", func(c *gin.Context) {
 		store := sessions.Default(c)
