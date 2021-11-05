@@ -148,7 +148,11 @@ export default Vue.extend({
             body: JSON.stringify(video),
           })
           if (response.ok) {
-            alert('サーバーに保存しました')
+            const videoId = (
+              (await response.json()) as { message: string; videoId: number }
+            ).videoId
+            this.$router.push(`/player/${videoId}`)
+            alert('録画データを保存しました')
           } else {
             alert('サーバーへの保存に失敗しました')
           }
