@@ -35,6 +35,7 @@
         <div class="header-context-menu-item" @click="changeMyPage">
           マイページ
         </div>
+        <div class="header-context-menu-item" @click="logout">ログアウト</div>
       </div>
     </div>
   </header>
@@ -110,6 +111,27 @@ export default Vue.extend({
       }
       this.searchWord = ''
     },
+    logout: async function () {
+      try {
+        const response = await fetch('/api/private/logout', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'include',
+        })
+        if (response.status != 200) {
+          // 失敗時はエラーを表示
+          let message =
+            `message:${await response.text()}\n` +
+            `http status:${response.status} ${response.statusText}`
+          alert(message)
+          return
+        }
+        this.$router.push('/login')
+      } catch (error: unknown) {
+        // 通信エラーの場合はアラートで表示
+        alert((error as Error).message)
+      }
+    },
   },
 })
 </script>
@@ -182,13 +204,22 @@ export default Vue.extend({
   right: 30px;
   top: 25px;
   font-size: 1.2em;
-  padding: 5px 7px;
   background: white;
   box-shadow: 1px 0 5px 1px #999;
 }
 
 .header-context-menu {
   color: #202020;
+}
+
+.header-context-menu-item {
+  border: 1px solid #aaaaaa;
+  padding: 5px 7px;
+}
+
+.header-context-menu-item:hover {
+  cursor: pointer;
+  background-color: #ddd;
 }
 
 .header-login-button {
