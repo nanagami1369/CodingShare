@@ -182,13 +182,22 @@ export default Vue.extend({
   right: 30px;
   top: 25px;
   font-size: 1.2em;
-  padding: 5px 7px;
   background: white;
   box-shadow: 1px 0 5px 1px #999;
 }
 
 .header-context-menu {
   color: #202020;
+}
+
+.header-context-menu-item {
+  border: 1px solid #aaaaaa;
+  padding: 5px 7px;
+}
+
+.header-context-menu-item:hover {
+  cursor: pointer;
+  background-color: #ddd;
 }
 
 .header-login-button {
