@@ -38,7 +38,6 @@
         <Thumbnail :video="video" />
       </div>
     </article>
-    <button @click="logout">ログアウト</button>
   </div>
 </template>
 
@@ -233,27 +232,6 @@ export default Vue.extend({
       }
       alert(message)
       this.loadMyVideo()
-    },
-    logout: async function () {
-      try {
-        const response = await fetch('/api/private/logout', {
-          method: 'POST',
-          mode: 'cors',
-          credentials: 'include',
-        })
-        if (response.status != 200) {
-          // 失敗時はエラーを表示
-          let message =
-            `message:${await response.text()}\n` +
-            `http status:${response.status} ${response.statusText}`
-          alert(message)
-          return
-        }
-        this.$router.push('/login')
-      } catch (error: unknown) {
-        // 通信エラーの場合はアラートで表示
-        alert((error as Error).message)
-      }
     },
   },
   async created(): Promise<void> {
