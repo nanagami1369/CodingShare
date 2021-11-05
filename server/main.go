@@ -45,13 +45,6 @@ func main() {
 	}
 
 	// set sample data
-	sampleStudenNumber := 1821141
-	uam.SignIn(&model.SignInRequest{
-		Id:            "1821141",
-		RowPassword:   "sampleData",
-		AccountType:   user.AccountTypeStudent,
-		StudentNumber: &sampleStudenNumber,
-	})
 	uam.SignIn(&model.SignInRequest{
 		Id:          "tanaka",
 		RowPassword: "sampleData",
