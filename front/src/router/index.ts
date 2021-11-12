@@ -1,5 +1,6 @@
 import { store } from '@/store'
 import Vue from 'vue'
+import VideoSavedAlertPage from '@/views/VideoSavedAlertPage.vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../views/HomePage.vue'
 import NotFoundPage from '../views/NotFoundPage.vue'
@@ -47,6 +48,11 @@ const routes: Array<RouteConfig> = [
     path: '/search',
     name: 'Search',
     component: () => import('../views/SearchPage.vue'),
+  },
+  {
+    path: '/savedvideo/:id',
+    name: 'VideoSavedAlert',
+    component: VideoSavedAlertPage,
   },
   {
     path: '*',
