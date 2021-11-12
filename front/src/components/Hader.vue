@@ -14,7 +14,7 @@
     </div>
     <span class="header-free-space"></span>
     <button class="header-button" @click="changeEditorPage">
-      <FontAwesomeIcon icon="edit" />
+      <FontAwesomeIcon icon="video" />
     </button>
     <button
       v-if="isLogin"
@@ -47,11 +47,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
   faHome,
   faUserCircle,
-  faEdit,
+  faVideo,
   faSearch,
 } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faHome, faUserCircle, faEdit, faSearch)
+library.add(faHome, faUserCircle, faVideo, faSearch)
 
 type DataType = {
   isHeaderContextMenu: boolean
