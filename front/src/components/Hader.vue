@@ -16,28 +16,12 @@
     <button class="header-button" @click="changeEditorPage">
       <FontAwesomeIcon icon="video" />
     </button>
-    <button
-      v-if="isLogin"
-      class="header-button"
-      @click="toggleHeaderContextMenu"
-    >
+    <button v-if="isLogin" class="header-button" @click="changeMyPage">
       <FontAwesomeIcon icon="user-circle" />
     </button>
     <button v-else class="header-login-button" @click="changeLogin">
       ログイン
     </button>
-    <div
-      v-show="isHeaderContextMenu"
-      class="header-context-menu-wrapper"
-      @click="toggleHeaderContextMenu"
-    >
-      <div class="header-context-menu">
-        <div class="header-context-menu-item" @click="changeMyPage">
-          マイページ
-        </div>
-        <div class="header-context-menu-item" @click="logout">ログアウト</div>
-      </div>
-    </div>
   </header>
 </template>
 <script lang="ts">
@@ -54,7 +38,6 @@ import {
 library.add(faHome, faUserCircle, faVideo, faSearch)
 
 type DataType = {
-  isHeaderContextMenu: boolean
   searchWord: string
 }
 
@@ -65,7 +48,6 @@ export default Vue.extend({
   },
   data(): DataType {
     return {
-      isHeaderContextMenu: false,
       searchWord: '',
     }
   },
@@ -82,13 +64,11 @@ export default Vue.extend({
       this.$router.push({ path: '/' })
     },
     changeMyPage: function (): void {
+      console.log('mypage')
       if (this.$route.path == '/mypage') {
         return
       }
       this.$router.push({ path: '/mypage' })
-    },
-    toggleHeaderContextMenu: function (): void {
-      this.isHeaderContextMenu = !this.isHeaderContextMenu
     },
     changeLogin: function (): void {
       if (this.$route.path == '/login') {
@@ -190,36 +170,6 @@ export default Vue.extend({
 .search-button-style {
   padding: 0px 10px;
   border-radius: 45px;
-}
-.header-context-menu-wrapper {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  right: 0px;
-  top: 0px;
-  z-index: 100;
-}
-.header-context-menu {
-  position: absolute;
-  right: 30px;
-  top: 25px;
-  font-size: 1.2em;
-  background: white;
-  box-shadow: 1px 0 5px 1px #999;
-}
-
-.header-context-menu {
-  color: #202020;
-}
-
-.header-context-menu-item {
-  border: 1px solid #aaaaaa;
-  padding: 5px 7px;
-}
-
-.header-context-menu-item:hover {
-  cursor: pointer;
-  background-color: #ddd;
 }
 
 .header-login-button {
