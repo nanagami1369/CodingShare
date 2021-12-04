@@ -1,4 +1,4 @@
-//#{language:{tag:'text/x-java',name: 'Java'},ch:0,line:8}
+//#{"language":{"tag":"text/x-java","name": "Java"}}
 package kadai23;
 
 import java.util.Comparator;
