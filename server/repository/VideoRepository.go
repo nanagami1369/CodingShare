@@ -162,3 +162,30 @@ func (r *VideoRepositoryImpl) Remove(id int) error {
 	video.Update().SetIsRemoved(true).Save(r.context)
 	return nil
 }
+
+func (r *VideoRepositoryImpl) FindAll() ([]*model.Video, error) {
+	searchedVideos, err := r.client.Video.Query().All(r.context)
+	if err != nil {
+		return nil, err
+	}
+	videos := make([]*model.Video, 0)
+	for _, video := range searchedVideos {
+		user, err := video.QueryUser().First(r.context)
+		if err != nil {
+			return nil, err
+		}
+		videos = append(videos, &model.Video{
+			Header: model.Header{
+				VideoID:       video.ID,
+				UserID:        user.UserID,
+				Name:          user.UserID,
+				Title:         video.Title,
+				Language:      video.LanguageTag,
+				UploadTime:    video.UploadTime.UTC().UnixNano() / 1e6,
+				RecordingTime: video.RecordingTime,
+				Comment:       video.Comment,
+			},
+			Value: video.CodingSequence})
+	}
+	return videos, nil
+}

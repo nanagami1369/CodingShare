@@ -249,5 +249,25 @@ func main() {
 		}
 		c.Status(http.StatusOK)
 	})
+	private.GET("/allvideo", func(c *gin.Context) {
+		store := sessions.Default(c)
+		_, sessionUser, err := sem.Get(store)
+		if err != nil {
+			log.Println("get user err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		if sessionUser.AccountType != user.AccountTypeTeacher {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		videos, err := vim.GetAllVideos()
+		if err != nil {
+			log.Println("err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.JSON(http.StatusOK, videos)
+	})
 	router.Run(":8080")
 }
