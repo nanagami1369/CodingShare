@@ -38,7 +38,7 @@
         <label>コメント</label>
         <textarea rows="5" resize="none" v-model="data.comment"></textarea>
         <button
-          class="submit-button"
+          class="submit-button save-button"
           type="button"
           @click="submit"
           :disabled="invalid"
@@ -121,6 +121,12 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.save-button {
+  background-color: #50fa7b;
+  border-radius: 5px;
+  border: solid 1px gray;
+}
+
 .save-video-modal {
   display: flex;
   flex-direction: column;
