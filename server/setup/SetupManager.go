@@ -70,6 +70,13 @@ func (sm *SetupManager) readEnv(key string) (string, error) {
 
 }
 
+func (sm *SetupManager) ReadAdminNameFromEnv() (string, error) {
+	admin_name, err := sm.readEnv("ADMIN_NAME")
+	if err != nil {
+		return "", err
+	}
+	return admin_name + "sadmin", nil
+}
 func (sm *SetupManager) ReadConfigFromEnv() (*model.Config, error) {
 	dbUser, err := sm.readEnv("MYSQL_USER")
 	if err != nil {
