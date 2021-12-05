@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"github.com/nanagami1369/CodingShare/ent/migrate"
 	"github.com/nanagami1369/CodingShare/ent/user"
@@ -64,6 +65,18 @@ func main() {
 	// logger
 	loginLog := log.New(os.Stdout, "[LOGIN]", log.LstdFlags|log.LUTC)
 
+	// admin
+	admin_name, err := sm.ReadAdminNameFromEnv()
+	if err != nil {
+		log.Panic(err)
+	}
+	admin_password := uuid.New().String()
+	log.Println("admin_password is ", admin_password)
+	uam.SignIn(&model.SignInRequest{
+		Id:          admin_name,
+		RowPassword: admin_password,
+		AccountType: user.AccountTypeTeacher,
+	})
 	// router
 	router, _ := sm.GetRouter(middleware)
 	router.GET("/", func(c *gin.Context) {
@@ -235,6 +248,26 @@ func main() {
 			return
 		}
 		c.Status(http.StatusOK)
+	})
+	private.GET("/allvideo", func(c *gin.Context) {
+		store := sessions.Default(c)
+		_, sessionUser, err := sem.Get(store)
+		if err != nil {
+			log.Println("get user err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		if sessionUser.AccountType != user.AccountTypeTeacher {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		videos, err := vim.GetAllVideos()
+		if err != nil {
+			log.Println("err:", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.JSON(http.StatusOK, videos)
 	})
 	router.Run(":8080")
 }

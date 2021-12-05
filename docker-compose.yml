@@ -19,6 +19,8 @@ services:
       - coding_share_net
     volumes:
       - coding_share_volume:/CodingShare
+    env_file:
+      - .env
 
   proxy_server:
     restart: always

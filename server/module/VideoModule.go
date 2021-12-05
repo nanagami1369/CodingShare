@@ -50,6 +50,11 @@ func (m *VideoModuleImpl) GetUserVideos(id string) ([]*model.Video, error) {
 	return m.repository.FindFromUserId(id)
 }
 
+func (m *VideoModuleImpl) GetAllVideos() ([]*model.Video, error) {
+	return m.repository.FindAll()
+}
+
+
 func (m *VideoModuleImpl) Remove(id int, loginUser *ent.User) error {
 	isExist, err := m.repository.Exists(id)
 	if err != nil {
