@@ -175,10 +175,51 @@ export default Vue.extend({
     recordCancel: function (): void {
       this.recorder.clearVideo()
     },
+    observerUrlDo: async function (): Promise<void> {
+      this.editor?.setValue('')
+      const template = this.$route.query.template
+      if (!template) {
+        return
+      }
+      try {
+        const response = await fetch('/templates/' + template)
+        if (response.ok) {
+          const text = await response.text()
+          const headerText = text.split('\n')[0].substring(3)
+          const header = JSON.parse(headerText) as {
+            language: { tag: string; name: string }
+          }
+          const body = text
+            .split('\n')
+            .slice(1, text.split('\n').length)
+            .join('\n')
+          this.editor?.setOption('mode', header.language.tag)
+          this.editor?.setValue(body)
+          this.selectedLanguage = header.language
+          return
+        }
+        if (response.status == 404) {
+          return
+        }
+        const message =
+          `録画データの取得に失敗しました\n` +
+          `message:${await response.text()}\n` +
+          `http status:${response.status} ${response.statusText}`
+        alert(message)
+        return
+      } catch (error: unknown) {
+        // 通信エラーの場合はアラートで表示
+        alert((error as Error).message)
+      }
+    },
   },
   watch: {
     selectedLanguage: function (newLang: Language) {
       this.editor?.setOption('mode', newLang.tag)
+    },
+    async $route(): Promise<void> {
+      // 2回目呼び出し
+      await this.observerUrlDo()
     },
   },
   mounted() {
@@ -193,6 +234,8 @@ export default Vue.extend({
     this.editor.setOption('mode', this.selectedLanguage.tag)
     this.recorder.register(this.editor)
     window.onresize = this.setEditorSize
+    // 1回目呼び出し
+    this.observerUrlDo()
   },
   beforeDestroy() {
     this.recorder.unregister(this.editor)
