@@ -98,6 +98,8 @@ export default Vue.extend({
 .search-page {
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .search-box {
   flex: 0 0 40px;
