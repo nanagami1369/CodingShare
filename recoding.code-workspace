@@ -9,7 +9,8 @@
   ],
   "settings": {
     "files.associations": {
-      "docker-compose-azure.yml": "dockercompose"
+      "Dockerfile_Front_Dev": "dockerfile",
+      "docker-compose_dev.yml": "dockercompose"
     }
   }
 }

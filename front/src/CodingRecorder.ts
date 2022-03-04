@@ -97,7 +97,7 @@ export class CodingRecorder {
   }
 
   public outputVideo(
-    userId: string,
+    userId: number,
     name: string,
     title: string,
     language: Language,
@@ -113,7 +113,6 @@ export class CodingRecorder {
     this._video = []
     return {
       header: {
-        videoId: -1,
         userId: userId,
         name: name,
         title: title,

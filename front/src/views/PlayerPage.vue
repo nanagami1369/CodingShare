@@ -1,101 +1,91 @@
 <template>
-  <div>
-    <NotFoundPage v-show="isNotFound" :style="{ height: '100%' }" />
-    <div
-      v-show="!isNotFound"
-      id="player-page"
-      :class="{ 'is-play': player.isPlay }"
-    >
-      <div id="side-panel">
-        <h1>Player</h1>
-        <input
-          v-show="isFileMode"
-          class="video_label"
-          type="file"
-          @change="loadData"
-          value="読み込み"
-          :disabled="player.isLoading || player.isPlay"
-        />
-        <div v-show="!isFileMode" class="video_label"></div>
-        <VideoInfoViewer :videoInfo="player.videoInfo" />
-        <textarea id="background-editor-aria"></textarea>
-        <LoadingViwer v-show="player.isLoading" />
-      </div>
-      <div id="player-panel">
-        <textarea id="editor-aria"></textarea>
-        <VideoSliderBar
-          :elapsedTime="player.info.elapsedTime"
-          :totalTime="player.info.totalTime"
-          :disabled="!player.isLoaded || player.isPlay"
-          @change="move"
-        />
-        <div class="player-control">
+  <div id="player-page" :class="{ 'is-play': player.isPlay }">
+    <div id="side-panel">
+      <h1>Player</h1>
+      <input
+        type="file"
+        @change="loadData"
+        value="読み込み"
+        :disabled="player.isLoading || player.isPlay"
+      />
+      <VideoInfoViewer :videoInfo="player.videoInfo" />
+      <textarea id="background-editor-aria"></textarea>
+      <LoadingViwer v-show="player.isLoading" />
+    </div>
+    <div id="player-panel">
+      <textarea id="editor-aria"></textarea>
+      <VideoSliderBar
+        :elapsedTime="player.info.elapsedTime"
+        :totalTime="player.info.totalTime"
+        :disabled="!player.isLoaded || player.isPlay"
+        @change="move"
+      />
+      <div class="player-control">
+        <button
+          @click="backToTheBeginning"
+          class="player-control-button"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="undo" />
+        </button>
+        <button
+          v-if="player.isPlay"
+          @click="pouse"
+          class="player-control-button"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="pause" />
+        </button>
+        <button
+          v-else
+          @click="start"
+          class="player-control-button"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="play" />
+        </button>
+        <button
+          class="player-control-button"
+          @click="stepForward"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="step-forward" />
+        </button>
+        <button
+          class="player-control-button"
+          @click="fastForward"
+          :disabled="!player.isLoaded"
+        >
+          <FontAwesomeIcon icon="fast-forward" />
+        </button>
+        <span class="elapsed-time">{{ playbackPosition }}</span>
+        <div class="speed-control">
           <button
-            @click="backToTheBeginning"
-            class="player-control-button"
-            :disabled="!player.isLoaded"
+            class="player-control-button speed-control-button"
+            @click="toggleSpeedMenu"
           >
-            <FontAwesomeIcon icon="undo" />
+            速度 {{ speed }}%
           </button>
-          <button
-            v-if="player.isPlay"
-            @click="pouse"
-            class="player-control-button"
-            :disabled="!player.isLoaded"
-          >
-            <FontAwesomeIcon icon="pause" />
-          </button>
-          <button
-            v-else
-            @click="start"
-            class="player-control-button"
-            :disabled="!player.isLoaded"
-          >
-            <FontAwesomeIcon icon="play" />
-          </button>
-          <button
-            class="player-control-button"
-            @click="stepForward"
-            :disabled="!player.isLoaded"
-          >
-            <FontAwesomeIcon icon="step-forward" />
-          </button>
-          <button
-            class="player-control-button"
-            @click="fastForward"
-            :disabled="!player.isLoaded"
-          >
-            <FontAwesomeIcon icon="fast-forward" />
-          </button>
-          <span class="elapsed-time">{{ playbackPosition }}</span>
-          <div class="speed-control">
-            <button
-              class="player-control-button speed-control-button"
-              @click="toggleSpeedMenu"
-            >
-              速度 {{ speed }}%
-            </button>
+          <div
+            v-show="isSpeedMenuOpen"
+            class="spped-control-wrapper"
+            @click="toggleSpeedMenu"
+          ></div>
+          <div class="speed-context-menu">
             <div
               v-show="isSpeedMenuOpen"
-              class="spped-control-wrapper"
-              @click="toggleSpeedMenu"
-            ></div>
-            <div class="speed-context-menu">
-              <div
-                v-show="isSpeedMenuOpen"
-                v-for="speedIndex in speedSliderIndex"
-                :key="speedIndex"
-                class="speed-context-menu-item"
-                @click="
-                  speed = speedIndex
-                  toggleSpeedMenu()
-                "
-              >
-                <span class="speed-context-menu-check-space">{{
-                  speed == speedIndex ? '✓' : ''
-                }}</span>
-                <span>{{ speedIndex }}%</span>
-              </div>
+              v-for="speedIndex in speedSliderIndex"
+              :key="speedIndex"
+              class="speed-context-menu-item"
+              @click="
+                speed = speedIndex
+                toggleSpeedMenu()
+              "
+            >
+              <span class="speed-context-menu-check-space">{{
+                speed == speedIndex ? '✓' : ''
+              }}</span>
+              <span>{{ speedIndex }}%</span>
             </div>
           </div>
         </div>
@@ -117,7 +107,6 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/addon/hint/javascript-hint.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import { Video } from '@/models/Video'
-import NotFoundPage from '@/views/NotFoundPage.vue'
 import VideoInfoViewer from '@/components/VideoInfoViewer.vue'
 import VideoSliderBar from '@/components/VideoSliderBar.vue'
 import LoadingViwer from '@/components/LoadingViewer.vue'
@@ -141,7 +130,6 @@ type DataType = {
   backgroundEditor?: CodeMirror.EditorFromTextArea
   defualtConfig: EditorConfiguration
   player: CodingPlayer
-  isNotFound: boolean
   speedSliderIndex: number[]
   isSpeedMenuOpen: boolean
 }
@@ -164,7 +152,6 @@ export default Vue.extend({
     VideoSliderBar,
     FontAwesomeIcon,
     LoadingViwer,
-    NotFoundPage,
   },
   data(): DataType {
     const snapShotTimeSpan = 30000
@@ -178,7 +165,6 @@ export default Vue.extend({
         readOnly: true,
       },
       player: new CodingPlayer(snapShotTimeSpan, this.$store.getters.speed),
-      isNotFound: false,
       speedSliderIndex: [50, 100, 200],
       isSpeedMenuOpen: false,
     }
@@ -196,9 +182,6 @@ export default Vue.extend({
     playbackPosition: function (): string {
       // prettier-ignore
       return `${formatRecordingTime(this.player.info.elapsedTime)} / ${formatRecordingTime(this.player.info.totalTime)}`
-    },
-    isFileMode: function (): boolean {
-      return this.$route.params.id == 'file'
     },
   },
   methods: {
@@ -226,47 +209,7 @@ export default Vue.extend({
       }
       const videoJson = (await readTextFile(file)) as string
       const video: Video = JSON.parse(videoJson)
-      // usreIdがファイルから書き換わっていたとしてもファイルとして処理できるようにした
-      video.header.userId = 'file'
       this.player.load(video, this.editor, this.backgroundEditor)
-    },
-    observerUrlDo: async function (): Promise<void> {
-      this.speed = this.$store.getters.speed
-      this.player.pause()
-      this.player.clear(this.editor)
-      if (this.isFileMode) {
-        this.isNotFound = false
-        return
-      }
-      // サーバーからデータを取得
-      const id = this.$route.params.id
-      try {
-        const response = await fetch('/api/loadvideo/' + id, {
-          method: 'GET',
-          mode: 'cors',
-          credentials: 'include',
-        })
-        if (response.ok) {
-          this.isNotFound = false
-          const video = (await response.json()) as Video
-          this.player.load(video, this.editor, this.backgroundEditor)
-          return
-        } else if (response.status == 404) {
-          this.isNotFound = true
-          return
-        } else {
-          // それ以外の場合はエラーを表示
-          const message =
-            `message:${await response.text()}\n` +
-            `http status:${response.status} ${response.statusText}`
-          alert(message)
-          return
-        }
-      } catch (error: unknown) {
-        // 通信エラーの場合はアラートで表示
-        alert((error as Error).message)
-        return
-      }
     },
     start: function (): void {
       this.player.start(this.editor)
@@ -285,6 +228,35 @@ export default Vue.extend({
     },
     move: function (time: number): void {
       this.player.move(time, this.editor)
+    },
+    observerUrlDo: async function (): Promise<void> {
+      this.speed = this.$store.getters.speed
+      this.player.pause()
+      this.player.clear(this.editor)
+      if (this.$route.query.src == null) {
+        return
+      }
+      try {
+        const response = await fetch(
+          process.env.BASE_URL + '/video/' + this.$route.query.src.toString()
+        )
+        if (response.ok) {
+          const video = (await response.json()) as Video
+          this.player.load(video, this.editor, this.backgroundEditor)
+          return
+        } else {
+          // それ以外の場合はエラーを表示
+          const message =
+            `message:${await response.text()}\n` +
+            `http status:${response.status} ${response.statusText}`
+          alert(message)
+          return
+        }
+      } catch (error: unknown) {
+        // 通信エラーの場合はアラートで表示
+        alert((error as Error).message)
+        return
+      }
     },
   },
   watch: {
@@ -312,7 +284,6 @@ export default Vue.extend({
     this.editor = CodeMirror.fromTextArea(editorAria, config)
     this.setEditorSize()
     window.onresize = this.setEditorSize
-    // 1回目呼び出し
     await this.observerUrlDo()
   },
   beforeDestroy(): void {
@@ -408,8 +379,8 @@ h1 {
   width: 0.8em;
   display: inline-block;
 }
-.video_label {
-  height: 70px;
-  line-height: 70px;
+
+input[type='file'] {
+  padding: 20px 0px;
 }
 </style>

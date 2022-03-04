@@ -105,14 +105,6 @@ export default Vue.extend({
       },
     }
   },
-  computed: {
-    isLogin: function (): boolean {
-      return this.$store.getters.isLogin
-    },
-    userId: function (): string {
-      return this.$store.getters.userId
-    },
-  },
   methods: {
     setEditorSize: function () {
       const sidePanelWidth = 300
@@ -131,95 +123,29 @@ export default Vue.extend({
       this.recorder.stop()
       this.$modal.show('save-video-modal')
     },
-    recordSave: async function (data: SaveVideoUserEditData): Promise<void> {
+    recordSave: function (data: SaveVideoUserEditData): void {
       const video = this.recorder.outputVideo(
-        this.isLogin ? this.userId : 'file',
-        this.isLogin ? this.userId : data.name,
+        -1,
+        data.name,
         data.title,
         this.selectedLanguage,
         data.comment
       )
-      if (this.isLogin) {
-        try {
-          const response = await fetch('/api/private/savevideo', {
-            method: 'POST',
-            mode: 'cors',
-            credentials: 'include',
-            body: JSON.stringify(video),
-          })
-          if (response.ok) {
-            const videoId = (
-              (await response.json()) as { message: string; videoId: number }
-            ).videoId
-            this.$router.push('/savedvideo/' + videoId)
-          } else {
-            alert('サーバーへの保存に失敗しました')
-          }
-        } catch (error: unknown) {
-          // 通信エラーの場合はアラートで表示
-          alert('サーバーへの保存に失敗しました:' + (error as Error).message)
-          return
-        }
-        return
-      } else {
-        var url = (window.URL || window.webkitURL).createObjectURL(
-          new Blob([JSON.stringify(video)], { type: 'application/json' })
-        )
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${data.name}_${data.title}_video.json`
-        a.click()
-        return
-      }
+      var url = (window.URL || window.webkitURL).createObjectURL(
+        new Blob([JSON.stringify(video)], { type: 'application/json' })
+      )
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${data.name}_${data.title}_video.json`
+      a.click()
     },
     recordCancel: function (): void {
       this.recorder.clearVideo()
-    },
-    observerUrlDo: async function (): Promise<void> {
-      this.editor?.setValue('')
-      const template = this.$route.query.template
-      if (!template) {
-        return
-      }
-      try {
-        const response = await fetch('/templates/' + template)
-        if (response.ok) {
-          const text = await response.text()
-          const headerText = text.split('\n')[0].substring(3)
-          const header = JSON.parse(headerText) as {
-            language: { tag: string; name: string }
-          }
-          const body = text
-            .split('\n')
-            .slice(1, text.split('\n').length)
-            .join('\n')
-          this.editor?.setOption('mode', header.language.tag)
-          this.editor?.setValue(body)
-          this.selectedLanguage = header.language
-          return
-        }
-        if (response.status == 404) {
-          return
-        }
-        const message =
-          `録画データの取得に失敗しました\n` +
-          `message:${await response.text()}\n` +
-          `http status:${response.status} ${response.statusText}`
-        alert(message)
-        return
-      } catch (error: unknown) {
-        // 通信エラーの場合はアラートで表示
-        alert((error as Error).message)
-      }
     },
   },
   watch: {
     selectedLanguage: function (newLang: Language) {
       this.editor?.setOption('mode', newLang.tag)
-    },
-    async $route(): Promise<void> {
-      // 2回目呼び出し
-      await this.observerUrlDo()
     },
   },
   mounted() {
@@ -234,8 +160,6 @@ export default Vue.extend({
     this.editor.setOption('mode', this.selectedLanguage.tag)
     this.recorder.register(this.editor)
     window.onresize = this.setEditorSize
-    // 1回目呼び出し
-    this.observerUrlDo()
   },
   beforeDestroy() {
     this.recorder.unregister(this.editor)
