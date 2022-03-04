@@ -1,26 +1,14 @@
 <template>
   <div id="app">
-    <Header />
-    <!-- <div id="nav">
+    <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/editor">Editor</router-link> |
-      <router-link to="/player">Player</router-link>
-    </div> -->
+      <router-link to="/player">Player</router-link> |
+      <router-link to="/list">list</router-link>
+    </div>
     <router-view />
   </div>
 </template>
-
-<script>
-import Header from '@/components/Hader.vue'
-import Vue from 'vue'
-
-export default Vue.extend({
-  name: 'App',
-  components: {
-    Header,
-  },
-})
-</script>
 
 <style>
 * {
@@ -42,8 +30,8 @@ export default Vue.extend({
   overflow-y: hidden;
 }
 
-/* #nav {
-  padding: 30px;
+#nav {
+  padding: 15px;
   grid-row: 1;
 }
 
@@ -54,7 +42,7 @@ export default Vue.extend({
 
 #nav a.router-link-exact-active {
   color: #42b983;
-} */
+}
 
 html {
   height: 100%;
@@ -80,14 +68,6 @@ body {
 
 #player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursor {
   animation: flash 1s linear infinite;
-}
-
-/* ConfirmSelectedVideoModal に スクロールバーを追加する css */
-/* :scrollable="true" が効かないので暫定措置 */
-div[data-modal='confirm-selected-video-modal']
-  .v--modal-background-click
-  .v--modal-box {
-  overflow-y: auto !important;
 }
 
 @keyframes flash {

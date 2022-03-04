@@ -9,36 +9,30 @@
       <p>
         これに同意できない場合、あなたは本ソフトを使用することができません。
       </p>
-      <p>{{ userId }}</p>
     </div>
     <div class="controll-panel">
       <!-- prettier-ignore -->
       <router-link to="/editor"><FontAwesomeIcon icon="video" />録画画面へ</router-link>
       <!-- prettier-ignore -->
       <router-link to="/player"><FontAwesomeIcon icon="file-video" />再生画面へ</router-link>
+      <!-- prettier-ignore -->
+      <router-link to="/list"  ><FontAwesomeIcon icon="film" />動画一覧へ</router-link>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faFileVideo, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faFileVideo, faVideo, faFilm } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Vue from 'vue'
 
-library.add(faFileVideo, faVideo)
+library.add(faFileVideo, faVideo, faFilm)
 
 export default Vue.extend({
   name: 'HomePage',
   components: {
     FontAwesomeIcon,
-  },
-  computed: {
-    userId() {
-      return this.$store.getters.isLogin
-        ? this.$store.getters.userId
-        : 'ログインしていません'
-    },
   },
 })
 </script>
