@@ -6,7 +6,8 @@ import { RouterLink, RouterView } from 'vue-router'
   <div id="app">
     <div id="nav">
       <RouterLink to="/">Home</RouterLink> |
-      <RouterLink to="/about">About</RouterLink>
+      <RouterLink to="/about">About</RouterLink> |
+      <RouterLink to="/editor">Editor</RouterLink>
     </div>
     <router-view />
   </div>
@@ -54,5 +55,14 @@ html {
 
 body {
   height: 100%;
+}
+
+.CodeMirror {
+  text-align: start;
+  font-size: 2em;
+}
+
+.CodeMirror-hint {
+  font-size: 2em !important;
 }
 </style>
