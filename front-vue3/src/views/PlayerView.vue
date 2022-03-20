@@ -43,7 +43,7 @@ function readTextFile(file: File): Promise<string | ArrayBuffer | null> {
 
 const snapShotTimeSpan = 30000
 
-const defualtConfig = reactive<EditorConfiguration>({
+const defaultConfig = reactive<EditorConfiguration>({
   mode: 'javascript',
   lineNumbers: true,
   indentUnit: 4,
@@ -108,7 +108,7 @@ const loadData = async (event: Event): Promise<void> => {
 const start = (): void => {
   player.start(editor)
 }
-const pouse = (): void => {
+const pause = (): void => {
   player.pause()
 }
 const backToTheBeginning = (): void => {
@@ -172,7 +172,8 @@ onMounted(async (): Promise<void> => {
   if (editorAria.value == null) {
     throw new Error('textarea not found for CodeMirror')
   }
-  const config = defualtConfig
+
+  const config = defaultConfig
   editor = CodeMirror.fromTextArea(editorAria.value, config)
   setEditorSize()
   window.onresize = setEditorSize
@@ -221,7 +222,7 @@ onUnmounted((): void => {
         </button>
         <button
           v-if="player.isPlay"
-          @click="pouse"
+          @click="pause"
           class="player-control-button"
           :disabled="!player.isLoaded"
         >

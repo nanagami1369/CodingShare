@@ -19,7 +19,7 @@ library.add(faFileVideo, faVideo, faFilm)
         これに同意できない場合、あなたは本ソフトを使用することができません。
       </p>
     </div>
-    <div class="controll-panel">
+    <div class="control-panel">
       <!-- prettier-ignore -->
       <RouterLink to="/editor"><FontAwesomeIcon icon="video" />録画画面へ</RouterLink>
       <!-- prettier-ignore -->
@@ -41,22 +41,22 @@ library.add(faFileVideo, faVideo, faFilm)
   align-items: center;
 }
 
-.controll-panel a {
+.control-panel a {
   text-decoration: none;
   border-bottom: solid 2px black;
   color: black;
 }
-.controll-panel a:hover {
+.control-panel a:hover {
   color: #28e270;
   border-bottom: solid 2px #28e270;
 }
 
-.controll-panel a:active {
+.control-panel a:active {
   color: #ff4500;
   border-bottom: solid 2px #ff4500;
 }
 
-.controll-panel {
+.control-panel {
   display: flex;
   flex-direction: column;
   font-size: 2em;

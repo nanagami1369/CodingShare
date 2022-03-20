@@ -25,7 +25,7 @@ interface EditorConfig extends EditorConfiguration {
   autoCloseBrackets: boolean
 }
 
-const defualtConfig = reactive<EditorConfig>({
+const defaultConfig = reactive<EditorConfig>({
   lineNumbers: true,
   indentUnit: 4,
   theme: 'monokai',
@@ -106,7 +106,7 @@ watch(selectedLanguage, (newLang: Language) => {
 onMounted(() => {
   console.log('マウント')
   console.log(editorAria?.value)
-  const config = defualtConfig
+  const config = defaultConfig
   if (editorAria.value == null) {
     throw new Error('textarea not found for CodeMirror')
   }
