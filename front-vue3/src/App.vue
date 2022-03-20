@@ -7,7 +7,8 @@ import { RouterLink, RouterView } from 'vue-router'
     <div id="nav">
       <RouterLink to="/">Home</RouterLink> |
       <RouterLink to="/about">About</RouterLink> |
-      <RouterLink to="/editor">Editor</RouterLink>
+      <RouterLink to="/editor">Editor</RouterLink> |
+      <RouterLink to="/player">Player</RouterLink>
     </div>
     <router-view />
   </div>
@@ -64,5 +65,26 @@ body {
 
 .CodeMirror-hint {
   font-size: 2em !important;
+}
+
+/* PlayerPageで再生中のみカーソルを表示させるCSS */
+#player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursors {
+  visibility: visible !important;
+}
+
+#player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursor {
+  animation: flash 1s linear infinite;
+}
+
+@keyframes flash {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 </style>
