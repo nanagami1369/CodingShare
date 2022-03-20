@@ -26,7 +26,6 @@ import {
   faFastForward,
 } from '@fortawesome/free-solid-svg-icons'
 import { formatRecordingTime } from '@/util'
-import { useRoute } from 'vue-router'
 
 library.add(faPlay, faPause, faUndo, faStepForward, faFastForward)
 
@@ -123,33 +122,10 @@ const fastForward = (): void => {
 const move = (time: number): void => {
   player.move(time, editor)
 }
-const observerUrlDo = async (): Promise<void> => {
+const observerUrlDo = (): void => {
   speed.value = speedStore.speed
   player.pause()
   player.clear(editor)
-  const route = useRoute()
-  if (route.query.src == null) {
-    return
-  }
-  try {
-    const response = await fetch('/video/' + route.query.src.toString())
-    if (response.ok) {
-      const video = (await response.json()) as Video
-      player.load(video, editor, backgroundEditor)
-      return
-    } else {
-      // それ以外の場合はエラーを表示
-      const message =
-        `message:${await response.text()}\n` +
-        `http status:${response.status} ${response.statusText}`
-      alert(message)
-      return
-    }
-  } catch (error: unknown) {
-    // 通信エラーの場合はアラートで表示
-    alert((error as Error).message)
-    return
-  }
 }
 
 onMounted(async (): Promise<void> => {
