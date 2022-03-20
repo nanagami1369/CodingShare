@@ -151,16 +151,7 @@ const observerUrlDo = async (): Promise<void> => {
     return
   }
 }
-// watch(selectedLanguage, (newLang: Language) => {
-//   editor?.setOption('mode', newLang.tag)
-// })
 
-// watch: {
-//     async $route(): Promise<void> {
-//       // 2回目呼び出し
-//       await this.observerUrlDo()
-//     },
-//   },
 onMounted(async (): Promise<void> => {
   // 裏で動かす用のエディタ
   if (backgroundEditorArea.value == null) {
