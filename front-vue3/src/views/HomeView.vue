@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faFileVideo, faVideo, faFilm } from '@fortawesome/free-solid-svg-icons'
+import { faFileVideo, faVideo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { RouterLink } from 'vue-router'
 
-library.add(faFileVideo, faVideo, faFilm)
+library.add(faFileVideo, faVideo)
 </script>
 
 <template>
@@ -24,8 +24,6 @@ library.add(faFileVideo, faVideo, faFilm)
       <RouterLink to="/editor"><FontAwesomeIcon icon="video" />録画画面へ</RouterLink>
       <!-- prettier-ignore -->
       <RouterLink to="/player"><FontAwesomeIcon icon="file-video" />再生画面へ</RouterLink>
-      <!-- prettier-ignore -->
-      <RouterLink to="/list"  ><FontAwesomeIcon icon="film" />動画一覧へ</RouterLink>
     </div>
   </div>
 </template>
