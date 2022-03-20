@@ -102,7 +102,11 @@ const mouseUp = (): void => {
 </script>
 
 <template>
-  <div :aria-disabled="isDisabled" :class="[isHold]" class="video-slider">
+  <div
+    :aria-disabled="isDisabled"
+    :class="{ isHold: isHold }"
+    class="video-slider"
+  >
     <div ref="bar" class="bar" @mousedown="mouseDown">
       <div class="slider" :style="positionStyle"></div>
       <div class="pointer"></div>
