@@ -211,6 +211,11 @@ onUnmounted((): void => {
           <FontAwesomeIcon icon="fast-forward" />
         </button>
         <span class="elapsed-time">{{ playbackPosition }}</span>
+        <div
+          v-show="isSpeedMenuOpen"
+          class="speed-control-wrapper"
+          @click="toggleSpeedMenu"
+        ></div>
         <div class="speed-control">
           <button
             class="player-control-button speed-control-button"
@@ -218,11 +223,6 @@ onUnmounted((): void => {
           >
             速度 {{ speed }}%
           </button>
-          <div
-            v-show="isSpeedMenuOpen"
-            class="speed-control-wrapper"
-            @click="toggleSpeedMenu"
-          ></div>
           <div class="speed-context-menu">
             <div
               v-show="isSpeedMenuOpen"
@@ -295,13 +295,16 @@ h1 {
   color: white;
 }
 
+.speed-control {
+  position: relative;
+}
+
 .speed-control-wrapper {
   position: absolute;
   height: 100%;
   width: 100%;
   top: 0px;
   right: 0px;
-  z-index: 10;
 }
 
 .speed-control-button {
@@ -311,10 +314,8 @@ h1 {
 
 .speed-context-menu {
   background-color: #111111;
-  position: relative;
   color: #eeeeee;
-  top: -160px;
-  z-index: 11;
+  margin-top: -180px;
 }
 
 .speed-context-menu-item {
