@@ -172,12 +172,6 @@ onUnmounted((): void => {
         :disabled="!player.isLoaded || player.isPlay"
         @seek="move"
       />
-      <!-- <VideoSliderBar
-        :elapsedTime="player.info.elapsedTime"
-        :totalTime="player.info.totalTime"
-        :disabled="!player.isLoaded || player.isPlay"
-        @change="move"
-      /> -->
       <div class="player-control">
         <button
           @click="backToTheBeginning"
