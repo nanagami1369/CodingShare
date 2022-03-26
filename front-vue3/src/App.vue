@@ -66,6 +66,27 @@ body {
   font-size: 2em !important;
 }
 
+.CodeMirror ::-webkit-scrollbar {
+  height: 15px;
+  width: 15px;
+}
+.CodeMirror ::-webkit-scrollbar-track {
+  border-radius: 15px;
+  background-color: #222222aa;
+}
+.CodeMirror ::-webkit-scrollbar-thumb {
+  border-radius: 15px;
+  background-color: #99999999;
+}
+
+.CodeMirror ::-webkit-scrollbar-thumb:hover {
+  background-color: #77777799;
+}
+
+.CodeMirror ::-webkit-scrollbar-thumb:active {
+  background-color: #55555599;
+}
+
 /* PlayerPageで再生中のみカーソルを表示させるCSS */
 #player-page.is-play .CodeMirror:not(.CodeMirror-focused) .CodeMirror-cursors {
   visibility: visible !important;
