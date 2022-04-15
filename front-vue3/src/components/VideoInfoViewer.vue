@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { VideoInfo } from '@/models/VideoInfo'
-import { format } from 'date-fns'
 import { formatRecordingTime } from '@/util'
 import { computed, type PropType } from 'vue'
 
@@ -24,7 +23,7 @@ const uploadTime = computed((): string => {
   if (props.videoInfo.uploadTime < 0) {
     return ''
   }
-  return format(props.videoInfo.uploadTime, 'yyyy/MM/dd hh:mm:ss')
+  return new Date(props.videoInfo.uploadTime).toLocaleString()
 })
 const recordingTime = computed((): string => {
   if (props.videoInfo.recordingTime < 0) {
